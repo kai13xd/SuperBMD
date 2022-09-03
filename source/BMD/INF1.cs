@@ -58,7 +58,7 @@ namespace SuperBMD.BMD
             reader.Align(32);
         }
 
-        public INF1(Assimp.Scene scene, JNT1 skeleton)
+        public INF1(Assimp.Scene scene, JNT1 skeleton, bool isMatStrict)
         {
             FlatNodes = new List<SceneNode>();
             Root = new SceneNode(NodeType.Joint, 0, null);
@@ -79,7 +79,19 @@ namespace SuperBMD.BMD
                         continue;
 
                     SceneNode downNode1 = new SceneNode(NodeType.OpenChild, 0, Root);
-                    SceneNode matNode = new SceneNode(NodeType.Material, scene.Meshes[i].MaterialIndex, Root);
+                    SceneNode matNode;
+
+                    // Sometimes the mesh material index seems to be wrong which results in the wrong material being assigned.
+                    // So if mat_strict isn't used we will just use the mesh order for material index.
+                    // This also applies to the mat index in GetNodesRecursive.
+                    if (isMatStrict)
+                    {
+                        matNode = new SceneNode(NodeType.Material, scene.Meshes[i].MaterialIndex, Root);
+                    }
+                    else
+                    {
+                        matNode = new SceneNode(NodeType.Material, i, Root);
+                    }
                     SceneNode downNode2 = new SceneNode(NodeType.OpenChild, 0, Root);
                     SceneNode shapeNode = new SceneNode(NodeType.Shape, i, Root);
 
@@ -100,7 +112,7 @@ namespace SuperBMD.BMD
 
                 foreach (Rigging.Bone bone in skeleton.SkeletonRoot.Children)
                 {
-                    GetNodesRecursive(bone, skeleton.FlatSkeleton, Root, scene.Meshes, scene.Materials);
+                    GetNodesRecursive(bone, skeleton.FlatSkeleton, Root, scene.Meshes, scene.Materials, isMatStrict);
                 }
 
                 SceneNode rootChildUp = new SceneNode(NodeType.CloseChild, 0, Root);
@@ -114,7 +126,7 @@ namespace SuperBMD.BMD
             Console.WriteLine("✓");
         }
 
-        private void GetNodesRecursive(Rigging.Bone bone, List<Rigging.Bone> skeleton, SceneNode parent, List<Assimp.Mesh> meshes, List<Assimp.Material> materials)
+        private void GetNodesRecursive(Rigging.Bone bone, List<Rigging.Bone> skeleton, SceneNode parent, List<Assimp.Mesh> meshes, List<Assimp.Material> materials, bool isMatStrict)
         {
             SceneNode node = new SceneNode(NodeType.Joint, skeleton.IndexOf(bone), parent);
             FlatNodes.Add(node);
@@ -131,7 +143,16 @@ namespace SuperBMD.BMD
                         continue;
 
                     SceneNode downNode1 = new SceneNode(NodeType.OpenChild, 0, Root);
-                    SceneNode matNode = new SceneNode(NodeType.Material, mesh.MaterialIndex, Root);
+                    SceneNode matNode;
+
+                    if (isMatStrict)
+                    {
+                        matNode = new SceneNode(NodeType.Material, mesh.MaterialIndex, Root);
+                    }
+                    else
+                    {
+                        matNode = new SceneNode(NodeType.Material, meshes.IndexOf(mesh), Root);
+                    }
                     SceneNode downNode2 = new SceneNode(NodeType.OpenChild, 0, Root);
                     SceneNode shapeNode = new SceneNode(NodeType.Shape, meshes.IndexOf(mesh), Root);
 
@@ -151,7 +172,7 @@ namespace SuperBMD.BMD
 
                 foreach (Rigging.Bone child in bone.Children)
                 {
-                    GetNodesRecursive(child, skeleton, node, meshes, materials);
+                    GetNodesRecursive(child, skeleton, node, meshes, materials, isMatStrict);
                 }
 
                 SceneNode upNode = new SceneNode(NodeType.CloseChild, 0, parent);
