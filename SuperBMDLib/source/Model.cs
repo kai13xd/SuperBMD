@@ -335,7 +335,6 @@ namespace SuperBMDLib
                 VertexData.Write(writer);
                 SkinningEnvelopes.Write(writer);
                 PartialWeightData.Write(writer);
-                Joints.UpdateBoundingBoxes(VertexData);
                 Joints.Write(writer);
                 Shapes.Write(writer);
                 Materials.Write(writer);
