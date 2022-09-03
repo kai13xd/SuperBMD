@@ -28,7 +28,6 @@ namespace SuperBMDLib
         public bool exportAnims;
         public Geometry.Enums.GXDataType vertextype;
         public byte fraction;
-        public bool material_order_strict;
 
         /// <summary>
         /// Initializes a new Arguments instance from the arguments passed in to SuperBMD.
@@ -56,7 +55,6 @@ namespace SuperBMDLib
             exportAnims = false;
             vertextype = Geometry.Enums.GXDataType.Float32;
             fraction = 0;
-            material_order_strict = false;
 
             int positional_arguments = 0;
 
@@ -144,9 +142,6 @@ namespace SuperBMDLib
                         vertextype = (Geometry.Enums.GXDataType)Enum.Parse(typeof(Geometry.Enums.GXDataType), args[i+1]);
                         fraction = byte.Parse(args[i+2]);
                         i+=2;
-                        break;
-                    case "--mat_strict":
-                        material_order_strict = true;
                         break;
                     default:
                         if (positional_arguments == 0) {
