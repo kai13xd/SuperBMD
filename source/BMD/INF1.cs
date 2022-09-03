@@ -123,7 +123,7 @@ namespace SuperBMD.BMD
                 FlatNodes.Add(new SceneNode(NodeType.CloseChild, 0, Root));
 
             FlatNodes.Add(new SceneNode(NodeType.Terminator, 0, Root));
-            Console.WriteLine("✓");
+            Console.WriteLine("✓\n");
         }
 
         private void GetNodesRecursive(Rigging.Bone bone, List<Rigging.Bone> skeleton, SceneNode parent, List<Assimp.Mesh> meshes, List<Assimp.Material> materials, bool isMatStrict)
@@ -239,7 +239,7 @@ namespace SuperBMD.BMD
             {
                 scene.RootNode.Children.Add(root);
             }
-            Console.Write("✓");
+            Console.Write("✓\n");
         }
 
         private void DeleteNodesRecursive(Assimp.Node assNode)

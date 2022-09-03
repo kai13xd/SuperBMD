@@ -122,7 +122,7 @@ namespace SuperBMD.BMD
                     Indices.Add(0); // This will get filled with the correct value when SHP1 is generated
                 }
             }
-            Console.Write(".✓");
+            Console.Write(".✓\n");
 
         }
 

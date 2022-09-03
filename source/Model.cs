@@ -176,7 +176,7 @@ namespace SuperBMD
                 Console.Write(".");
             }
 
-            Console.Write(root is null ? "✓ No Skeleton found" : "✓ Skeleton Found");
+            Console.Write(root is null ? "✓\nNo Skeleton found\n" : "✓\nSkeleton Found\n");
 
 
             foreach (Mesh mesh in scene.Meshes)
@@ -224,7 +224,7 @@ namespace SuperBMD
                     }
                     Console.Write(".");
                 }
-                Console.Write("✓");
+                Console.Write("✓\n");
 
             }
 
@@ -362,6 +362,7 @@ namespace SuperBMD
 
             }
             writer.PadAlign(32);
+            Console.WriteLine("Output BMD size is " + writer.Length + " bytes!");
             writer.Close();
         }
 
@@ -403,7 +404,7 @@ namespace SuperBMD
                 Console.Write(mesh.Name.Replace('_', ' ') + ": ");
                 // Assimp has a JoinIdenticalVertices post process step, but we can't use that or the skinning info we manually add won't take it into account.
                 RemoveDuplicateVertices(mesh);
-                Console.Write("✓");
+                Console.Write("✓\n");
 
             }
 
@@ -568,7 +569,7 @@ namespace SuperBMD
                 }
                 Console.Write(".");
             }
-            Console.Write("✓");
+            Console.Write("✓\n");
             test.Close();
             dae.Close();
             File.Copy(fileName + ".tmp", fileName, true);
@@ -972,7 +973,7 @@ namespace SuperBMD
             {
                 scene.Meshes[i] = meshesArray[i];
             }
-            Console.Write("✓");
+            Console.Write("✓\n");
         }
         private void EnsureOneMaterialPerMesh(Scene scene)
         {

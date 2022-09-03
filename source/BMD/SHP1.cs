@@ -152,17 +152,17 @@ namespace SuperBMD.BMD
                 if (mesh.Name.Contains("BillXY"))
                 {
                     meshShape = new Shape(MatrixType.BillboardXY); // Matrix Type 1, XY Billboard
-                    Console.Write("Billboarding on the X & Y axis");
+                    Console.Write("Billboarding on the X & Y axis\n");
                 }
                 else if (mesh.Name.Contains("BillX"))
                 {
                     meshShape = new Shape(MatrixType.BillboardX); // Matrix Type 2, X Billboard, i.e. the X axis is always turned towards camera
-                    Console.Write("Billboarding on the X axis");
+                    Console.Write("Billboarding on the X axis\n");
                 }
                 else
                 {
                     meshShape = new Shape(); // Matrix Type 3, normal
-                    Console.Write("Normal Mesh");
+                    Console.Write("No Billboarding\n");
                 }
                 // Force a mesh in an otherwise rigged model to be "unrigged"
                 bool forceUnweighted = mesh.Name.Contains("_NoWeights");
@@ -402,7 +402,7 @@ namespace SuperBMD.BMD
                 }
 
                 scene.Meshes.Add(mesh);
-                Console.Write("✓");
+                Console.Write("✓\n");
 
             }
         }

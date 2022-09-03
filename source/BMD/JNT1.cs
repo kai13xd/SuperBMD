@@ -108,7 +108,7 @@ namespace SuperBMD.BMD
                 //FlatSkeleton[0].m_MatrixType = 0;
                 //FlatSkeleton[0].m_UnknownIndex = 0;
             }
-            Console.Write("✓");
+            Console.Write("✓\n");
 
         }
 

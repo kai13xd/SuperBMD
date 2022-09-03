@@ -6,7 +6,7 @@ namespace SuperBMD.BMD
     public class VTX1
     {
         public VertexData Attributes { get; private set; } = new();
-        public SortedDictionary<GXVertexAttribute, Tuple<GXDataType, byte>> StorageFormats { get; private set; }= new();
+        public SortedDictionary<GXVertexAttribute, Tuple<GXDataType, byte>> StorageFormats { get; private set; } = new();
 
         public VTX1(ref EndianBinaryReader reader, BMDInfo modelstats = null)
         {
@@ -162,7 +162,7 @@ namespace SuperBMD.BMD
 
                     Console.Write(".");
                 }
-                Console.Write("✓");
+                Console.Write("✓\n");
                 Console.WriteLine();
             }
         }

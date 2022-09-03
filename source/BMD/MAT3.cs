@@ -803,7 +803,7 @@ namespace SuperBMD.BMD
                     indices.Add(-1);
                 }
                 MaterialNames.Add(meshMat.Name);
-                Console.WriteLine("✓");
+                Console.WriteLine("✓\n");
             }
             if (matOrderStrict)
             {
@@ -1025,7 +1025,7 @@ namespace SuperBMD.BMD
                 }
 
                 scene.Materials.Add(assMat);
-                Console.Write("✓");
+                Console.Write("✓\n");
 
             }
         }

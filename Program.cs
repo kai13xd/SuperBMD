@@ -116,7 +116,7 @@ namespace SuperBMD
             }
             else
             {
-                Console.Write("Finishing the Job...");
+                Console.WriteLine("Finishing the Job...");
                 model.ExportBMD(cmdArgs.OutputPath, cmdArgs.ExportBDL);
                 Console.WriteLine("✓");
             }
