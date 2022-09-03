@@ -136,7 +136,7 @@ namespace SuperBMD
             ModelStats = new BMDInfo();
             BCKAnims = new List<BCK>();
 
-            if (args.EnsureOneMaterialPerMesh)
+            if (args.EnsureOneMaterialPerMesh || args.MaterialOrderStrict)
             {
                 EnsureOneMaterialPerMesh(scene);
             }

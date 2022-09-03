@@ -4,6 +4,16 @@ using SuperBMD.Materials.IO;
 
 namespace SuperBMD.BMD
 {
+    struct PresetResult
+    {
+        public PresetResult(Material mat, int i)
+        {
+            Preset = mat;
+            Index = i;
+        }
+        public Material Preset;
+        public int Index;
+    }
     public class MAT3
     {
         public List<Material> Materials = new();
@@ -473,7 +483,7 @@ namespace SuperBMD.BMD
 
         public MAT3(Assimp.Scene scene, TEX1 textures, SHP1 shapes, Arguments args, List<Material> mat_presets = null)
         {
-            LoadFromScene(scene, textures, shapes, mat_presets);
+            LoadFromScene(scene, textures, shapes, args.MaterialOrderStrict, mat_presets);
             FillMaterialDataBlocks();
         }
 
@@ -539,8 +549,13 @@ namespace SuperBMD.BMD
             }
             return result;
         }
+        private int GetMatIndex(Material mat, List<Material> matPresets)
+        {
+            return matPresets.IndexOf(mat);
+        }
 
-        private Material FindMatPreset(string name, List<Material> mat_presets)
+
+        private PresetResult? FindMatPreset(string name, List<Material> mat_presets, bool mat_strict)
         {
             if (mat_presets is null)
             {
@@ -554,20 +569,31 @@ namespace SuperBMD.BMD
             {
                 if (mat is null)
                 {
+                    if (mat_strict)
+                    {
+                        throw new Exception("Warning: Material entry with index { 0 } is malformed, cannot continue in Strict Material Order mode.");
+                    }
                     Console.WriteLine(String.Format("Warning: Material entry with index {0} is malformed and has been skipped", i));
                     continue;
                 }
 
-                i++;
-
                 //Console.WriteLine(String.Format("{0}", mat.Name));
+
                 if (mat.Name == "__MatDefault" && default_mat is null)
                 {
+                    if (mat_strict)
+                    {
+                        throw new Exception("'__MatDefault' materials cannot be used in Strict Material Order mode!");
+                    }
                     default_mat = mat;
                 }
 
                 if (mat.Name.StartsWith("__MatDefault:"))
                 {
+                    if (mat_strict)
+                    {
+                        throw new Exception("'__MatDefault:' materials cannot be used in Strict Material Order mode!");
+                    }
                     string[] subs = mat.Name.Split(delimiter, 2, StringSplitOptions.None);
                     if (subs.Length == 2)
                     {
@@ -582,7 +608,7 @@ namespace SuperBMD.BMD
                 if (mat.Name == name)
                 {
                     //Console.WriteLine(String.Format("Applying material preset to {1}", default_mat.Name, name));
-                    return mat;
+                    return new PresetResult(mat, i);
                 }
                 if (name.StartsWith("m"))
                 {
@@ -593,14 +619,15 @@ namespace SuperBMD.BMD
                         (name.Length > 4 && name.Substring(4) == sanitized))
                     {
                         Console.WriteLine(String.Format("Matched up {0} with {1} from the json file", name, mat.Name));
-                        return mat;
+                        return new PresetResult(mat, i);
                     }
                 }
+                i++;
             }
             //if (default_mat != null)
             //    Console.WriteLine(String.Format("Applying __MatDefault to {1}", default_mat.Name, name));
 
-            return default_mat;
+            return new PresetResult(default_mat, -1);
         }
 
         private void SetPreset(Material bmdMaterial, Material preset)
@@ -712,8 +739,10 @@ namespace SuperBMD.BMD
             }
         }
 
-        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material> mat_presets = null)
+        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, bool matOrderStrict, List<Material> matPresets = null)
         {
+            List<int> indices = new List<int>();
+
             for (short i = 0; i < scene.MeshCount; i++)
             {
                 Assimp.Material meshMat = scene.Materials[scene.Meshes[i].MaterialIndex];
@@ -731,17 +760,19 @@ namespace SuperBMD.BMD
                 }
 
                 bmdMaterial.SetUpTev(meshMat.HasTextureDiffuse, hasVtxColor0, texIndex, texName, meshMat);
-                string originalName = FindOriginalMaterialName(meshMat.Name, mat_presets);
+                string originalName = FindOriginalMaterialName(meshMat.Name, matPresets);
                 if (originalName != null)
                 {
                     Console.WriteLine("Material name {0} renamed to {1}", meshMat.Name, originalName);
                     meshMat.Name = originalName;
                 }
 
-                Material preset = FindMatPreset(meshMat.Name, mat_presets);
+                PresetResult? result = FindMatPreset(meshMat.Name, matPresets, matOrderStrict);
 
-                if (preset != null)
+
+                if (result != null)
                 {
+                    Material preset = ((PresetResult)result).Preset;
                     if (preset.Name.StartsWith("__MatDefault:"))
                     {
                         // If a material has a suffix that fits one of the default presets, we remove the suffix as the
@@ -753,13 +784,49 @@ namespace SuperBMD.BMD
                     Console.Write(string.Format("Applying material preset for {0}...", meshMat.Name));
                     SetPreset(bmdMaterial, preset);
                 }
-
+                else if (matOrderStrict)
+                {
+                    throw new Exception(String.Format("No material entry found for material {0}. In Strict Material Order mode every material needs to have an entry in the JSON!",
+                                        meshMat.Name));
+                }
                 bmdMaterial.Readjust();
 
                 Materials.Add(bmdMaterial);
                 RemapIndices.Add(i);
+
+                if (result != null)
+                {
+                    indices.Add(((PresetResult)result).Index);
+                }
+                else
+                {
+                    indices.Add(-1);
+                }
                 MaterialNames.Add(meshMat.Name);
                 Console.WriteLine("✓");
+            }
+            if (matOrderStrict)
+            {
+                if (Materials.Count != matPresets.Count)
+                {
+                    throw new Exception($"Amount of materials doesn't match amount of presets: \"{Materials.Count}\" vs \"{matPresets.Count}\".");
+                }
+                List<Material> new_list = new List<Material>(Materials);
+                List<String> names = new List<String>(MaterialNames);
+                for (int i = 0; i < new_list.Count; i++)
+                {
+                    int index = indices[i];
+                    if (index == -1)
+                    {
+                        throw new Exception("On resorting the materials, couldn't find one material in the material JSON. This shouldn't happen.");
+                    }
+                    scene.Meshes[i].MaterialIndex = index;
+                    new_list[index] = Materials[i];
+                    names[index] = MaterialNames[i];
+                }
+                Materials = new_list;
+                MaterialNames = names;
+                Console.WriteLine("Materials have been sorted according to their position in the material JSON file.");
             }
         }
 

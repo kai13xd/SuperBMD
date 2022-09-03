@@ -25,6 +25,7 @@
         public bool ExportAnims;
         public Geometry.GXDataType VertexType;
         public byte Fraction;
+        public bool MaterialOrderStrict;
 
         /// <summary>
         /// Initializes a new Arguments instance from the arguments passed in to SuperBMD.
@@ -50,7 +51,9 @@
             DumpHierarchy = false;
             HierarchyPath = "";
             ExportAnims = false;
-
+            VertexType = Geometry.GXDataType.Float32;
+            Fraction = 0;
+            MaterialOrderStrict = false;
             int positionalArguments = 0;
 
             for (int i = 0; i < args.Length; i++)
@@ -138,6 +141,9 @@
                         VertexType = (Geometry.GXDataType)Enum.Parse(typeof(Geometry.GXDataType), args[i + 1]);
                         Fraction = byte.Parse(args[i + 2]);
                         i += 2;
+                        break;
+                    case "--mat_strict":
+                        MaterialOrderStrict = true;
                         break;
                     default:
                         if (positionalArguments == 0)
