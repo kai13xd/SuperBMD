@@ -23,6 +23,8 @@
         public bool DumpHierarchy;
         public string HierarchyPath;
         public bool ExportAnims;
+        public Geometry.GXDataType VertexType;
+        public byte Fraction;
 
         /// <summary>
         /// Initializes a new Arguments instance from the arguments passed in to SuperBMD.
@@ -129,6 +131,13 @@
                     case "-a":
                     case "--animation":
                         ExportAnims = true;
+                        break;
+                    case "--vtxpos":
+                        if (i + 2 >= args.Length)
+                            throw new Exception("The parameters were malformed.");
+                        VertexType = (Geometry.GXDataType)Enum.Parse(typeof(Geometry.GXDataType), args[i + 1]);
+                        Fraction = byte.Parse(args[i + 2]);
+                        i += 2;
                         break;
                     default:
                         if (positionalArguments == 0)
