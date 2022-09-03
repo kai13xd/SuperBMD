@@ -48,6 +48,7 @@ namespace SuperBMD.BMD
                 {
                     SceneNode newNode = new SceneNode(ref reader, node.Parent);
                     FlatNodes.Add(newNode);
+                    parent.Children.Add(newNode);
                     parent = newNode;
                 }
                 else if (node.Type == NodeType.CloseChild)
