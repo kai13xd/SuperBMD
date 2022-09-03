@@ -70,7 +70,7 @@ namespace SuperBMDLib.BMD
             reader.BaseStream.Seek(offset + inf1Size, System.IO.SeekOrigin.Begin);
         }
 
-        public INF1(Scene scene, JNT1 skeleton, bool mat_strict)
+        public INF1(Scene scene, JNT1 skeleton)
         {
             FlatNodes = new List<SceneNode>();
             Root = new SceneNode(NodeType.Joint, 0, null);
@@ -91,21 +91,7 @@ namespace SuperBMDLib.BMD
                         continue;
                     
                     SceneNode downNode1 = new SceneNode(NodeType.OpenChild, 0, Root);
-                    
-                    SceneNode matNode;
-
-                    // Sometimes the mesh material index seems to be wrong which results in the wrong material being assigned.
-                    // So if mat_strict isn't used we will just use the mesh order for material index.
-                    // This also applies to the mat index in GetNodesRecursive.
-                    if (mat_strict)
-                    {
-                        matNode = new SceneNode(NodeType.Material, scene.Meshes[i].MaterialIndex, Root);
-                    }
-                    else
-                    {
-                        matNode = new SceneNode(NodeType.Material, i, Root);
-                    }
-                    
+                    SceneNode matNode = new SceneNode(NodeType.Material, scene.Meshes[i].MaterialIndex, Root);
                     SceneNode downNode2 = new SceneNode(NodeType.OpenChild, 0, Root);
                     SceneNode shapeNode = new SceneNode(NodeType.Shape, i, Root);
 
@@ -126,7 +112,7 @@ namespace SuperBMDLib.BMD
 
                 foreach (Rigging.Bone bone in skeleton.SkeletonRoot.Children)
                 {
-                    GetNodesRecursive(bone, skeleton.FlatSkeleton, Root, scene.Meshes, scene.Materials, mat_strict);
+                    GetNodesRecursive(bone, skeleton.FlatSkeleton, Root, scene.Meshes, scene.Materials);
                 }
 
                 SceneNode rootChildUp = new SceneNode(NodeType.CloseChild, 0, Root);
@@ -140,7 +126,7 @@ namespace SuperBMDLib.BMD
             Console.WriteLine("✓");
         }
 
-        private void GetNodesRecursive(Rigging.Bone bone, List<Rigging.Bone> skeleton, SceneNode parent, List<Mesh> meshes, List<Material> materials, bool mat_strict)
+        private void GetNodesRecursive(Rigging.Bone bone, List<Rigging.Bone> skeleton, SceneNode parent, List<Mesh> meshes, List<Material> materials)
         {
             SceneNode node = new SceneNode(NodeType.Joint, skeleton.IndexOf(bone), parent);
             FlatNodes.Add(node);
@@ -157,15 +143,7 @@ namespace SuperBMDLib.BMD
                         continue;
 
                     SceneNode downNode1 = new SceneNode(NodeType.OpenChild, 0, Root);
-                    SceneNode matNode;
-
-                    if (mat_strict) { 
-                        matNode = new SceneNode(NodeType.Material, mesh.MaterialIndex, Root);
-                    }
-                    else
-                    {
-                        matNode = new SceneNode(NodeType.Material, meshes.IndexOf(mesh), Root);
-                    }
+                    SceneNode matNode = new SceneNode(NodeType.Material, mesh.MaterialIndex, Root);
                     SceneNode downNode2 = new SceneNode(NodeType.OpenChild, 0, Root);
                     SceneNode shapeNode = new SceneNode(NodeType.Shape, meshes.IndexOf(mesh), Root);
 
@@ -185,7 +163,7 @@ namespace SuperBMDLib.BMD
 
                 foreach (Rigging.Bone child in bone.Children)
                 {
-                    GetNodesRecursive(child, skeleton, node, meshes, materials, mat_strict);
+                    GetNodesRecursive(child, skeleton, node, meshes, materials);
                 }
 
                 SceneNode upNode = new SceneNode(NodeType.CloseChild, 0, parent);
