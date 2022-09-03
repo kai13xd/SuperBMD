@@ -260,7 +260,7 @@ namespace SuperBMD
 
             Console.Write("Generating the Weight Data");
             PartialWeightData = new DRW1(scene, Joints.BoneNameIndices);
-
+            Joints.UpdateBoundingBoxes(VertexData);
 
 
             Console.WriteLine("Generating the Mesh Data ->");
