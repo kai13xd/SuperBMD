@@ -325,7 +325,7 @@ namespace SuperBMDLib.Materials
 
             if (mipCount > 1) {
                 MinFilter = FilterMode.LinearMipmapLinear;
-                MaxLOD = (float)(mipCount - 1);
+                MaxLOD = (float)mipCount;
             }
 
             m_rgbaMipImageData = new List<byte[]>();
