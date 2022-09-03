@@ -169,8 +169,7 @@ namespace Kai
         }
     }
 
-    //Stack-based file writer
-    public unsafe ref struct EndianBinaryWriter
+    public ref struct EndianBinaryWriter
     {
         private const int bufferSize = 8;
         public Span<Byte> SpanView = new byte[bufferSize];
@@ -183,15 +182,10 @@ namespace Kai
             fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write);
         }
 
-
-        public void Dispose()
+        public void Close()
         {
             fileStream.Dispose();
             fileStream.Close();
-        }
-        public void Close()
-        {
-            Dispose();
         }
 
         public void Seek(int position)
