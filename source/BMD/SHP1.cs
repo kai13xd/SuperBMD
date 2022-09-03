@@ -249,7 +249,7 @@ namespace SuperBMD.BMD
                         break;
                 }
 
-                Assimp.Mesh mesh = new($"mesh_{i}", Assimp.PrimitiveType.Triangle);
+                Assimp.Mesh mesh = new(meshname, Assimp.PrimitiveType.Triangle);
                 mesh.MaterialIndex = i;
 
                 foreach (Packet pack in curShape.Packets)
