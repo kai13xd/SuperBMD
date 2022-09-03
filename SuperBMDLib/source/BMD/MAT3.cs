@@ -312,8 +312,7 @@ namespace SuperBMDLib.BMD
                 Console.WriteLine("Warning: Material {0} referenced an out of range IndirectTexBlock index", mat.Name);
             }
             mat.ZCompLoc = m_zCompLocBlock[reader.ReadByte()];
-            int zmode_index = reader.ReadByte();
-            mat.ZMode = m_zModeBlock[zmode_index];
+            mat.ZMode = m_zModeBlock[reader.ReadByte()];
 
             if (m_ditherBlock == null)
                 reader.SkipByte();
