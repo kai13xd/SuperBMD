@@ -345,13 +345,13 @@ namespace SuperBMD.Animation
             WriteANK1(ref writer);
 
             writer.Seek(8);
-            writer.Write((int)writer.FileLength);
+            writer.Write((int)writer.Length);
             writer.SeekEnd();
         }
 
         private void WriteANK1(ref EndianBinaryWriter writer)
         {
-            int start_offset = writer.FileLength;
+            int start_offset = writer.Length;
 
             int ScaleCount;
             int RotCount;
@@ -387,7 +387,7 @@ namespace SuperBMD.Animation
             writer.PadAlign(32);
 
             writer.Seek(start_offset + 4);
-            writer.Write((int)(writer.FileLength - start_offset));
+            writer.Write((int)(writer.Length - start_offset));
             writer.SeekEnd();
         }
 

@@ -148,9 +148,9 @@ namespace Kai
             return s;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public OpenTK.Mathematics.Vector3 ReadVector3()
+        public OpenTK.Vector3 ReadVector3()
         {
-            var vec = new OpenTK.Mathematics.Vector3();
+            var vec = new OpenTK.Vector3();
             for (int i = 0; i < 3; i++)
                 vec[i] = ReadFloat();
             return vec;
@@ -175,7 +175,7 @@ namespace Kai
         public Span<Byte> SpanView = new byte[bufferSize];
         private FileStream fileStream;
         public int Position => (int)fileStream.Position;
-        public int FileLength => (int)fileStream.Length;
+        public int Length => (int)fileStream.Length;
 
         public EndianBinaryWriter(string fileName)
         {
@@ -245,7 +245,7 @@ namespace Kai
             }
         }
 
-        public void Write(OpenTK.Mathematics.Vector4 vector)
+        public void Write(OpenTK.Vector4 vector)
         {
             Write(vector.X);
             Write(vector.Y);
@@ -253,14 +253,14 @@ namespace Kai
             Write(vector.W);
         }
 
-        public void Write(OpenTK.Mathematics.Vector3 vector)
+        public void Write(OpenTK.Vector3 vector)
         {
             Write(vector.X);
             Write(vector.Y);
             Write(vector.Z);
         }
 
-        public void Write(OpenTK.Mathematics.Vector2 vec2)
+        public void Write(OpenTK.Vector2 vec2)
         {
             Write(vec2.X);
             Write(vec2.Y);
@@ -307,12 +307,12 @@ namespace Kai
             Write(mat.Row3);
         }
 
-        const string padding = "Kai was here Kai was here Kai was here Kai was here";
+        const string padding = "Model made with SuperBMD by Gamma";
         public void PadAlign(int alignment)
         {
-            long nextAligned = (FileLength + (alignment - 1)) & ~(alignment - 1);
-            long delta = nextAligned - FileLength;
-            fileStream.Position = (long)FileLength;
+            long nextAligned = (Length + (alignment - 1)) & ~(alignment - 1);
+            long delta = nextAligned - Length;
+            fileStream.Position = (long)Length;
             for (int i = 0; i < delta; i++)
             {
                 fileStream.WriteByte((byte)padding[i]);
@@ -322,7 +322,7 @@ namespace Kai
         {
             long nextAligned = (offset + (alignment - 1)) & ~(alignment - 1);
             long delta = nextAligned - offset;
-            fileStream.Position = (long)FileLength;
+            fileStream.Position = (long)Length;
             for (int i = 0; i < delta; i++)
             {
                 fileStream.WriteByte((byte)padding[i]);
@@ -330,9 +330,9 @@ namespace Kai
         }
         public void PadAlignZero(int alignment)
         {
-            long nextAligned = (FileLength + (alignment - 1)) & ~(alignment - 1);
-            long delta = nextAligned - FileLength;
-            fileStream.Position = (long)FileLength;
+            long nextAligned = (Length + (alignment - 1)) & ~(alignment - 1);
+            long delta = nextAligned - Length;
+            fileStream.Position = (long)Length;
             for (int i = 0; i < delta; i++)
             {
                 fileStream.WriteByte((byte)0);

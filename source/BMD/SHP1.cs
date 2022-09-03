@@ -316,12 +316,12 @@ namespace SuperBMD.BMD
                                     {
                                         Matrix4 test = inverseBindMatrices[vert.VertexWeight.BoneIndices[0]].Inverted();
                                         test.Transpose();
-                                        Vector4 trans = Vector4.Transform(openTKVec, test.ExtractRotation());
+                                        Vector4 trans = Vector4.Transform(openTKVec, test);
                                         vertVec = new Assimp.Vector3D(trans.X, trans.Y, trans.Z);
                                     }
                                     else
                                     {
-                                        Vector4 trans = Vector4.Transform(openTKVec, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix.ExtractRotation());
+                                        Vector4 trans = Vector4.Transform(openTKVec, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix);
                                         vertVec = new Assimp.Vector3D(trans.X, trans.Y, trans.Z);
                                     }
                                 }
@@ -343,7 +343,7 @@ namespace SuperBMD.BMD
                                         }
                                         else
                                         {
-                                            Vector4 trans = Vector4.Transform(openTKNrm, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix.ExtractRotation());
+                                            Vector4 trans = Vector4.Transform(openTKNrm, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix);
                                             vertNrm = new Assimp.Vector3D(trans.X, trans.Y, trans.Z);
                                         }
                                     }
@@ -432,8 +432,8 @@ namespace SuperBMD.BMD
 
             // Remap table offset
             writer.Seek((int)(start + 16));
-            writer.Write((int)(writer.FileLength - start));
-            writer.Seek((int)(writer.FileLength));
+            writer.Write((int)(writer.Length - start));
+            writer.Seek((int)(writer.Length));
 
             for (int i = 0; i < Shapes.Count; i++)
                 writer.Write((short)i);
@@ -442,15 +442,15 @@ namespace SuperBMD.BMD
 
             // Attribute descriptor data offset
             writer.Seek((int)(start + 24));
-            writer.Write((int)(writer.FileLength - start));
-            writer.Seek((int)(writer.FileLength));
+            writer.Write((int)(writer.Length - start));
+            writer.Seek((int)(writer.Length));
 
             descriptorOffsets = WriteShapeAttributeDescriptors(ref writer);
 
             // Packet matrix index data offset
             writer.Seek((int)(start + 28));
-            writer.Write((int)(writer.FileLength - start));
-            writer.Seek((int)(writer.FileLength));
+            writer.Write((int)(writer.Length - start));
+            writer.Seek((int)(writer.Length));
 
             packetMatrixOffsets = WritePacketMatrixIndices(ref writer);
 
@@ -458,15 +458,15 @@ namespace SuperBMD.BMD
 
             // Primitive data offset
             writer.Seek((int)(start + 32));
-            writer.Write((int)(writer.FileLength - start));
-            writer.Seek((int)(writer.FileLength));
+            writer.Write((int)(writer.Length - start));
+            writer.Seek((int)(writer.Length));
 
             packetPrimitiveOffsets = WritePrimitives(ref writer);
 
             // Packet matrix index metadata offset
             writer.Seek((int)(start + 36));
-            writer.Write((int)(writer.FileLength - start));
-            writer.Seek((int)(writer.FileLength));
+            writer.Write((int)(writer.Length - start));
+            writer.Seek((int)(writer.Length));
 
             foreach (Tuple<Packet, int> tup in packetMatrixOffsets)
             {
@@ -477,8 +477,8 @@ namespace SuperBMD.BMD
 
             // Packet primitive metadata offset
             writer.Seek((int)(start + 40));
-            writer.Write((int)(writer.FileLength - start));
-            writer.Seek((int)(writer.FileLength));
+            writer.Write((int)(writer.Length - start));
+            writer.Seek((int)(writer.Length));
 
             foreach (Tuple<int, int> tup in packetPrimitiveOffsets)
             {
@@ -499,7 +499,7 @@ namespace SuperBMD.BMD
                 writer.Skip(30);
             }
 
-            writer.Seek((int)writer.FileLength);
+            writer.Seek((int)writer.Length);
 
             long end = writer.Position;
             long length = (end - start);

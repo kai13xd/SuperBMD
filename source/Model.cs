@@ -328,8 +328,8 @@ namespace SuperBMD
                 writer.Write(0); // Placeholder for file size
                 writer.Write(8);
             }
-
-            writer.PadAlign(32);
+            writer.Write("SuperBMD - Gamma");
+            //writer.PadAlign(32);
             Scenegraph.Write(ref writer, packetCount, vertexCount);
             VertexData.Write(ref writer);
             SkinningEnvelopes.Write(ref writer);
@@ -344,7 +344,7 @@ namespace SuperBMD
             Textures.Write(ref writer);
 
             writer.Seek(8);
-            writer.Write((int)writer.FileLength);
+            writer.Write((int)writer.Length);
 
 
             if (BCKAnims.Count > 0)

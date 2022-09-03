@@ -1,4 +1,4 @@
-﻿global using OpenTK.Mathematics;
+﻿global using OpenTK;
 global using Newtonsoft.Json;
 global using Newtonsoft.Json.Converters;
 global using System;
