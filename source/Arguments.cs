@@ -1,59 +1,39 @@
 ﻿namespace SuperBMD
 {
     /// <summary>
-    /// Container for arguments taken from the user's input.
+    /// Static class that holds arguments taken from the user's input.
     /// </summary>
-    public struct Arguments
+    public static class Arguments
     {
-        public string InputPath;
-        public string OutputPath;
-        public string MaterialsPath;
-        public string OutputMaterialPath;
-        public string TexheadersPath;
-        public string TriStripMode;
-        public bool RotateModel;
-        public bool ExportBDL;
-        public bool DoProfile;
-        public bool SortMeshes;
-        public bool EnsureOneMaterialPerMesh;
-        public bool ExportObj;
-        public bool ForceFloat;
-        public bool DegenerateTriangles;
-        public bool ReadMipmaps;
-        public bool DumpHierarchy;
-        public string HierarchyPath;
-        public bool ExportAnims;
-        public Geometry.GXDataType VertexType;
-        public byte Fraction;
-        public bool MaterialOrderStrict;
+        public static string InputPath { get; private set; } = "";
+        public static string OutputPath { get; private set; } = "";
+        public static string MaterialPath { get; private set; } = "";
+        public static string OutputMaterialPath { get; private set; } = "";
+        public static string TexHeaderPath { get; private set; } = "";
+        public static string TriStripMode { get; private set; } = "";
+        public static bool ShouldRotateModel { get; private set; } = false;
+        public static bool ShouldExportAsBDL { get; private set; } = false;
+        public static bool ShouldProfile { get; private set; } = false;
+        public static bool ShouldSortMeshes { get; private set; } = true;
+        public static bool ShouldEnsureOneMaterialPerMesh { get; private set; } = false;
+        public static bool ShouldExportAsObj { get; private set; } = false;
+        public static bool ShouldForceFloat { get; private set; } = false;
+        public static bool ShouldDegenerateTriangles { get; private set; } = false;
+        public static bool ShouldReadMipmaps { get; private set; } = true;
+        public static bool ShouldDumpHierarchy { get; private set; } = false;
+        public static string HierarchyPath { get; private set; } = "";
+        public static bool ShouldExportAnims { get; private set; } = false;
+        public static GXDataType VertexType { get; private set; } = GXDataType.Float32;
+        public static byte Fraction { get; private set; } = 0;
+        public static bool IsMaterialOrderStrict { get; private set; } = false;
+
 
         /// <summary>
-        /// Initializes a new Arguments instance from the arguments passed in to SuperBMD.
+        /// Initializes Arguments instance from the arguments passed in to SuperBMD.
         /// </summary>
         /// <param name="args">Arguments from the user</param>
-        public Arguments(string[] args)
+        public static void ParseArguments(string[] args)
         {
-            InputPath = "";
-            OutputPath = "";
-            MaterialsPath = "";
-            OutputMaterialPath = "";
-            TexheadersPath = "";
-            TriStripMode = "static";
-            RotateModel = false;
-            ExportBDL = false;
-            DoProfile = false;
-            SortMeshes = true;
-            EnsureOneMaterialPerMesh = false;
-            ExportObj = false;
-            ForceFloat = false;
-            DegenerateTriangles = false;
-            ReadMipmaps = true;
-            DumpHierarchy = false;
-            HierarchyPath = "";
-            ExportAnims = false;
-            VertexType = Geometry.GXDataType.Float32;
-            Fraction = 0;
-            MaterialOrderStrict = false;
             int positionalArguments = 0;
 
             for (int i = 0; i < args.Length; i++)
@@ -63,87 +43,87 @@
                     case "-m":
                     case "--mat":
                         if (i + 1 >= args.Length)
-                            throw new Exception("The parameters were malformed.");
+                            throw new Exception("Not enough parameters have been specified for given cmd arguments.");
+                        MaterialPath = args[i + 1];
 
-                        MaterialsPath = args[i + 1];
                         i++;
                         break;
                     case "--outmat":
                         if (i + 1 >= args.Length)
-                            throw new Exception("The parameters were malformed.");
-
+                            throw new Exception("Not enough parameters have been specified for given cmd arguments.");
                         OutputMaterialPath = args[i + 1];
                         i++;
                         break;
                     case "-x":
                     case "--texheader":
                         if (i + 1 >= args.Length)
-                            throw new Exception("The parameters were malformed.");
+                            throw new Exception("Not enough parameters have been specified for given cmd arguments.");
 
-                        TexheadersPath = args[i + 1];
+                        TexHeaderPath = args[i + 1];
+
                         i++;
                         break;
                     case "-t":
                     case "--tristrip":
                         if (i + 1 >= args.Length)
-                            throw new Exception("The parameters were malformed.");
+                            throw new Exception("Not enough parameters have been specified for given cmd arguments.");
 
                         TriStripMode = args[i + 1].ToLower();
                         i++;
                         break;
                     case "-r":
                     case "--rotate":
-                        RotateModel = true;
+                        ShouldRotateModel = true;
                         break;
                     case "-b":
                     case "--bdl":
-                        ExportBDL = true;
+                        ShouldExportAsBDL = true;
                         break;
                     case "--p":
                     case "--profile":
-                        DoProfile = true;
+                        ShouldProfile = true;
                         break;
                     case "--nosort":
-                        SortMeshes = false;
+                        ShouldSortMeshes = false;
                         break;
                     case "--onematpermesh":
-                        EnsureOneMaterialPerMesh = true;
+                        ShouldEnsureOneMaterialPerMesh = true;
                         break;
                     case "--obj":
-                        ExportObj = true;
+                        ShouldExportAsObj = true;
                         break;
                     case "--texfloat32":
-                        ForceFloat = true;
+                        ShouldForceFloat = true;
                         break;
                     case "--degeneratetri":
-                        DegenerateTriangles = true;
+                        ShouldDegenerateTriangles = true;
                         break;
                     case "--nomipmaps":
-                        ReadMipmaps = false;
+                        ShouldReadMipmaps = false;
                         break;
                     case "--dumphierarchy":
-                        DumpHierarchy = true;
+                        ShouldDumpHierarchy = true;
                         break;
                     case "--hierarchy":
                         if (i + 1 >= args.Length)
-                            throw new Exception("The parameters were malformed.");
+                            throw new Exception("Not enough parameters have been specified for given cmd arguments.");
 
                         HierarchyPath = args[i + 1];
                         i++;
                         break;
                     case "-a":
                     case "--animation":
-                        ExportAnims = true;
+                        ShouldExportAnims = true;
                         break;
                     case "--vtxpos":
                         if (i + 2 >= args.Length)
-                            throw new Exception("The parameters were malformed.");
+                            throw new Exception("Not enough parameters have been specified for given cmd arguments.");
                         VertexType = (Geometry.GXDataType)Enum.Parse(typeof(Geometry.GXDataType), args[i + 1]);
                         Fraction = byte.Parse(args[i + 2]);
                         i += 2;
                         break;
                     case "--mat_strict":
-                        MaterialOrderStrict = true;
+                        IsMaterialOrderStrict = true;
                         break;
                     default:
                         if (positionalArguments == 0)
@@ -171,8 +151,9 @@
         /// Ensures that all the settings parsed from the user's input are valid.
         /// </summary>
         /// <param name="args">Array of settings parsed from the user's input</param>
-        private void ValidateArgs()
+        private static void ValidateArgs()
         {
+
             // Input
             if (InputPath == "")
                 throw new Exception("No input file was specified.");
@@ -193,22 +174,25 @@
             }
 
             // Material presets
-            if (MaterialsPath != "")
+            if (MaterialPath != "")
             {
-                if (!File.Exists(MaterialsPath))
-                    throw new Exception($"Material presets file \"{MaterialsPath}\" does not exist.");
+                if (!File.Exists(MaterialPath))
+                    throw new Exception($"Material presets file \"{MaterialPath}\" does not exist.");
             }
 
             // Texture headers
-            if (TexheadersPath != "")
+            if (TexHeaderPath != "")
             {
-                if (!File.Exists(TexheadersPath))
-                    throw new Exception($"Texture headers file \"{TexheadersPath}\" does not exist.");
+                if (!File.Exists(TexHeaderPath))
+                    throw new Exception($"Texture headers file \"{TexHeaderPath}\" does not exist.");
             }
 
             // Tristrip options
-            if (TriStripMode != "static" && TriStripMode != "all" && TriStripMode != "none")
-                throw new Exception($"Unknown tristrip option \"{TriStripMode}\".");
+            string[] triStripOptions = { "none", "all", "static" };
+            if (!triStripOptions.Contains(TriStripMode))
+            {
+                throw new Exception($"'{TriStripMode}' is not a valid -t/--tristrip option! Did you mean 'none', 'all', or 'static'?");
+            }
         }
     }
 }

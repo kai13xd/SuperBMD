@@ -101,7 +101,7 @@ namespace SuperBMD.Geometry
             return triindices;
         }
 
-        public void ProcessVerticesWithoutWeights(Mesh mesh, VertexData vertData, bool degenerateTriangles = false)
+        public void ProcessVerticesWithoutWeights(Mesh mesh, VertexData vertData)
         {
             Packet pack = new Packet();
 
@@ -115,7 +115,7 @@ namespace SuperBMD.Geometry
             TriStripper stripper = new TriStripper(triindices);
             List<PrimitiveBrawl> primlist = stripper.Strip();
 
-            if (degenerateTriangles)
+            if (Arguments.ShouldDegenerateTriangles)
             {
                 Console.WriteLine("Converting Triangle Lists into Triangle Strips with degenerate triangles.");
 
@@ -278,8 +278,7 @@ namespace SuperBMD.Geometry
             Console.Write("...✓\n");
         }
 
-        public void ProcessVerticesWithWeights(Mesh mesh, VertexData vertData, Dictionary<string, int> boneNames, EVP1 envelopes, DRW1 partialWeight,
-            bool doStrip = true, bool degenerateTriangles = false)
+        public void ProcessVerticesWithWeights(Mesh mesh, VertexData vertData, Dictionary<string, int> boneNames, EVP1 envelopes, DRW1 partialWeight)
         {
             Weight[] weights = new Weight[mesh.Vertices.Count];
 
@@ -309,7 +308,7 @@ namespace SuperBMD.Geometry
 
             List<PrimitiveBrawl> primlist;
 
-            if (doStrip)
+            if (Arguments.TriStripMode == "all")
             {
                 //Console.WriteLine("Calculating triangle strips for Weighted");
                 TriStripper stripper = new TriStripper(triindices, weights);
@@ -335,7 +334,7 @@ namespace SuperBMD.Geometry
             List<Weight> packetWeights = new List<Weight>();
             int numMatrices = 0;
 
-            if (degenerateTriangles)
+            if (Arguments.ShouldDegenerateTriangles)
             {
                 Console.WriteLine("Converting Triangle Lists into Triangle Strips with degenerate triangles.");
 

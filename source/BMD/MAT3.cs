@@ -481,9 +481,9 @@ namespace SuperBMD.BMD
             Materials.Add(mat);
         }
 
-        public MAT3(Assimp.Scene scene, TEX1 textures, SHP1 shapes, Arguments args, List<Material> mat_presets = null)
+        public MAT3(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material> mat_presets = null)
         {
-            LoadFromScene(scene, textures, shapes, args.MaterialOrderStrict, mat_presets);
+            LoadFromScene(scene, textures, shapes, mat_presets);
             FillMaterialDataBlocks();
         }
 
@@ -555,7 +555,7 @@ namespace SuperBMD.BMD
         }
 
 
-        private PresetResult? FindMatPreset(string name, List<Material> mat_presets, bool mat_strict)
+        private PresetResult? FindMatPreset(string name, List<Material> mat_presets)
         {
             if (mat_presets is null)
             {
@@ -569,7 +569,7 @@ namespace SuperBMD.BMD
             {
                 if (mat is null)
                 {
-                    if (mat_strict)
+                    if (Arguments.IsMaterialOrderStrict)
                     {
                         throw new Exception("Warning: Material entry with index { 0 } is malformed, cannot continue in Strict Material Order mode.");
                     }
@@ -581,7 +581,7 @@ namespace SuperBMD.BMD
 
                 if (mat.Name == "__MatDefault" && default_mat is null)
                 {
-                    if (mat_strict)
+                    if (Arguments.IsMaterialOrderStrict)
                     {
                         throw new Exception("'__MatDefault' materials cannot be used in Strict Material Order mode!");
                     }
@@ -590,7 +590,7 @@ namespace SuperBMD.BMD
 
                 if (mat.Name.StartsWith("__MatDefault:"))
                 {
-                    if (mat_strict)
+                    if (Arguments.IsMaterialOrderStrict)
                     {
                         throw new Exception("'__MatDefault:' materials cannot be used in Strict Material Order mode!");
                     }
@@ -739,7 +739,7 @@ namespace SuperBMD.BMD
             }
         }
 
-        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, bool matOrderStrict, List<Material> matPresets = null)
+        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material> matPresets = null)
         {
             List<int> indices = new List<int>();
 
@@ -767,7 +767,7 @@ namespace SuperBMD.BMD
                     meshMat.Name = originalName;
                 }
 
-                PresetResult? result = FindMatPreset(meshMat.Name, matPresets, matOrderStrict);
+                PresetResult? result = FindMatPreset(meshMat.Name, matPresets);
 
 
                 if (result != null)
@@ -784,7 +784,7 @@ namespace SuperBMD.BMD
                     Console.Write(string.Format("Applying material preset for {0}...", meshMat.Name));
                     SetPreset(bmdMaterial, preset);
                 }
-                else if (matOrderStrict)
+                else if (Arguments.IsMaterialOrderStrict)
                 {
                     throw new Exception(String.Format("No material entry found for material {0}. In Strict Material Order mode every material needs to have an entry in the JSON!",
                                         meshMat.Name));
@@ -805,7 +805,7 @@ namespace SuperBMD.BMD
                 MaterialNames.Add(meshMat.Name);
                 Console.WriteLine("✓\n");
             }
-            if (matOrderStrict)
+            if (Arguments.IsMaterialOrderStrict)
             {
                 if (Materials.Count != matPresets.Count)
                 {
@@ -1494,7 +1494,7 @@ namespace SuperBMD.BMD
             }
         }
 
-        public void LoadAdditionalTextures(TEX1 tex1, string texpath, bool readMipmaps)
+        public void LoadAdditionalTextures(TEX1 tex1, string texpath)
         {
             //string modeldir = Path.GetDirectoryName(modelpath);
             foreach (Material mat in Materials)
@@ -1521,7 +1521,7 @@ namespace SuperBMD.BMD
 
                             if (path != "")
                             {
-                                tex1.AddTextureFromPath(path, readMipmaps);
+                                tex1.AddTextureFromPath(path);
                                 short texindex = (short)(tex1.Textures.Count - 1);
                                 TexRemapBlock.Add(texindex);
                                 Console.WriteLine("----------------------------------------");

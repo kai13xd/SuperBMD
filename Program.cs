@@ -8,6 +8,7 @@ global using System.Collections.Generic;
 global using System.Globalization;
 global using System.Reflection;
 global using System.IO;
+global using SuperBMD.Geometry;
 global using Kai;
 
 using SuperBMD.Materials;
@@ -31,16 +32,17 @@ namespace SuperBMD
                 return;
             }
 
-            Arguments cmdArgs = new Arguments(args);
+            Arguments.ParseArguments(args);
 
             List<Material> mat_presets = null;
             Model model;
-            if (cmdArgs.DoProfile)
+            if (Arguments.ShouldProfile)
             {
-                if (cmdArgs.InputPath.EndsWith(".bmd") || cmdArgs.InputPath.EndsWith(".bdl"))
+
+                if (Arguments.InputPath.EndsWith(".bmd") || Arguments.InputPath.EndsWith(".bdl"))
                 {
                     Console.WriteLine("Reading the model...");
-                    model = Model.Load(cmdArgs, mat_presets, "");
+                    model = Model.Load(mat_presets, "");
 
                     Console.WriteLine("Profiling ->");
                     model.ModelStats.PrintInfo();
@@ -55,13 +57,13 @@ namespace SuperBMD
                 }
             }
 
-            if (cmdArgs.MaterialsPath != "")
+            if (Arguments.MaterialPath != "")
             {
                 JsonSerializer serializer = new JsonSerializer();
 
                 serializer.Converters.Add((new Newtonsoft.Json.Converters.StringEnumConverter()));
                 Console.WriteLine("Reading the Materials...");
-                using (TextReader file = File.OpenText(cmdArgs.MaterialsPath))
+                using (TextReader file = File.OpenText(Arguments.MaterialPath))
                 {
                     using (JsonTextReader reader = new JsonTextReader(file))
                     {
@@ -71,13 +73,13 @@ namespace SuperBMD
                         }
                         catch (Newtonsoft.Json.JsonReaderException e)
                         {
-                            Console.WriteLine(String.Format("Error encountered while reading {0}", cmdArgs.MaterialsPath));
+                            Console.WriteLine(String.Format("Error encountered while reading {0}", Arguments.MaterialPath));
                             Console.WriteLine(String.Format("JsonReaderException: {0}", e.Message));
                             return;
                         }
                         catch (Newtonsoft.Json.JsonSerializationException e)
                         {
-                            Console.WriteLine(String.Format("Error encountered while reading {0}", cmdArgs.MaterialsPath));
+                            Console.WriteLine(String.Format("Error encountered while reading {0}", Arguments.MaterialPath));
                             Console.WriteLine(String.Format("JsonSerializationException: {0}", e.Message));
                             return;
                         }
@@ -86,38 +88,38 @@ namespace SuperBMD
             }
 
             string additionalTexPath = null;
-            if (cmdArgs.MaterialsPath != "")
+            if (Arguments.MaterialPath != "")
             {
-                additionalTexPath = Path.GetDirectoryName(cmdArgs.MaterialsPath);
+                additionalTexPath = Path.GetDirectoryName(Arguments.MaterialPath);
             }
-            FileInfo fi = new FileInfo(cmdArgs.InputPath);
-            string destinationFormat = (fi.Extension == ".bmd" || fi.Extension == ".bdl") ? ".DAE" : (cmdArgs.ExportBDL ? ".BDL" : ".BMD");
+            FileInfo fi = new FileInfo(Arguments.InputPath);
+            string destinationFormat = (fi.Extension == ".bmd" || fi.Extension == ".bdl") ? ".DAE" : (Arguments.ShouldExportAsBDL ? ".BDL" : ".BMD");
 
-            if (destinationFormat == ".DAE" && cmdArgs.ExportObj)
+            if (destinationFormat == ".DAE" && Arguments.ShouldExportAsObj)
             {
                 destinationFormat = ".OBJ";
             }
 
             Console.WriteLine(string.Format("Preparing to convert {0} from {1} to {2}", fi.Name.Replace(fi.Extension, ""), fi.Extension.ToUpper(), destinationFormat));
-            model = Model.Load(cmdArgs, mat_presets, additionalTexPath);
+            model = Model.Load(mat_presets, additionalTexPath);
 
-            if (cmdArgs.HierarchyPath != "")
+            if (Arguments.HierarchyPath != "")
             {
-                model.Scenegraph.LoadHierarchyFromJson(cmdArgs.HierarchyPath);
+                model.Scenegraph.LoadHierarchyFromJson(Arguments.HierarchyPath);
             }
 
-            if (cmdArgs.InputPath.EndsWith(".bmd") || cmdArgs.InputPath.EndsWith(".bdl"))
+            if (Arguments.InputPath.EndsWith(".bmd") || Arguments.InputPath.EndsWith(".bdl"))
             {
                 Console.WriteLine(string.Format("Converting {0} into {1}...", fi.Extension.ToUpper(), destinationFormat));
-                if (cmdArgs.ExportObj)
-                    model.ExportAssImp(cmdArgs.OutputPath, "obj", new ExportSettings(), cmdArgs);
+                if (Arguments.ShouldExportAsObj)
+                    model.ExportAssImp(Arguments.OutputPath, "obj", new ExportSettings());
                 else
-                    model.ExportAssImp(cmdArgs.OutputPath, "dae", new ExportSettings(), cmdArgs);
+                    model.ExportAssImp(Arguments.OutputPath, "dae", new ExportSettings());
             }
             else
             {
                 Console.WriteLine("Finishing the Job...");
-                model.ExportBMD(cmdArgs.OutputPath, cmdArgs.ExportBDL);
+                model.ExportBMD(Arguments.OutputPath, Arguments.ShouldExportAsBDL);
                 Console.WriteLine("✓");
             }
             Console.WriteLine("The Conversion is complete!");

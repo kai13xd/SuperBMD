@@ -269,7 +269,7 @@ namespace SuperBMD.Materials
             }
         }
 
-        public void Load(Assimp.TextureSlot texture, string modelDirectory, bool readMipmaps)
+        public void Load(Assimp.TextureSlot texture, string modelDirectory)
         {
             Format = TextureFormats.CMPR;
             AlphaSetting = 0;
@@ -310,7 +310,7 @@ namespace SuperBMD.Materials
             Marshal.Copy(dat.Scan0, m_rgbaImageData, 0, m_rgbaImageData.Length);
 
             int mipCount;
-            if (readMipmaps)
+            if (Arguments.ShouldReadMipmaps)
             {
                 mipCount = DetectMipCount(texFilePath, texData);
             }

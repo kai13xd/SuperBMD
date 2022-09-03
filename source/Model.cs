@@ -30,15 +30,15 @@ namespace SuperBMD
         private int packetCount;
         private int vertexCount;
 
-        public static Model Load(Arguments args, List<SuperBMD.Materials.Material> mat_presets, string additionalTexPath)
+        public static Model Load(List<SuperBMD.Materials.Material> mat_presets, string additionalTexPath)
         {
-            string extension = Path.GetExtension(args.InputPath);
+            string extension = Path.GetExtension(Arguments.InputPath);
             Model output = null;
 
             if (extension == ".bmd" || extension == ".bdl")
             {
-                var a = new EndianBinaryReader(args.InputPath);
-                output = new Model(ref a, args);
+                var a = new EndianBinaryReader(Arguments.InputPath);
+                output = new Model(ref a);
             }
             else
             {
@@ -48,20 +48,20 @@ namespace SuperBMD
                 context.SetConfig(new Assimp.Configs.FBXPreservePivotsConfig(false));
                 Assimp.PostProcessSteps postprocess = Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.JoinIdenticalVertices;
 
-                if (args.TriStripMode == "none")
+                if (Arguments.TriStripMode == "none")
                 {
                     // By not joining identical vertices, the Tri Strip algorithm we use cannot make tristrips, 
                     // effectively disabling tri stripping
                     postprocess = Assimp.PostProcessSteps.Triangulate;
                 }
-                Assimp.Scene aiScene = context.ImportFile(args.InputPath, postprocess);
+                Assimp.Scene aiScene = context.ImportFile(Arguments.InputPath, postprocess);
 
-                output = new Model(aiScene, args, mat_presets, additionalTexPath);
+                output = new Model(aiScene, mat_presets, additionalTexPath);
             }
             return output;
         }
 
-        public Model(ref EndianBinaryReader reader, Arguments args)
+        public Model(ref EndianBinaryReader reader)
         {
             ModelStats = new BMDInfo();
             BCKAnims = new List<BCK>();
@@ -95,22 +95,22 @@ namespace SuperBMD
             Materials.SetTextureNames(Textures);
 
 
-            if (args.OutputMaterialPath != "")
+            if (Arguments.OutputMaterialPath != "")
             {
-                Materials.DumpMaterials(Path.GetDirectoryName(args.OutputMaterialPath));
+                Materials.DumpMaterials(Path.GetDirectoryName(Arguments.OutputMaterialPath));
             }
             else
             {
-                if (args.OutputPath != "")
+                if (Arguments.OutputPath != "")
                 {
-                    string outDir = Path.GetDirectoryName(args.OutputPath);
-                    string filenameNoExt = Path.GetFileNameWithoutExtension(args.InputPath);
+                    string outDir = Path.GetDirectoryName(Arguments.OutputPath);
+                    string filenameNoExt = Path.GetFileNameWithoutExtension(Arguments.InputPath);
                     Materials.DumpMaterials(Path.Combine(outDir, "materials.json"));
                 }
                 else
                 {
-                    string inDir = Path.GetDirectoryName(args.InputPath);
-                    string filenameNoExt = Path.GetFileNameWithoutExtension(args.InputPath);
+                    string inDir = Path.GetDirectoryName(Arguments.InputPath);
+                    string filenameNoExt = Path.GetFileNameWithoutExtension(Arguments.InputPath);
                     Materials.DumpMaterials(Path.Combine(inDir, "materials.json"));
                 }
             }
@@ -131,17 +131,17 @@ namespace SuperBMD
             }
         }
 
-        public Model(Scene scene, Arguments args, List<SuperBMD.Materials.Material> mat_presets = null, string additionalTexPath = null)
+        public Model(Scene scene, List<SuperBMD.Materials.Material> mat_presets = null, string additionalTexPath = null)
         {
             ModelStats = new BMDInfo();
             BCKAnims = new List<BCK>();
 
-            if (args.EnsureOneMaterialPerMesh || args.MaterialOrderStrict)
+            if (Arguments.ShouldEnsureOneMaterialPerMesh || Arguments.IsMaterialOrderStrict)
             {
                 EnsureOneMaterialPerMesh(scene);
             }
 
-            if (args.SortMeshes)
+            if (Arguments.ShouldSortMeshes)
             {
                 SortMeshesByObjectNames(scene);
             }
@@ -188,7 +188,7 @@ namespace SuperBMD
             }
 
 
-            if (args.RotateModel)
+            if (Arguments.ShouldRotateModel)
             {
 
                 Console.Write("Rotating the model");
@@ -245,13 +245,13 @@ namespace SuperBMD
 
 
             Console.WriteLine("Generating the Vertex Data ->");
-            VertexData = new VTX1(scene, args.ForceFloat, args.VertexType, args.Fraction);
+            VertexData = new VTX1(scene);
 
             Console.Write("Generating the Bone Data");
             Joints = new JNT1(scene, VertexData);
 
             Console.WriteLine("Generating the Texture Data -> ");
-            Textures = new TEX1(scene, args);
+            Textures = new TEX1(scene);
 
             Console.Write("Generating the Envelope Data");
             SkinningEnvelopes = new EVP1();
@@ -264,30 +264,29 @@ namespace SuperBMD
 
 
             Console.WriteLine("Generating the Mesh Data ->");
-            Shapes = SHP1.Create(scene, Joints.BoneNameIndices, VertexData.Attributes, SkinningEnvelopes, PartialWeightData,
-                args.TriStripMode, args.DegenerateTriangles);
+            Shapes = SHP1.Create(scene, Joints.BoneNameIndices, VertexData.Attributes, SkinningEnvelopes, PartialWeightData);
 
             //Joints.UpdateBoundingBoxes(VertexData);
 
 
 
             Console.WriteLine("Generating the Material Data ->");
-            Materials = new MAT3(scene, Textures, Shapes, args, mat_presets);
+            Materials = new MAT3(scene, Textures, Shapes, mat_presets);
 
 
             Console.WriteLine("Loading the Textures ->");
             if (additionalTexPath is null)
             {
-                Materials.LoadAdditionalTextures(Textures, Path.GetDirectoryName(args.InputPath), args.ReadMipmaps);
+                Materials.LoadAdditionalTextures(Textures, Path.GetDirectoryName(Arguments.InputPath));
             }
             else
             {
-                Materials.LoadAdditionalTextures(Textures, additionalTexPath, args.ReadMipmaps);
+                Materials.LoadAdditionalTextures(Textures, additionalTexPath);
             }
 
             Materials.MapTextureNamesToIndices(Textures);
 
-            if (args.ExportBDL)
+            if (Arguments.ShouldExportAsBDL)
             {
 
                 Console.WriteLine("Compiling the MDL3 ->");
@@ -296,14 +295,14 @@ namespace SuperBMD
 
 
             Console.Write("Generating the Joints");
-            Scenegraph = new INF1(scene, Joints, args.MaterialOrderStrict);
+            Scenegraph = new INF1(scene, Joints, Arguments.IsMaterialOrderStrict);
 
             foreach (Geometry.Shape shape in Shapes.Shapes)
                 packetCount += shape.Packets.Count;
 
             vertexCount = VertexData.Attributes.Positions.Count;
 
-            if (args.ExportAnims && scene.AnimationCount > 0)
+            if (Arguments.ShouldExportAnims && scene.AnimationCount > 0)
             {
                 foreach (Assimp.Animation anm in scene.Animations)
                     BCKAnims.Add(new BCK(anm, Joints.FlatSkeleton));
@@ -366,7 +365,7 @@ namespace SuperBMD
             writer.Close();
         }
 
-        public void ExportAssImp(string fileName, string modelType, ExportSettings settings, Arguments cmdargs)
+        public void ExportAssImp(string fileName, string modelType, ExportSettings settings)
         {
             fileName = Path.GetFullPath(fileName); // Get absolute path instead of relative
             string outDir = Path.GetDirectoryName(fileName);
@@ -392,7 +391,7 @@ namespace SuperBMD
             Scenegraph.CorrectMaterialIndices(outScene, Materials);
 
             Console.WriteLine("Processing Textures ->");
-            Textures.DumpTextures(outDir, "tex_headers.json", true, cmdargs.ReadMipmaps);
+            Textures.DumpTextures(outDir, "tex_headers.json", true, Arguments.ShouldReadMipmaps);
             this.Scenegraph.DumpJson(Path.Combine(outDir, "hierarchy.json"));
             this.Joints.DumpJson(Path.Combine(outDir, "joints.json"));
             this.PartialWeightData.DumpJson(Path.Combine(outDir, "partialweights.json"));

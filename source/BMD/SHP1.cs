@@ -135,8 +135,7 @@ namespace SuperBMD.BMD
             reader.Align(32);
         }
 
-        private SHP1(Assimp.Scene scene, VertexData vertData, Dictionary<string, int> boneNames, EVP1 envelopes, DRW1 partialWeight,
-            string tristripMode = "static", bool degenerateTriangles = false)
+        private SHP1(Assimp.Scene scene, VertexData vertData, Dictionary<string, int> boneNames, EVP1 envelopes, DRW1 partialWeight)
         {
             Shapes = new List<Shape>();
             RemapTable = new List<int>();
@@ -152,17 +151,17 @@ namespace SuperBMD.BMD
                 if (mesh.Name.Contains("BillXY"))
                 {
                     meshShape = new Shape(MatrixType.BillboardXY); // Matrix Type 1, XY Billboard
-                    Console.Write("Billboarding on the X & Y axis\n");
+                    Console.Write("Billboarding on the X & Y axis");
                 }
                 else if (mesh.Name.Contains("BillX"))
                 {
                     meshShape = new Shape(MatrixType.BillboardX); // Matrix Type 2, X Billboard, i.e. the X axis is always turned towards camera
-                    Console.Write("Billboarding on the X axis\n");
+                    Console.Write("Billboarding on the X axis");
                 }
                 else
                 {
                     meshShape = new Shape(); // Matrix Type 3, normal
-                    Console.Write("No Billboarding\n");
+                    Console.Write("Normal Mesh");
                 }
                 // Force a mesh in an otherwise rigged model to be "unrigged"
                 bool forceUnweighted = mesh.Name.Contains("_NoWeights");
@@ -178,10 +177,10 @@ namespace SuperBMD.BMD
                 }
 
                 if (boneNames.Count > 1 && !forceUnweighted)
-                    meshShape.ProcessVerticesWithWeights(mesh, vertData, boneNames, envelopes, partialWeight, tristripMode == "all", degenerateTriangles);
+                    meshShape.ProcessVerticesWithWeights(mesh, vertData, boneNames, envelopes, partialWeight);
                 else
                 {
-                    meshShape.ProcessVerticesWithoutWeights(mesh, vertData, degenerateTriangles);
+                    meshShape.ProcessVerticesWithoutWeights(mesh, vertData);
                     partialWeight.WeightTypeCheck.Add(false);
                     partialWeight.Indices.Add(0);
                 }
@@ -191,12 +190,9 @@ namespace SuperBMD.BMD
             }
         }
 
-        public static SHP1 Create(Assimp.Scene scene, Dictionary<string, int> boneNames, VertexData vertData, EVP1 evp1, DRW1 drw1,
-            string tristrip_mode = "static", bool degenerateTriangles = false)
+        public static SHP1 Create(Assimp.Scene scene, Dictionary<string, int> boneNames, VertexData vertData, EVP1 evp1, DRW1 drw1)
         {
-            SHP1 shp1 = new SHP1(scene, vertData, boneNames, evp1, drw1, tristrip_mode, degenerateTriangles);
-
-            return shp1;
+            return new SHP1(scene, vertData, boneNames, evp1, drw1);
         }
 
         public void SetVertexWeights(EVP1 envelopes, DRW1 drawList)
@@ -402,7 +398,7 @@ namespace SuperBMD.BMD
                 }
 
                 scene.Meshes.Add(mesh);
-                Console.Write("✓\n");
+                Console.Write("✓");
 
             }
         }

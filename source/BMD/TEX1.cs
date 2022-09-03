@@ -42,20 +42,20 @@ namespace SuperBMD.BMD
             }
         }
 
-        public TEX1(Assimp.Scene scene, Arguments args)
+        public TEX1(Assimp.Scene scene)
         {
             Textures = new List<BinaryTextureImage>();
 
-            if (args.TexheadersPath != "")
+            if (Arguments.TexHeaderPath != "")
             {
-                string dir_path = Path.GetDirectoryName(args.TexheadersPath);
-                LoadTexturesFromJson(args.TexheadersPath, dir_path, args);
+                string dir_path = Path.GetDirectoryName(Arguments.TexHeaderPath);
+                LoadTexturesFromJson(Arguments.TexHeaderPath, dir_path);
             }
             else
-                LoadTexturesFromScene(scene, Path.GetDirectoryName(args.InputPath), args);
+                LoadTexturesFromScene(scene, Path.GetDirectoryName(Arguments.InputPath));
         }
 
-        private void LoadTexturesFromJson(string headers_path, string directory_path, Arguments args)
+        private void LoadTexturesFromJson(string headers_path, string directory_path)
         {
             JsonSerializer serial = new JsonSerializer();
             serial.Formatting = Formatting.Indented;
@@ -81,11 +81,11 @@ namespace SuperBMD.BMD
                 {
                     throw new Exception($"Could not find texture \"{nameWithoutExt}\".");
                 }
-                tex.LoadImageDataFromDisk(fullImgPath, args.ReadMipmaps);
+                tex.LoadImageDataFromDisk(fullImgPath, Arguments.ShouldReadMipmaps);
             }
         }
 
-        private void LoadTexturesFromScene(Assimp.Scene scene, string model_directory, Arguments cmdargs)
+        private void LoadTexturesFromScene(Assimp.Scene scene, string model_directory)
         {
             foreach (Assimp.Mesh mesh in scene.Meshes)
             {
@@ -130,7 +130,7 @@ namespace SuperBMD.BMD
                     }
                     else
                     {
-                        img.Load(mat.TextureDiffuse, model_directory, cmdargs.ReadMipmaps);
+                        img.Load(mat.TextureDiffuse, model_directory);
                     }
                     Textures.Add(img);
                 }
@@ -139,7 +139,7 @@ namespace SuperBMD.BMD
             }
         }
 
-        public void AddTextureFromPath(string path, bool readMipmaps)
+        public void AddTextureFromPath(string path)
         {
             string modelDirectory = System.IO.Path.GetDirectoryName(path);
             BinaryTextureImage img = new BinaryTextureImage();
@@ -147,7 +147,7 @@ namespace SuperBMD.BMD
             // Only the path and the wrap mode are relevant, the rest doesn't matter for img.Load
             Assimp.TextureSlot tex = new(path, 0, 0, 0, 0, (float)0.0, 0, Assimp.TextureWrapMode.Clamp, Assimp.TextureWrapMode.Clamp, 0);
 
-            img.Load(tex, modelDirectory, readMipmaps);
+            img.Load(tex, modelDirectory);
 
             Textures.Add(img);
         }
