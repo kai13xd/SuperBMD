@@ -5,13 +5,13 @@ namespace SuperBMD.Materials
     public struct BlendMode : IEquatable<BlendMode>
     {
         /// <summary> Blending Type </summary>
-        public BlendModeType Type;
+        public BlendModeType Type{ get; set; }
         /// <summary> Blending Control </summary>
-        public BlendModeControl SourceFact;
+        public BlendModeControl SourceFact{ get; set; }
         /// <summary> Blending Control </summary>
-        public BlendModeControl DestinationFact;
+        public BlendModeControl DestinationFact{ get; set; }
         /// <summary> What operation is used to blend them when <see cref="Type"/> is set to <see cref="GXBlendMode.Logic"/>. </summary>
-        public LogicOp Operation; // Seems to be logic operators such as clear, and, copy, equiv, inv, invand, etc.
+        public LogicOp Operation{ get; set; } // Seems to be logic operators such as clear, and, copy, equiv, inv, invand, etc.
 
         public BlendMode(BlendModeType type, BlendModeControl src, BlendModeControl dest, LogicOp operation)
         {

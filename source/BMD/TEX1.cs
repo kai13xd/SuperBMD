@@ -57,16 +57,10 @@ namespace SuperBMD.BMD
 
         private void LoadTexturesFromJson(string headers_path, string directory_path)
         {
-            JsonSerializer serial = new JsonSerializer();
-            serial.Formatting = Formatting.Indented;
-            serial.Converters.Add(new StringEnumConverter());
 
-            using (StreamReader strm_reader = new StreamReader(headers_path))
-            {
-                strm_reader.BaseStream.Seek(0, SeekOrigin.Begin);
-                JsonTextReader reader = new JsonTextReader(strm_reader);
-                Textures = serial.Deserialize<List<BinaryTextureImage>>(reader);
-            }
+            var jsonString = File.ReadAllText(headers_path);
+            Textures = JsonSerializer.Deserialize<List<BinaryTextureImage>>(jsonString);
+
 
             foreach (BinaryTextureImage tex in Textures)
             {
@@ -77,7 +71,7 @@ namespace SuperBMD.BMD
                 string nameWithoutExt = Path.Combine(directory_path, tex.Name);
                 string fullImgPath = FindImagePath(nameWithoutExt);
 
-                if (fullImgPath == "")
+                if (fullImgPath.IsEmpty())
                 {
                     throw new Exception($"Could not find texture \"{nameWithoutExt}\".");
                 }
@@ -175,16 +169,9 @@ namespace SuperBMD.BMD
                     Console.WriteLine($"Saved \"{tex.Name}\" to Disk");
             }
 
-            JsonSerializer serial = new JsonSerializer();
-            serial.Formatting = Formatting.Indented;
-            serial.Converters.Add(new StringEnumConverter());
+            var jsonString = Textures.JsonSerialize();
+            File.WriteAllText(Path.Combine(directory, filename), jsonString);
 
-            using (FileStream strm = new FileStream(Path.Combine(directory, filename), FileMode.Create, FileAccess.Write))
-            {
-                StreamWriter writer = new StreamWriter(strm);
-                writer.AutoFlush = true;
-                serial.Serialize(writer, Textures);
-            }
             if (list)
                 Console.WriteLine("Texture Headers have been saved!");
         }

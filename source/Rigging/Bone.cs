@@ -14,14 +14,14 @@ namespace SuperBMD.Rigging
         public Matrix4 TransformationMatrix { get; private set; }
         public BoundingSphere Bounds { get; set; }
 
-        public short MatrixType;
-        public bool InheritParentScale;
+        public MatrixTransformType MatrixType { get; private set; }
+        public bool InheritParentScale { get; private set; }
         [JsonConverter(typeof(Vector3Converter))]
-        public Vector3 Scale;
+        public Vector3 Scale { get; private set; }
         [JsonConverter(typeof(QuaternionConverter))]
-        public Quaternion Rotation;
+        public Quaternion Rotation { get; private set; }
         [JsonConverter(typeof(Vector3Converter))]
-        public Vector3 Translation;
+        public Vector3 Translation { get; private set; }
 
         public Bone(string name)
         {
@@ -36,7 +36,7 @@ namespace SuperBMD.Rigging
             Children = new List<Bone>();
 
             Name = name;
-            MatrixType = reader.ReadShort();
+            MatrixType = (MatrixTransformType)reader.ReadShort();
             InheritParentScale = reader.ReadBool();
             Console.WriteLine($"{name}:\nMatrixType: {MatrixType}\nInherit Scaling: {InheritParentScale}\n");
             reader.Skip(1);

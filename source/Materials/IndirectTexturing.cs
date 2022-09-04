@@ -7,45 +7,39 @@ namespace SuperBMD.Materials
         /// <summary>
         /// Determines if an indirect texture lookup is to take place
         /// </summary>
-        public bool HasLookup;
+        public bool HasLookup { get; set; } = false;
         /// <summary>
         /// The number of indirect texturing stages to use
         /// </summary>
-        public byte IndTexStageNum;
+        public byte IndTexStageNum { get; set; } = 0;
 
-        public IndirectTevOrder[] TevOrders;
+        public IndirectTevOrder[] TevOrders { get; set; } = new IndirectTevOrder[4];
 
         /// <summary>
         /// The dynamic 2x3 matrices to use when transforming the texture coordinates
         /// </summary>
-        public IndirectTexMatrix[] Matrices;
+        public IndirectTexMatrix[] Matrices { get; set; } = new IndirectTexMatrix[3];
         /// <summary>
         /// U and V scales to use when transforming the texture coordinates
         /// </summary>
-        public IndirectTexScale[] Scales;
+        public IndirectTexScale[] Scales { get; set; } = new IndirectTexScale[4];
         /// <summary>
         /// Instructions for setting up the specified TEV stage for lookup operations
         /// </summary>
-        public IndirectTevStage[] TevStages;
+        public IndirectTevStage[] TevStages { get; set; } = new IndirectTevStage[16];
+
 
         public IndirectTexturing()
         {
-            HasLookup = false;
-            IndTexStageNum = 0;
-
-            TevOrders = new IndirectTevOrder[4];
             for (int i = 0; i < 4; i++)
                 TevOrders[i] = new IndirectTevOrder(TexCoordId.Null, TexMapId.Null);
 
-            Matrices = new IndirectTexMatrix[3];
             for (int i = 0; i < 3; i++)
                 Matrices[i] = new IndirectTexMatrix(new Matrix2x3(0.5f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f), 1);
 
-            Scales = new IndirectTexScale[4];
             for (int i = 0; i < 4; i++)
                 Scales[i] = new IndirectTexScale(IndirectScale.ITS_1, IndirectScale.ITS_1);
 
-            TevStages = new IndirectTevStage[16];
             for (int i = 0; i < 3; i++)
                 TevStages[i] = new IndirectTevStage(
                     TevStageId.TevStage0,

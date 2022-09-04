@@ -576,17 +576,7 @@ namespace SuperBMD.BMD
         }
         public void DumpJson(string path)
         {
-            JsonSerializer serial = new JsonSerializer();
-            serial.Formatting = Formatting.Indented;
-            serial.Converters.Add(new StringEnumConverter());
-
-
-            using (FileStream strm = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                StreamWriter writer = new StreamWriter(strm);
-                writer.AutoFlush = true;
-                serial.Serialize(writer, this);
-            }
+           //File.WriteAllText(path, this.JsonSerialize());
         }
     }
 }

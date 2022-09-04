@@ -5,15 +5,15 @@ namespace SuperBMD.Materials
     public struct AlphaCompare : IEquatable<AlphaCompare>
     {
         /// <summary> subfunction 0 </summary>
-        public CompareType Comp0;
+        public CompareType Comp0{ get; set; }
         /// <summary> Reference value for subfunction 0. </summary>
-        public byte Reference0;
+        public byte Reference0{ get; set; }
         /// <summary> Alpha combine control for subfunctions 0 and 1. </summary>
-        public AlphaOp Operation;
+        public AlphaOp Operation{ get; set; }
         /// <summary> subfunction 1 </summary>
-        public CompareType Comp1;
+        public CompareType Comp1{ get; set; }
         /// <summary> Reference value for subfunction 1. </summary>
-        public byte Reference1;
+        public byte Reference1{ get; set; }
 
         public AlphaCompare(CompareType comp0, byte ref0, AlphaOp operation, CompareType comp1, byte ref1)
         {

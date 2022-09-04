@@ -4,15 +4,15 @@ namespace SuperBMD.Materials
 {
     public struct Fog : IEquatable<Fog>
     {
-        public byte Type;
-        public bool Enable;
-        public ushort Center;
-        public float StartZ;
-        public float EndZ;
-        public float NearZ;
-        public float FarZ;
-        public Color Color;
-        public float[] RangeAdjustmentTable;
+        public byte Type{ get; set; }
+        public bool Enable{ get; set; }
+        public ushort Center{ get; set; }
+        public float StartZ{ get; set; }
+        public float EndZ{ get; set; }
+        public float NearZ{ get; set; }
+        public float FarZ{ get; set; }
+        public Color Color{ get; set; }
+        public float[] RangeAdjustmentTable{ get; set; }
 
         public Fog(byte type, bool enable, ushort center, float startZ, float endZ, float nearZ, float farZ, Color color, float[] rangeAdjust)
         {

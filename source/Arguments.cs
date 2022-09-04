@@ -10,7 +10,7 @@
         public static string MaterialPath { get; private set; } = "";
         public static string OutputMaterialPath { get; private set; } = "";
         public static string TexHeaderPath { get; private set; } = "";
-        public static string TriStripMode { get; private set; } = "";
+        public static string TriStripMode { get; private set; } = "static";
         public static bool ShouldRotateModel { get; private set; } = false;
         public static bool ShouldExportAsBDL { get; private set; } = false;
         public static bool ShouldProfile { get; private set; } = false;
@@ -23,6 +23,8 @@
         public static bool ShouldDumpHierarchy { get; private set; } = false;
         public static string HierarchyPath { get; private set; } = "";
         public static bool ShouldExportAnims { get; private set; } = false;
+        public static bool ShouldExportColorAsBytes { get; private set; } = true;
+        public static bool ShouldExportColorAsHexString { get; private set; } = false;
         public static GXDataType VertexType { get; private set; } = GXDataType.Float32;
         public static byte Fraction { get; private set; } = 0;
         public static bool IsMaterialOrderStrict { get; private set; } = false;
@@ -155,13 +157,13 @@
         {
 
             // Input
-            if (InputPath == "")
+            if (InputPath.IsEmpty())
                 throw new Exception("No input file was specified.");
             if (!File.Exists(InputPath))
                 throw new Exception($"Input file \"{InputPath}\" does not exist.");
 
             // Output
-            if (OutputPath == "")
+            if (OutputPath.IsEmpty())
             {
                 string dirName = Path.GetDirectoryName(InputPath);
                 string fileName = Path.GetFileNameWithoutExtension(InputPath);
@@ -174,14 +176,14 @@
             }
 
             // Material presets
-            if (MaterialPath != "")
+            if (!MaterialPath.IsEmpty())
             {
                 if (!File.Exists(MaterialPath))
                     throw new Exception($"Material presets file \"{MaterialPath}\" does not exist.");
             }
 
             // Texture headers
-            if (TexHeaderPath != "")
+            if (!TexHeaderPath.IsEmpty())
             {
                 if (!File.Exists(TexHeaderPath))
                     throw new Exception($"Texture headers file \"{TexHeaderPath}\" does not exist.");

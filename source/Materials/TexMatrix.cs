@@ -4,21 +4,21 @@ namespace SuperBMD.Materials
 {
     public struct TexMatrix : IEquatable<TexMatrix>
     {
-        public TexGenType Projection;
-        public byte Type;
+        public TexGenType Projection { get; set; }
+        public byte Type { get; set; }
 
         [JsonConverter(typeof(Vector3Converter))]
-        public Vector3 EffectTranslation;
+        public Vector3 EffectTranslation { get; set; }
 
         [JsonConverter(typeof(Vector2Converter))]
-        public Vector2 Scale;
-        public float Rotation;
+        public Vector2 Scale { get; set; }
+        public float Rotation { get; set; }
 
         [JsonConverter(typeof(Vector2Converter))]
-        public Vector2 Translation;
+        public Vector2 Translation { get; set; }
 
         [JsonConverter(typeof(Matrix4Converter))]
-        public Matrix4 ProjectionMatrix;
+        public Matrix4 ProjectionMatrix { get; set; }
 
         [JsonConstructor]
         public TexMatrix(TexGenType projection, byte type, Vector3 effectTranslation, Vector2 scale, float rotation, Vector2 translation, Matrix4 matrix)

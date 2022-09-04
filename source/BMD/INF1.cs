@@ -311,10 +311,6 @@ namespace SuperBMD.BMD
 
         public void DumpJson(string path)
         {
-            JsonSerializer serial = new JsonSerializer();
-            serial.Formatting = Formatting.Indented;
-            serial.Converters.Add(new StringEnumConverter());
-
             foreach (SceneNode node in FlatNodes)
             {
                 if (node.Parent != null)
@@ -326,35 +322,20 @@ namespace SuperBMD.BMD
                 }
             }
 
-            using (FileStream strm = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                StreamWriter writer = new StreamWriter(strm);
-                writer.AutoFlush = true;
-                serial.Serialize(writer, this);
-            }
+            File.WriteAllText("INF1.json", this.JsonSerialize());
         }
 
         public void LoadHierarchyFromJson(string path)
         {
-            JsonSerializer serializer = new JsonSerializer();
-            INF1 information;
-            serializer.Converters.Add(
-                (new Newtonsoft.Json.Converters.StringEnumConverter())
-            );
+
             Console.WriteLine("Reading the Materials...");
-            using (TextReader file = File.OpenText(path))
-            {
-                using (JsonTextReader reader = new JsonTextReader(file))
-                {
-                    information = serializer.Deserialize<INF1>(reader);
-                }
-            }
+            INF1 inf1 = JsonSerializer.Deserialize<INF1>(path);
 
             this.FlatNodes = new List<SceneNode>();
-            this.Root = information.Root;
+            this.Root = inf1.Root;
             Console.WriteLine("Is null? {0}", this.Root is null);
             Stack<SceneNode> nodestack = new Stack<SceneNode>();
-            nodestack.Push(information.Root);
+            nodestack.Push(inf1.Root);
 
             while (nodestack.Count > 0)
             {

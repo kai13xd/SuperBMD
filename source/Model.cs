@@ -153,7 +153,7 @@ namespace SuperBMD
                 foreach (int meshindex in node.MeshIndices)
                 {
                     Assimp.Mesh mesh = scene.Meshes[meshindex];
-                    if (mesh.Name == String.Empty)
+                    if (mesh.Name.IsEmpty())
                     {
                         mesh.Name = node.Name;
                     }
@@ -395,7 +395,7 @@ namespace SuperBMD
             this.Scenegraph.DumpJson(Path.Combine(outDir, "hierarchy.json"));
             this.Joints.DumpJson(Path.Combine(outDir, "joints.json"));
             this.PartialWeightData.DumpJson(Path.Combine(outDir, "partialweights.json"));
-            this.Shapes.DumpJson(Path.Combine(outDir, "shapes.json"));
+            //this.Shapes.DumpJson(Path.Combine(outDir, "shapes.json"));
 
             Console.WriteLine("Removing Duplicate Verticies ->");
             foreach (Mesh mesh in outScene.Meshes)

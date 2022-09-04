@@ -4,95 +4,44 @@ namespace SuperBMD.Materials
 {
     public class Material
     {
-        public string Name;
-        public byte Flag;
+        public string Name { get; set; }
+        public byte Flag { get; set; }
         [JsonIgnore]
-        public byte ColorChannelControlsCount;
+        public byte ColorChannelControlsCount { get; set; }
         [JsonIgnore]
-        public byte NumTexGensCount;
+        public byte NumTexGensCount { get; set; }
         [JsonIgnore]
-        public byte NumTevStagesCount;
-
-        public CullMode CullMode;
-        public bool ZCompLoc;
-        public bool Dither;
-
+        public byte NumTevStagesCount { get; set; }
+        public CullMode CullMode { get; set; } = CullMode.Back;
+        public bool ZCompLoc { get; set; }
+        public bool Dither { get; set; }
         [JsonIgnore]
-        public int[] TextureIndices;
-        public string[] TextureNames;
+        public int[] TextureIndices { get; set; } = new int[8] { -1, -1, -1, -1, -1, -1, -1, -1 };
+        public string[] TextureNames { get; set; } = new string[8] { "", "", "", "", "", "", "", "" };
+        public IndirectTexturing IndTexEntry { get; set; } = new IndirectTexturing();
+        public Color?[] MaterialColors { get; set; } = new Color?[2] { new Color(1, 1, 1, 1), null };
+        public ChannelControl?[] ChannelControls { get; set; } = new ChannelControl?[4];
+        public Color?[] AmbientColors { get; set; } = new Color?[2] { new Color(50f / 255f, 50f / 255f, 50f / 255f, 50f / 255f), null };
+        public Color?[] LightingColors { get; set; } = new Color?[8];
+        public TexCoordGen?[] TexCoord1Gens { get; set; } = new TexCoordGen?[8];
+        public TexCoordGen?[] PostTexCoordGens { get; set; } = new TexCoordGen?[8];
+        public TexMatrix?[] TexMatrix1 { get; set; } = new TexMatrix?[10];
+        public TexMatrix?[] PostTexMatrix { get; set; } = new TexMatrix?[20];
+        public TevOrder?[] TevOrders { get; set; } = new TevOrder?[16];
+        public KonstColorSel[] ColorSels { get; set; } = new KonstColorSel[16];
+        public KonstAlphaSel[] AlphaSels { get; set; } = new KonstAlphaSel[16];
+        public Color?[] TevColors { get; set; }  = new Color?[4]{Color.White,null,null,null};
+        public Color?[] KonstColors { get; set; } = new Color?[4] { Color.White, null, null, null };
+        public TevStage?[] TevStages { get; set; } = new TevStage?[16];
+        public TevSwapMode?[] SwapModes { get; set; } = new TevSwapMode?[16] { new TevSwapMode(0, 0), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
+        public TevSwapModeTable?[] SwapTables { get; set; } = new TevSwapModeTable?[16] { new TevSwapModeTable(0, 1, 2, 3), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
+        public Fog FogInfo { get; set; } = new Fog(0, false, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0), new float[10]);
+        public AlphaCompare AlphCompare { get; set; } = new AlphaCompare(CompareType.Greater, 127, AlphaOp.And, CompareType.Always, 0);
+        public BlendMode BlendMode { get; set; } = new BlendMode(BlendModeType.Blend, BlendModeControl.SrcAlpha, BlendModeControl.InverseSrcAlpha, LogicOp.NoOp);
+        public ZMode ZMode { get; set; } = new ZMode(true, CompareType.LEqual, true);
+        public NBTScale NBTScale { get; set; } = new NBTScale(0, Vector3.Zero);
 
-        public IndirectTexturing IndTexEntry;
-        public Color?[] MaterialColors;
-        public ChannelControl?[] ChannelControls;
-        public Color?[] AmbientColors;
-        public Color?[] LightingColors;
-        public TexCoordGen?[] TexCoord1Gens;
-        public TexCoordGen?[] PostTexCoordGens;
-        public TexMatrix?[] TexMatrix1;
-        public TexMatrix?[] PostTexMatrix;
-        public TevOrder?[] TevOrders;
-        public KonstColorSel[] ColorSels;
-        public KonstAlphaSel[] AlphaSels;
-        public Color?[] TevColors;
-        public Color?[] KonstColors;
-        public TevStage?[] TevStages;
-        public TevSwapMode?[] SwapModes;
-        public TevSwapModeTable?[] SwapTables;
-
-        public Fog FogInfo;
-        public AlphaCompare AlphCompare;
-        public BlendMode BlendMode;
-        public ZMode ZMode;
-        public NBTScale NBTScale;
-
-        public Material()
-        {
-            CullMode = CullMode.Back;
-            MaterialColors = new Color?[2] { new Color(1, 1, 1, 1), null };
-
-            ChannelControls = new ChannelControl?[4];
-
-            IndTexEntry = new IndirectTexturing();
-
-            AmbientColors = new Color?[2] { new Color(50f / 255f, 50f / 255f, 50f / 255f, 50f / 255f), null };
-            LightingColors = new Color?[8];
-
-            TexCoord1Gens = new TexCoordGen?[8];
-            PostTexCoordGens = new TexCoordGen?[8];
-
-            TexMatrix1 = new TexMatrix?[10];
-            PostTexMatrix = new TexMatrix?[20];
-
-            TextureIndices = new int[8] { -1, -1, -1, -1, -1, -1, -1, -1 };
-            TextureNames = new string[8] { "", "", "", "", "", "", "", "" };
-
-            KonstColors = new Color?[4];
-            KonstColors[0] = new Color(1, 1, 1, 1);
-
-            ColorSels = new KonstColorSel[16];
-            AlphaSels = new KonstAlphaSel[16];
-
-            TevOrders = new TevOrder?[16];
-            //TevOrders[0] = new TevOrder(TexCoordId.TexCoord0, TexMapId.TexMap0, GXColorChannelId.Color0);
-
-            TevColors = new Color?[4];
-            TevColors[0] = new Color(1, 1, 1, 1);
-
-            TevStages = new TevStage?[16];
-
-            SwapModes = new TevSwapMode?[16];
-            SwapModes[0] = new TevSwapMode(0, 0);
-
-            SwapTables = new TevSwapModeTable?[16];
-            SwapTables[0] = new TevSwapModeTable(0, 1, 2, 3);
-
-            AlphCompare = new AlphaCompare(CompareType.Greater, 127, AlphaOp.And, CompareType.Always, 0);
-            ZMode = new ZMode(true, CompareType.LEqual, true);
-            BlendMode = new BlendMode(BlendModeType.Blend, BlendModeControl.SrcAlpha, BlendModeControl.InverseSrcAlpha, LogicOp.NoOp);
-            NBTScale = new NBTScale(0, Vector3.Zero);
-            FogInfo = new Fog(0, false, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0), new float[10]);
-        }
-
+        public Material(){}
         public void SetUpTev(bool hasTexture, bool hasVtxColor, int texIndex, string texName, Assimp.Material meshMat)
         {
             Flag = 1;

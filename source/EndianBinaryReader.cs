@@ -346,7 +346,7 @@ namespace Kai
         }
         public void Write(Bone bone)
         {
-            Write(bone.MatrixType);
+            Write((short)bone.MatrixType);
             Write(bone.InheritParentScale);
             Write((sbyte)-1);
 

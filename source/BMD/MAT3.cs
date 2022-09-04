@@ -1,5 +1,4 @@
 ﻿using SuperBMD.Materials;
-using SuperBMD.Util;
 using SuperBMD.Materials.IO;
 
 namespace SuperBMD.BMD
@@ -670,18 +669,10 @@ namespace SuperBMD.BMD
             if (preset.NBTScale != null) bmdMaterial.NBTScale = preset.NBTScale;
         }
 
-        private void LoadFromJson(Assimp.Scene scene, TEX1 textures, SHP1 shapes, string json_path)
+        private void LoadFromJson(Assimp.Scene scene, TEX1 textures, SHP1 shapes, string jsonPath)
         {
-            JsonSerializer serial = new JsonSerializer();
-            serial.Formatting = Formatting.Indented;
-            serial.Converters.Add(new StringEnumConverter());
 
-            using (StreamReader strm_reader = new StreamReader(json_path))
-            {
-                strm_reader.BaseStream.Seek(0, SeekOrigin.Begin);
-                JsonTextReader reader = new JsonTextReader(strm_reader);
-                Materials = serial.Deserialize<List<Material>>(reader);
-            }
+            Materials = JsonSerializer.Deserialize<List<Material>>(jsonPath);
 
             for (short i = 0; i < Materials.Count; i++)
             {
@@ -693,7 +684,7 @@ namespace SuperBMD.BMD
                 MaterialNames.Add(mat.Name);
                 for (int i = 0; i < 8; i++)
                 {
-                    if (mat.TextureNames[i] == "")
+                    if (mat.TextureNames[i].IsEmpty())
                         continue;
 
                     foreach (BinaryTextureImage tex in textures.Textures)
@@ -747,7 +738,7 @@ namespace SuperBMD.BMD
             {
                 Assimp.Material meshMat = scene.Materials[scene.Meshes[i].MaterialIndex];
                 Console.Write("Mesh {0} has material {1}...\n", scene.Meshes[i].Name, meshMat.Name);
-                Material bmdMaterial = new();
+                Material bmdMaterial = new Material();
                 bmdMaterial.Name = meshMat.Name;
 
                 bool hasVtxColor0 = shapes.Shapes[i].AttributeData.CheckAttribute(Geometry.GXVertexAttribute.Color0);
@@ -1482,16 +1473,9 @@ namespace SuperBMD.BMD
 
         public void DumpMaterials(string out_path)
         {
-            JsonSerializer serial = new JsonSerializer();
-            serial.Formatting = Formatting.Indented;
-            serial.Converters.Add(new StringEnumConverter());
             Directory.CreateDirectory(Path.GetDirectoryName(out_path));
-            using (FileStream strm = new FileStream(out_path, FileMode.Create, FileAccess.Write))
-            {
-                StreamWriter writer = new StreamWriter(strm);
-                writer.AutoFlush = true;
-                serial.Serialize(writer, Materials);
-            }
+            File.WriteAllText(out_path, Materials.JsonSerialize());
+
         }
 
         public void LoadAdditionalTextures(TEX1 tex1, string texpath)
@@ -1503,7 +1487,7 @@ namespace SuperBMD.BMD
                 {
                     if (texname != null && texname != "")
                     {
-                        if (tex1[texname] is null || texname == "")
+                        if (tex1[texname] is null || texname.IsEmpty())
                         {
                             var textureName = texname.Split(":")[0];
                             Console.Write("Searching for " + textureName);

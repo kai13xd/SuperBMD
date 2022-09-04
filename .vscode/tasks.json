@@ -7,6 +7,9 @@
             "type": "process",
             "args": [
                 "build",
+                "--os",
+                "win",
+                "-o","bin",
                 "${workspaceFolder}/SuperBMD.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"

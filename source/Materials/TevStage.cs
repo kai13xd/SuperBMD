@@ -4,52 +4,52 @@ namespace SuperBMD.Materials
 {
     public struct TevStageParameters
     {
-        public CombineColorInput ColorInA;
-        public CombineColorInput ColorInB;
-        public CombineColorInput ColorInC;
-        public CombineColorInput ColorInD;
+        public CombineColorInput ColorInA { get; set; }
+        public CombineColorInput ColorInB { get; set; }
+        public CombineColorInput ColorInC { get; set; }
+        public CombineColorInput ColorInD { get; set; }
 
-        public TevOp ColorOp;
-        public TevBias ColorBias;
-        public TevScale ColorScale;
-        public bool ColorClamp;
-        public TevRegisterId ColorRegId;
+        public TevOp ColorOp { get; set; }
+        public TevBias ColorBias { get; set; }
+        public TevScale ColorScale { get; set; }
+        public bool ColorClamp { get; set; }
+        public TevRegisterId ColorRegId { get; set; }
 
-        public CombineAlphaInput AlphaInA;
-        public CombineAlphaInput AlphaInB;
-        public CombineAlphaInput AlphaInC;
-        public CombineAlphaInput AlphaInD;
+        public CombineAlphaInput AlphaInA { get; set; }
+        public CombineAlphaInput AlphaInB { get; set; }
+        public CombineAlphaInput AlphaInC { get; set; }
+        public CombineAlphaInput AlphaInD { get; set; }
 
-        public TevOp AlphaOp;
-        public TevBias AlphaBias;
-        public TevScale AlphaScale;
-        public bool AlphaClamp;
-        public TevRegisterId AlphaRegId;
+        public TevOp AlphaOp { get; set; }
+        public TevBias AlphaBias { get; set; }
+        public TevScale AlphaScale { get; set; }
+        public bool AlphaClamp { get; set; }
+        public TevRegisterId AlphaRegId { get; set; }
     }
 
     public struct TevStage : IEquatable<TevStage>
     {
-        public CombineColorInput ColorInA;
-        public CombineColorInput ColorInB;
-        public CombineColorInput ColorInC;
-        public CombineColorInput ColorInD;
+        public CombineColorInput ColorInA { get; set; }
+        public CombineColorInput ColorInB { get; set; }
+        public CombineColorInput ColorInC { get; set; }
+        public CombineColorInput ColorInD { get; set; }
 
-        public TevOp ColorOp;
-        public TevBias ColorBias;
-        public TevScale ColorScale;
-        public bool ColorClamp;
-        public TevRegisterId ColorRegId;
+        public TevOp ColorOp { get; set; }
+        public TevBias ColorBias { get; set; }
+        public TevScale ColorScale { get; set; }
+        public bool ColorClamp { get; set; }
+        public TevRegisterId ColorRegId { get; set; }
 
-        public CombineAlphaInput AlphaInA;
-        public CombineAlphaInput AlphaInB;
-        public CombineAlphaInput AlphaInC;
-        public CombineAlphaInput AlphaInD;
+        public CombineAlphaInput AlphaInA { get; set; }
+        public CombineAlphaInput AlphaInB { get; set; }
+        public CombineAlphaInput AlphaInC { get; set; }
+        public CombineAlphaInput AlphaInD { get; set; }
 
-        public TevOp AlphaOp;
-        public TevBias AlphaBias;
-        public TevScale AlphaScale;
-        public bool AlphaClamp;
-        public TevRegisterId AlphaRegId;
+        public TevOp AlphaOp { get; set; }
+        public TevBias AlphaBias { get; set; }
+        public TevScale AlphaScale { get; set; }
+        public bool AlphaClamp { get; set; }
+        public TevRegisterId AlphaRegId { get; set; }
 
         public TevStage(ref EndianBinaryReader reader)
         {

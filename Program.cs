@@ -1,6 +1,6 @@
 ﻿global using OpenTK;
-global using Newtonsoft.Json;
-global using Newtonsoft.Json.Converters;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
 global using System;
 global using System.Linq;
 global using System.Text;
@@ -59,32 +59,10 @@ namespace SuperBMD
 
             if (Arguments.MaterialPath != "")
             {
-                JsonSerializer serializer = new JsonSerializer();
+            
+                    mat_presets = File.ReadAllText(Arguments.MaterialPath).JsonDeserialize<List<Material>>();
 
-                serializer.Converters.Add((new Newtonsoft.Json.Converters.StringEnumConverter()));
-                Console.WriteLine("Reading the Materials...");
-                using (TextReader file = File.OpenText(Arguments.MaterialPath))
-                {
-                    using (JsonTextReader reader = new JsonTextReader(file))
-                    {
-                        try
-                        {
-                            mat_presets = serializer.Deserialize<List<Material>>(reader);
-                        }
-                        catch (Newtonsoft.Json.JsonReaderException e)
-                        {
-                            Console.WriteLine(String.Format("Error encountered while reading {0}", Arguments.MaterialPath));
-                            Console.WriteLine(String.Format("JsonReaderException: {0}", e.Message));
-                            return;
-                        }
-                        catch (Newtonsoft.Json.JsonSerializationException e)
-                        {
-                            Console.WriteLine(String.Format("Error encountered while reading {0}", Arguments.MaterialPath));
-                            Console.WriteLine(String.Format("JsonSerializationException: {0}", e.Message));
-                            return;
-                        }
-                    }
-                }
+
             }
 
             string additionalTexPath = null;
@@ -103,7 +81,7 @@ namespace SuperBMD
             Console.WriteLine(string.Format("Preparing to convert {0} from {1} to {2}", fi.Name.Replace(fi.Extension, ""), fi.Extension.ToUpper(), destinationFormat));
             model = Model.Load(mat_presets, additionalTexPath);
 
-            if (Arguments.HierarchyPath != "")
+            if (!Arguments.HierarchyPath.IsEmpty())
             {
                 model.Scenegraph.LoadHierarchyFromJson(Arguments.HierarchyPath);
             }

@@ -3,16 +3,16 @@
     public struct Color
     {
         /// <summary> Red component of the <see cref="Color"/>. </summary>
-        public float R;
+        public float R{ get; set; }
 
         /// <summary> Green component of the <see cref="Color"/>. </summary>
-        public float G;
+        public float G{ get; set; }
 
         /// <summary> Blue component of the <see cref="Color"/>. </summary>
-        public float B;
+        public float B{ get; set; }
 
         /// <summary> Alpha component of the <see cref="Color"/>. Defaults to 1f. </summary>
-        public float A;
+        public float A{ get; set; }
 
         /// <summary>
         /// Construct new <see cref="Color"/> with the given R, G, B, and A components.

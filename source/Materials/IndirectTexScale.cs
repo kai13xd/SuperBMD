@@ -14,6 +14,11 @@ namespace SuperBMD.Materials
         public IndirectScale ScaleT { get; private set; }
 
         [JsonConstructor]
+        public IndirectTexScale()
+        {
+            ScaleS = IndirectScale.ITS_1;
+            ScaleT = IndirectScale.ITS_1;
+        }
         public IndirectTexScale(IndirectScale s, IndirectScale t)
         {
             ScaleS = s;
