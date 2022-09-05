@@ -149,21 +149,49 @@ namespace SuperBMD.Util
 
         public override Matrix4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-
-            reader.Read();
-            var row0 = new Vector4(reader.GetSingle(), reader.GetSingle(), reader.GetSingle(), reader.GetSingle());
+            var mtx = new Matrix4();
             reader.Read();
             reader.Read();
-            var row1 = new Vector4(reader.GetSingle(), reader.GetSingle(), reader.GetSingle(), reader.GetSingle());
+            mtx.Row0[0] = reader.GetSingle();
+            reader.Read();
+            mtx.Row0[1] = reader.GetSingle();
+            reader.Read();
+            mtx.Row0[2] = reader.GetSingle();
+            reader.Read();
+            mtx.Row0[3] = reader.GetSingle();
             reader.Read();
             reader.Read();
-            var row2 = new Vector4(reader.GetSingle(), reader.GetSingle(), reader.GetSingle(), reader.GetSingle());
+            reader.Read();
+            mtx.Row1[0] = reader.GetSingle();
+            reader.Read();
+            mtx.Row1[1] = reader.GetSingle();
+            reader.Read();
+            mtx.Row1[2] = reader.GetSingle();
+            reader.Read();
+            mtx.Row1[3] = reader.GetSingle();
             reader.Read();
             reader.Read();
-            var row3 = new Vector4(reader.GetSingle(), reader.GetSingle(), reader.GetSingle(), reader.GetSingle());
             reader.Read();
-            return new Matrix4(row0, row1, row2, row3);
-
+            mtx.Row2[0] = reader.GetSingle();
+            reader.Read();
+            mtx.Row2[1] = reader.GetSingle();
+            reader.Read();
+            mtx.Row2[2] = reader.GetSingle();
+            reader.Read();
+            mtx.Row2[3] = reader.GetSingle();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            mtx.Row3[0] = reader.GetSingle();
+            reader.Read();
+            mtx.Row3[1] = reader.GetSingle();
+            reader.Read();
+            mtx.Row3[2] = reader.GetSingle();
+            reader.Read();
+            mtx.Row3[3] = reader.GetSingle();
+            reader.Read();
+            reader.Read();
+            return mtx;
         }
 
         public override void Write(Utf8JsonWriter writer, Matrix4 matrix, JsonSerializerOptions options)
@@ -248,7 +276,7 @@ namespace SuperBMD.Util
         }
         public override Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            Color color = new();
+            Color32 color = new();
             int i = 0;
             while (reader.Read())
             {

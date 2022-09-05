@@ -57,13 +57,11 @@ namespace SuperBMD.BMD
 
         private void LoadTexturesFromJson(string headers_path, string directory_path)
         {
-
-            var jsonString = File.ReadAllText(headers_path);
-            Textures = JsonSerializer.Deserialize<List<BinaryTextureImage>>(jsonString);
-
+            Textures = File.ReadAllText(headers_path).JsonDeserialize<List<BinaryTextureImage>>();
 
             foreach (BinaryTextureImage tex in Textures)
             {
+                
                 // We'll search for duplicate texture names.
                 BinaryTextureImage duplicate_search = Textures.Find(x => x.Name == tex.Name);
 
