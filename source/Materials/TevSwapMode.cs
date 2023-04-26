@@ -2,8 +2,8 @@
 {
     public struct TevSwapMode : IEquatable<TevSwapMode>
     {
-        public byte RasSel{ get; set; }
-        public byte TexSel{ get; set; }
+        public byte RasSel;
+        public byte TexSel;
 
         public TevSwapMode(byte rasSel, byte texSel)
         {

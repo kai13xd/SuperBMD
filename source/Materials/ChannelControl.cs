@@ -4,12 +4,12 @@ namespace SuperBMD.Materials
 {
     public struct ChannelControl : IEquatable<ChannelControl>
     {
-        public bool Enable{ get; set; }
-        public ColorSrc MaterialSrcColor{ get; set; }
-        public LightId LitMask{ get; set; }
-        public DiffuseFn DiffuseFunction{ get; set; }
-        public J3DAttenuationFn AttenuationFunction{ get; set; }
-        public ColorSrc AmbientSrcColor{ get; set; }
+        public bool Enable;
+        public ColorSrc MaterialSrcColor;
+        public LightId LitMask;
+        public DiffuseFn DiffuseFunction;
+        public J3DAttenuationFn AttenuationFunction;
+        public ColorSrc AmbientSrcColor;
 
         public ChannelControl(bool enable, ColorSrc matSrcColor, LightId litMask, DiffuseFn diffFn, J3DAttenuationFn attenFn, ColorSrc ambSrcColor)
         {

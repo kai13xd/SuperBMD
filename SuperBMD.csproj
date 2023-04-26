@@ -4,9 +4,9 @@
     <LangVersion>latest</LangVersion>
     <OutputType>Exe</OutputType>
     <EnablePreviewFeatures>True</EnablePreviewFeatures>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 

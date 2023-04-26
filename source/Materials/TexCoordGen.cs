@@ -4,9 +4,9 @@ namespace SuperBMD.Materials
 {
     public struct TexCoordGen : IEquatable<TexCoordGen>
     {
-        public TexGenType Type{ get; set; }
-        public TexGenSrc Source{ get; set; }
-        public TexMatrixType TexMatrixSource{ get; set; }
+        public TexGenType Type { get; set; }
+        public TexGenSrc Source { get; set; }
+        public TexMatrixType TexMatrixSource { get; set; }
 
         public TexCoordGen(TexGenType type, TexGenSrc src, TexMatrixType mtrx)
         {

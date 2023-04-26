@@ -1,5 +1,4 @@
-﻿using SuperBMD.Geometry;
-
+﻿
 namespace SuperBMD.Geometry
 {
     public class Primitive

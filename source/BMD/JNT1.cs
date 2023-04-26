@@ -1,5 +1,4 @@
-﻿using SuperBMD.Util;
-
+﻿
 namespace SuperBMD.BMD
 {
 
@@ -125,7 +124,7 @@ namespace SuperBMD.BMD
 
         private Rigging.Bone AssimpNodesToBonesRecursive(Assimp.Node node, Rigging.Bone parent, List<Rigging.Bone> boneList)
         {
-            Rigging.Bone newBone = new Rigging.Bone(node, parent);
+            Rigging.Bone newBone = new(node, parent);
             boneList.Add(newBone);
 
             for (int i = 0; i < node.ChildCount; i++)
@@ -149,7 +148,7 @@ namespace SuperBMD.BMD
             writer.Write(0); // Placeholder for remap data offset
             writer.Write(0); // Placeholder for name table offset
 
-            List<string> names = new List<string>();
+            List<string> names = new();
             foreach (Rigging.Bone bone in FlatSkeleton)
             {
                 writer.Write(bone);

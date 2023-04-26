@@ -353,15 +353,9 @@ namespace SuperBMD.Animation
         {
             int start_offset = writer.Length;
 
-            int ScaleCount;
-            int RotCount;
-            int TransCount;
 
-            int ScaleOffset;
-            int RotOffset;
-            int TransOffset;
 
-            byte[] KeyframeData = WriteKeyframedata(out ScaleCount, out RotCount, out TransCount, out ScaleOffset, out RotOffset, out TransOffset);
+            byte[] KeyframeData = WriteKeyframedata(out int ScaleCount, out int RotCount, out int TransCount, out int ScaleOffset, out int RotOffset, out int TransOffset);
 
             writer.Write("ANK1".ToCharArray()); // Magic
             writer.Write((int)0); // Placeholder for section size

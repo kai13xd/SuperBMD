@@ -284,14 +284,16 @@ namespace SuperBMD.BMD
 
         private void LoadInitData(ref EndianBinaryReader reader, int matindex)
         {
-            Material mat = new Material();
-            mat.Name = MaterialNames[matindex];
-            mat.Flag = reader.ReadByte();
-            mat.CullMode = CullModeBlock[reader.ReadByte()];
+            Material mat = new Material
+            {
+                Name = MaterialNames[matindex],
+                Flag = reader.ReadByte(),
+                CullMode = CullModeBlock[reader.ReadByte()],
 
-            mat.ColorChannelControlsCount = NumColorChannelsBlock[reader.ReadByte()];
-            mat.NumTexGensCount = NumTexGensBlock[reader.ReadByte()];
-            mat.NumTevStagesCount = NumTevStagesBlock[reader.ReadByte()];
+                ColorChannelControlsCount = NumColorChannelsBlock[reader.ReadByte()],
+                NumTexGensCount = NumTexGensBlock[reader.ReadByte()],
+                NumTevStagesCount = NumTevStagesBlock[reader.ReadByte()]
+            };
 
             if (matindex < IndirectTexBlock.Count)
             {
@@ -480,9 +482,9 @@ namespace SuperBMD.BMD
             Materials.Add(mat);
         }
 
-        public MAT3(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material> mat_presets = null)
+        public MAT3(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material>? matPresets = null)
         {
-            LoadFromScene(scene, textures, shapes, mat_presets);
+            LoadFromScene(scene, textures, shapes, matPresets);
             FillMaterialDataBlocks();
         }
 
@@ -519,7 +521,7 @@ namespace SuperBMD.BMD
 
                     if (name.EndsWith("-material"))
                     {
-                        name = name.Substring(0, name.Length - 9);
+                        name = name[..^9];
                         if (
                             (name.Length > 2 && name.Substring(2) == sanitized) ||
                             (name.Length > 3 && name.Substring(3) == sanitized) ||
@@ -535,7 +537,7 @@ namespace SuperBMD.BMD
                 if (name.EndsWith("-material"))
                 {
                     string sanitized = Model.AssimpMatnamePartSanitize(mat.Name);
-                    name = name.Substring(0, name.Length - 9);
+                    name = name[..^9];
                     if (
                         (name == sanitized)
                         )
@@ -548,11 +550,6 @@ namespace SuperBMD.BMD
             }
             return result;
         }
-        private int GetMatIndex(Material mat, List<Material> matPresets)
-        {
-            return matPresets.IndexOf(mat);
-        }
-
 
         private PresetResult? FindMatPreset(string name, List<Material> mat_presets)
         {
@@ -560,7 +557,7 @@ namespace SuperBMD.BMD
             {
                 return null;
             }
-            Material default_mat = null;
+            Material? default_mat = null;
 
             int i = 0;
 
@@ -730,7 +727,7 @@ namespace SuperBMD.BMD
             }
         }
 
-        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material> matPresets = null)
+        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material>? matPresets = null)
         {
             List<int> indices = new List<int>();
 
@@ -802,8 +799,8 @@ namespace SuperBMD.BMD
                 {
                     throw new Exception($"Amount of materials doesn't match amount of presets: \"{Materials.Count}\" vs \"{matPresets.Count}\".");
                 }
-                List<Material> new_list = new List<Material>(Materials);
-                List<String> names = new List<String>(MaterialNames);
+                List<Material> new_list = new(Materials);
+                List<string> names = new(MaterialNames);
                 for (int i = 0; i < new_list.Count; i++)
                 {
                     int index = indices[i];

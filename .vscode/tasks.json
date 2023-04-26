@@ -9,7 +9,8 @@
                 "build",
                 "--os",
                 "win",
-                "-o","bin",
+                "-o",
+                "bin",
                 "${workspaceFolder}/SuperBMD.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"

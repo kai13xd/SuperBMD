@@ -1,6 +1,4 @@
-﻿using SuperBMD.Geometry;
-using SuperBMD.Util;
-using SuperBMD.Rigging;
+﻿using SuperBMD.Rigging;
 using SuperBMD.source.Geometry.Enums;
 
 
@@ -576,7 +574,7 @@ namespace SuperBMD.BMD
         }
         public void DumpJson(string path)
         {
-           //File.WriteAllText(path, this.JsonSerialize());
+            //File.WriteAllText(path, this.JsonSerialize());
         }
     }
 }

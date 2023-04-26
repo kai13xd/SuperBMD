@@ -59,8 +59,8 @@ namespace SuperBMD
 
             if (Arguments.MaterialPath != "")
             {
-            
-                    mat_presets = File.ReadAllText(Arguments.MaterialPath).JsonDeserialize<List<Material>>();
+
+                mat_presets = File.ReadAllText(Arguments.MaterialPath).JsonDeserialize<List<Material>>();
 
 
             }

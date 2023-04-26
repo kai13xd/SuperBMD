@@ -287,11 +287,11 @@ namespace SuperBMD.Util
                         {
                             color[i++] = b;
                         }
-                        // else if (reader.TryGetSingle(out float f))
-                        // {
-                        //     float[] fArray = new float[4] { f, reader.GetSingle(), reader.GetSingle(), reader.GetSingle() };
-                        //     color = new Color(fArray[0], fArray[1], fArray[2], fArray[3]);
-                        // }
+                        else if (reader.TryGetSingle(out float f))
+                        {
+                            float[] fArray = new float[4] { f, reader.GetSingle(), reader.GetSingle(), reader.GetSingle() };
+                            color = new Color(fArray[0], fArray[1], fArray[2], fArray[3]);
+                        }
                         else
                             throw new Exception("hm");
                         continue;

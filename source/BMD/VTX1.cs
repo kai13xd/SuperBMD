@@ -1,7 +1,4 @@
-﻿using SuperBMD.Geometry;
-using SuperBMD.Util;
-
-namespace SuperBMD.BMD
+﻿namespace SuperBMD.BMD
 {
     public class VTX1
     {
@@ -10,9 +7,7 @@ namespace SuperBMD.BMD
 
         public VTX1(ref EndianBinaryReader reader, BMDInfo modelstats = null)
         {
-
             var offset = reader.Position;
-            reader.Seek(offset);
 
             reader.Skip(4);
             int vtx1Size = reader.ReadInt();
@@ -38,27 +33,22 @@ namespace SuperBMD.BMD
                 StorageFormats.Add(attrib, new Tuple<GXDataType, byte>(componentType, fractionalBitCount));
 
                 reader.Skip(3);
-                int curPos = reader.Position;
-
+                reader.Remember();
                 int attribDataSize = 0;
                 int attribOffset = GetAttributeDataOffset(attribDataOffsets, vtx1Size, attrib, out attribDataSize);
                 int attribCount = GetAttributeDataCount(attribDataSize, attrib, componentType, componentCount);
-                Attributes.SetAttributeData(attrib, LoadAttributeData(reader, offset + attribOffset, attribCount, fractionalBitCount, attrib, componentType, componentCount));
-
-                reader.Seek(curPos);
-                attrib = (GXVertexAttribute)reader.ReadInt();
+                Attributes.SetAttributeData(attrib, LoadAttributeData(ref reader, offset + attribOffset, attribCount, fractionalBitCount, attrib, componentType, componentCount));
+                reader.Recall();
             }
-
             reader.Seek(offset + vtx1Size);
         }
 
-        bool use_float_for_texcoords(Assimp.Mesh mesh, int texchannel)
+        bool UseFloatForTexCoords(Assimp.Mesh mesh, int texchannel)
         {
             // SuperBMD normally converts UV coords into signed 16 bit integers
             // with a fractional part of 8 bits so these are the minimum and maximum values that can be represented.
             float min = -(float)(1 << 15) / (float)(1 << 8);
             float max = (float)((1 << 15) - 1) / (float)(1 << 8);
-
             foreach (Assimp.Vector3D texcoord in mesh.TextureCoordinateChannels[texchannel])
             {
                 if (texcoord.X < min || texcoord.X > max || texcoord.Y < min || texcoord.Y > max)
@@ -68,7 +58,6 @@ namespace SuperBMD.BMD
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -76,17 +65,14 @@ namespace SuperBMD.BMD
         {
             Attributes = new VertexData();
             StorageFormats = new SortedDictionary<GXVertexAttribute, Tuple<GXDataType, byte>>();
-
             int i = -1;
-
             foreach (Assimp.Mesh mesh in scene.Meshes)
             {
                 i++;
                 Console.Write(mesh.Name);
-
                 if (mesh.HasVertices)
                 {
-                    SetAssimpPositionAttribute(mesh);
+                    SetAssimpPositionAttribute();
                     if (!StorageFormats.ContainsKey(GXVertexAttribute.Position))
                         StorageFormats.Add(GXVertexAttribute.Position, new Tuple<GXDataType, byte>(Arguments.VertexType, Arguments.Fraction));
                 }
@@ -95,7 +81,7 @@ namespace SuperBMD.BMD
 
                 if (mesh.HasNormals)
                 {
-                    SetAssimpNormalAttribute(mesh);
+                    SetAssimpNormalAttribute();
                     if (!StorageFormats.ContainsKey(GXVertexAttribute.Normal))
                         StorageFormats.Add(GXVertexAttribute.Normal, new Tuple<GXDataType, byte>(GXDataType.Signed16, 14));
                 }
@@ -104,61 +90,56 @@ namespace SuperBMD.BMD
 
                 if (mesh.HasVertexColors(0))
                 {
-                    //Console.WriteLine($"Mesh \"{ mesh.Name }\" ({i}) has vertex colors on channel 0.");
+                    Console.WriteLine($"Mesh \"{mesh.Name}\" ({i}) has vertex colors on channel 0.");
                     SetAssimpColorAttribute(0, GXVertexAttribute.Color0, mesh);
                     if (!StorageFormats.ContainsKey(GXVertexAttribute.Color0))
                         StorageFormats.Add(GXVertexAttribute.Color0, new Tuple<GXDataType, byte>(GXDataType.RGBA8, 0));
                 }
-                //else
-                //    Console.WriteLine($"Mesh \"{ mesh.Name }\" has no colors on channel 0.");
+                else
+                    Console.WriteLine($"Mesh \"{mesh.Name}\" has no colors on channel 0.");
 
                 if (mesh.HasVertexColors(1))
                 {
-                    //Console.WriteLine($"Mesh \"{ mesh.Name }\" ({i}) has vertex colors on channel 1.");
+                    Console.WriteLine($"Mesh \"{mesh.Name}\" ({i}) has vertex colors on channel 1.");
                     SetAssimpColorAttribute(1, GXVertexAttribute.Color1, mesh);
                     if (!StorageFormats.ContainsKey(GXVertexAttribute.Color1))
                         StorageFormats.Add(GXVertexAttribute.Color1, new Tuple<GXDataType, byte>(GXDataType.RGBA8, 0));
                 }
-                //else
-                //Console.WriteLine($"Mesh \"{ mesh.Name }\" has no colors on channel 1.");
-
+                else
+                    Console.WriteLine($"Mesh \"{mesh.Name}\" has no colors on channel 1.");
                 for (int texCoords = 0; texCoords < 8; texCoords++)
                 {
                     if (mesh.HasTextureCoords(texCoords))
                     {
-
-
-                        //Console.WriteLine($"Mesh \"{ mesh.Name }\" ({i}) has texture coordinates on channel { texCoords }.");
+                        Console.WriteLine($"Mesh \"{mesh.Name}\" ({i}) has texture coordinates on channel {texCoords}.");
                         SetAssimpTexCoordAttribute(texCoords, GXVertexAttribute.Tex0 + texCoords, mesh);
                         if (!StorageFormats.ContainsKey(GXVertexAttribute.Tex0 + texCoords))
                         {
-                            bool use_float = false;
+                            bool useFloat = false;
                             if (Arguments.ShouldForceFloat)
                             {
-                                use_float = true;
+                                useFloat = true;
                             }
                             else
                             {
-                                use_float = use_float_for_texcoords(mesh, texCoords);
-                                if (use_float)
+                                useFloat = UseFloatForTexCoords(mesh, texCoords);
+                                if (useFloat)
                                 {
                                     Console.WriteLine($"Mesh \"{mesh.Name}\" ({i}) has big texture coordinate values on channel {texCoords} and will use floats.");
                                 }
                             }
-
-                            if (use_float)
+                            if (useFloat)
                             {
-
                                 StorageFormats.Add(GXVertexAttribute.Tex0 + texCoords, new Tuple<GXDataType, byte>(GXDataType.Float32, 0));
                             }
                             else
                             {
-                                StorageFormats.Add(GXVertexAttribute.Tex0 + texCoords, new Tuple<GXDataType, byte>(GXDataType.Signed16, 8));
+                                StorageFormats.Add(GXVertexAttribute.Tex0 + texCoords, new Tuple<GXDataType, byte>(GXDataType.Signed16, 0xe));
                             }
                         }
                     }
-                    //else
-                    //    Console.WriteLine($"Mesh \"{ mesh.Name }\" has no texture coordinates on channel { texCoords }.");
+                    else
+                        Console.WriteLine($"Mesh \"{mesh.Name}\" has no texture coordinates on channel {texCoords}.");
 
                     Console.Write(".");
                 }
@@ -167,7 +148,7 @@ namespace SuperBMD.BMD
             }
         }
 
-        public object LoadAttributeData(EndianBinaryReader reader, int offset, int count, byte frac, GXVertexAttribute attribute, GXDataType dataType, GXComponentCount compCount)
+        public object LoadAttributeData(ref EndianBinaryReader reader, int offset, int count, byte frac, GXVertexAttribute attribute, GXDataType dataType, GXComponentCount compCount)
         {
             reader.Seek(offset);
             object final = null;
@@ -178,10 +159,10 @@ namespace SuperBMD.BMD
                     switch (compCount)
                     {
                         case GXComponentCount.Position_XY:
-                            final = LoadVec2Data(reader, frac, count, dataType);
+                            final = LoadVec2Data(ref reader, frac, count, dataType);
                             break;
                         case GXComponentCount.Position_XYZ:
-                            final = LoadVec3Data(reader, frac, count, dataType);
+                            final = LoadVec3Data(ref reader, frac, count, dataType);
                             break;
                     }
                     break;
@@ -189,7 +170,7 @@ namespace SuperBMD.BMD
                     switch (compCount)
                     {
                         case GXComponentCount.Normal_XYZ:
-                            final = LoadVec3Data(reader, frac, count, dataType);
+                            final = LoadVec3Data(ref reader, frac, count, dataType);
                             break;
                         case GXComponentCount.Normal_NBT:
                             break;
@@ -199,7 +180,7 @@ namespace SuperBMD.BMD
                     break;
                 case GXVertexAttribute.Color0:
                 case GXVertexAttribute.Color1:
-                    final = LoadColorData(reader, count, dataType);
+                    final = LoadColorData(ref reader, count, dataType);
                     break;
                 case GXVertexAttribute.Tex0:
                 case GXVertexAttribute.Tex1:
@@ -212,10 +193,10 @@ namespace SuperBMD.BMD
                     switch (compCount)
                     {
                         case GXComponentCount.TexCoord_S:
-                            final = LoadSingleFloat(reader, frac, count, dataType);
+                            final = LoadSingleFloat(ref reader, frac, count, dataType);
                             break;
                         case GXComponentCount.TexCoord_ST:
-                            final = LoadVec2Data(reader, frac, count, dataType);
+                            final = LoadVec2Data(ref reader, frac, count, dataType);
                             break;
                     }
                     break;
@@ -224,7 +205,7 @@ namespace SuperBMD.BMD
             return final;
         }
 
-        private List<float> LoadSingleFloat(EndianBinaryReader reader, byte frac, int count, GXDataType dataType)
+        private List<float> LoadSingleFloat(ref EndianBinaryReader reader, byte frac, int count, GXDataType dataType)
         {
             List<float> floatList = new List<float>();
 
@@ -257,14 +238,12 @@ namespace SuperBMD.BMD
                         break;
                 }
             }
-
             return floatList;
         }
 
-        private List<Vector2> LoadVec2Data(EndianBinaryReader reader, byte frac, int count, GXDataType dataType)
+        private List<Vector2> LoadVec2Data(ref EndianBinaryReader reader, byte frac, int count, GXDataType dataType)
         {
             List<Vector2> vec2List = new List<Vector2>();
-
             for (int i = 0; i < count; i++)
             {
                 switch (dataType)
@@ -302,14 +281,12 @@ namespace SuperBMD.BMD
                         break;
                 }
             }
-
             return vec2List;
         }
 
-        private List<Vector3> LoadVec3Data(EndianBinaryReader reader, byte frac, int count, GXDataType dataType)
+        private List<Vector3> LoadVec3Data(ref EndianBinaryReader reader, byte frac, int count, GXDataType dataType)
         {
             List<Vector3> vec3List = new List<Vector3>();
-
             for (int i = 0; i < count; i++)
             {
                 switch (dataType)
@@ -355,11 +332,10 @@ namespace SuperBMD.BMD
                         break;
                 }
             }
-
             return vec3List;
         }
 
-        private List<Color> LoadColorData(EndianBinaryReader reader, int count, GXDataType dataType)
+        private List<Color> LoadColorData(ref EndianBinaryReader reader, int count, GXDataType dataType)
         {
             List<Color> colorList = new List<Color>();
             Console.WriteLine("Reading ColorData as {0}", dataType);
@@ -419,7 +395,6 @@ namespace SuperBMD.BMD
                         break;
                 }
             }
-
             return colorList;
         }
 
@@ -490,7 +465,6 @@ namespace SuperBMD.BMD
                     size = vtx1Size - offset;
                     break;
                 }
-
                 int nextOffset = offsets[i];
 
                 if (nextOffset == 0)
@@ -501,7 +475,6 @@ namespace SuperBMD.BMD
                     break;
                 }
             }
-
             return offset;
         }
 
@@ -528,7 +501,6 @@ namespace SuperBMD.BMD
                         break;
                 }
             }
-
             else
             {
                 switch (dataType)
@@ -545,7 +517,6 @@ namespace SuperBMD.BMD
                         compStride = 4;
                         break;
                 }
-
                 switch (attribute)
                 {
                     case GXVertexAttribute.Position:
@@ -573,17 +544,16 @@ namespace SuperBMD.BMD
                         break;
                 }
             }
-
             return size / (compCnt * compStride);
         }
 
-        private void SetAssimpPositionAttribute(Assimp.Mesh mesh)
+        private void SetAssimpPositionAttribute()
         {
             if (!Attributes.CheckAttribute(GXVertexAttribute.Position))
                 Attributes.SetAttributeData(GXVertexAttribute.Position, new List<Vector3>());
         }
 
-        private void SetAssimpNormalAttribute(Assimp.Mesh mesh)
+        private void SetAssimpNormalAttribute()
         {
             if (!Attributes.CheckAttribute(GXVertexAttribute.Normal))
                 Attributes.SetAttributeData(GXVertexAttribute.Normal, new List<Vector3>());
@@ -591,29 +561,29 @@ namespace SuperBMD.BMD
 
         private void SetAssimpColorAttribute(int channel, GXVertexAttribute colorAttrib, Assimp.Mesh mesh)
         {
-            List<Color> tempList = new List<Color>();
+            var colorList = new List<Color>();
             Color color;
             for (int col = 0; col < mesh.VertexColorChannels[channel].Count; col++)
             {
                 color = mesh.VertexColorChannels[channel][col].ToSuperBMDColorRGBA();
-                if (!tempList.Contains(color))
+                if (!colorList.Contains(color))
                 {
-                    tempList.Add(color);
+                    colorList.Add(color);
                 }
             }
             if (!Attributes.CheckAttribute(colorAttrib))
-                Attributes.SetAttributeData(colorAttrib, tempList);
+                Attributes.SetAttributeData(colorAttrib, colorList);
             else
             {
-                List<Color> attribData = (List<Color>)Attributes.GetAttributeData(colorAttrib);
+                List<Color> colorAttributeData = (List<Color>)Attributes.GetAttributeData(colorAttrib);
 
-                foreach (Color col in tempList)
+                foreach (Color col in colorList)
                 {
-                    if (!attribData.Contains(col))
-                        attribData.Add(col);
+                    if (!colorAttributeData.Contains(col))
+                        colorAttributeData.Add(col);
                 }
 
-                Attributes.SetAttributeData(colorAttrib, attribData);
+                Attributes.SetAttributeData(colorAttrib, colorAttributeData);
             }
         }
 
@@ -659,11 +629,11 @@ namespace SuperBMD.BMD
             for (int i = 0; i < 13; i++) // Placeholders for attribute data offsets
                 writer.Write(0);
 
-            WriteAttributeHeaders(writer);
+            WriteAttributeHeaders(ref writer);
 
             writer.PadAlign(32);
 
-            WriteAttributeData(writer, (int)start);
+            WriteAttributeData(ref writer, (int)start);
 
             long end = writer.Position;
             long length = (end - start);
@@ -673,7 +643,7 @@ namespace SuperBMD.BMD
             writer.Seek((int)end);
         }
 
-        private void WriteAttributeHeaders(EndianBinaryWriter writer)
+        private void WriteAttributeHeaders(ref EndianBinaryWriter writer)
         {
             foreach (GXVertexAttribute attrib in Enum.GetValues(typeof(GXVertexAttribute)))
             {
@@ -733,7 +703,7 @@ namespace SuperBMD.BMD
             writer.Write((short)-1);
         }
 
-        private void WriteAttributeData(EndianBinaryWriter writer, int baseOffset)
+        private void WriteAttributeData(ref EndianBinaryWriter writer, int baseOffset)
         {
             foreach (GXVertexAttribute attrib in Enum.GetValues(typeof(GXVertexAttribute)))
             {

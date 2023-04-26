@@ -4,10 +4,10 @@ namespace SuperBMD.Materials
 {
     public struct NBTScale : IEquatable<NBTScale>
     {
-        public byte Unknown1{ get; set; }
+        public byte Unknown1 { get; set; }
 
         [JsonConverter(typeof(Vector3Converter))]
-        public Vector3 Scale{ get; set; }
+        public Vector3 Scale { get; set; }
 
         public NBTScale(byte unk1, Vector3 scale)
         {

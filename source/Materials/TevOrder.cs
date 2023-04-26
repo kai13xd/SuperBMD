@@ -5,10 +5,9 @@ namespace SuperBMD.Materials
     public struct TevOrder : IEquatable<TevOrder>
     {
         public TexCoordId TexCoord { get; set; } = TexCoordId.Null;
-        public TexMapId TexMap{ get; set; } = TexMapId.Null;
+        public TexMapId TexMap { get; set; } = TexMapId.Null;
         public GXColorChannelId ChannelId { get; set; } = GXColorChannelId.ColorNull;
-
-    public TevOrder(){}
+        public TevOrder() { }
         public TevOrder(TexCoordId texCoord, TexMapId texMap, GXColorChannelId chanID)
         {
             TexCoord = texCoord;

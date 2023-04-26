@@ -1,5 +1,4 @@
-﻿using SuperBMD.Util;
-using SuperBMD.BMD;
+﻿using SuperBMD.BMD;
 using SuperBMD.Rigging;
 using BrawlLib.Modeling.Triangle_Converter;
 using System.Diagnostics;
@@ -19,9 +18,9 @@ namespace SuperBMD.Geometry
 
         public List<Packet> Packets { get; private set; }
         [JsonConverter(typeof(Vector4Converter))]
-        public Vector4[] PositionMatrices{ get; set; }
+        public Vector4[] PositionMatrices { get; set; }
         [JsonConverter(typeof(Vector4Converter))]
-        public Vector4[] NormalMatrices{ get; set; }
+        public Vector4[] NormalMatrices { get; set; }
 
         // The maximum number of unique vertex weights that can be in a single shape packet without causing visual errors.
         private const int MaxMatricesPerPacket = 10;

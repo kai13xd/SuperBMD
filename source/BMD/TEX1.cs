@@ -1,5 +1,4 @@
 ﻿using SuperBMD.Materials;
-using SuperBMD.Util;
 
 namespace SuperBMD.BMD
 {
@@ -61,7 +60,7 @@ namespace SuperBMD.BMD
 
             foreach (BinaryTextureImage tex in Textures)
             {
-                
+
                 // We'll search for duplicate texture names.
                 BinaryTextureImage duplicate_search = Textures.Find(x => x.Name == tex.Name);
 

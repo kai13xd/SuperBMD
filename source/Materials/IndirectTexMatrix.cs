@@ -8,11 +8,11 @@ namespace SuperBMD.Materials
         /// The floats that make up the matrix
         /// </summary>
         [JsonConverter(typeof(Matrix2x3Converter))]
-        public Matrix2x3 Matrix{ get; set; }
+        public Matrix2x3 Matrix { get; set; }
         /// <summary>
         /// The exponent (of 2) to multiply the matrix by
         /// </summary>
-        public byte Exponent{ get; set; }
+        public byte Exponent { get; set; }
 
         public IndirectTexMatrix(Matrix2x3 matrix, byte exponent)
         {

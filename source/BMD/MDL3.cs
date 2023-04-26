@@ -1,6 +1,5 @@
 ﻿using SuperBMD.Materials;
 using SuperBMD.Materials.Mdl;
-using SuperBMD.Util;
 
 namespace SuperBMD.BMD
 {

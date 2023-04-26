@@ -30,7 +30,7 @@ namespace SuperBMD.Materials
         public TevOrder?[] TevOrders { get; set; } = new TevOrder?[16];
         public KonstColorSel[] ColorSels { get; set; } = new KonstColorSel[16];
         public KonstAlphaSel[] AlphaSels { get; set; } = new KonstAlphaSel[16];
-        public Color?[] TevColors { get; set; }  = new Color?[4]{Color.White,null,null,null};
+        public Color?[] TevColors { get; set; } = new Color?[4] { Color.White, null, null, null };
         public Color?[] KonstColors { get; set; } = new Color?[4] { Color.White, null, null, null };
         public TevStage?[] TevStages { get; set; } = new TevStage?[16];
         public TevSwapMode?[] SwapModes { get; set; } = new TevSwapMode?[16] { new TevSwapMode(0, 0), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
@@ -40,8 +40,7 @@ namespace SuperBMD.Materials
         public BlendMode BlendMode { get; set; } = new BlendMode(BlendModeType.Blend, BlendModeControl.SrcAlpha, BlendModeControl.InverseSrcAlpha, LogicOp.NoOp);
         public ZMode ZMode { get; set; } = new ZMode(true, CompareType.LEqual, true);
         public NBTScale NBTScale { get; set; } = new NBTScale(0, Vector3.Zero);
-
-        public Material(){}
+        public Material() { }
         public void SetUpTev(bool hasTexture, bool hasVtxColor, int texIndex, string texName, Assimp.Material meshMat)
         {
             Flag = 1;

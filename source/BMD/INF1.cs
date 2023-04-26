@@ -1,6 +1,5 @@
 ﻿using SuperBMD.Scenegraph;
 using SuperBMD.Scenegraph.Enums;
-using SuperBMD.Util;
 using SuperBMD.Rigging;
 namespace SuperBMD.BMD
 {
@@ -286,7 +285,7 @@ namespace SuperBMD.BMD
 
             writer.Write("INF1");
             writer.Write(0); // Placeholder for section size
-            writer.Write((short)1);
+            writer.Write((short)2);
             writer.Write((short)-1);
 
             writer.Write(packetCount); // Number of packets

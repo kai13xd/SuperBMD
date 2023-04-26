@@ -307,7 +307,7 @@ namespace Kai
             Write(mat.Row3);
         }
 
-        const string padding = "Model made with SuperBMD by Gamma";
+        const string padding = "This is padding data to align";
         public void PadAlign(int alignment)
         {
             long nextAligned = (Length + (alignment - 1)) & ~(alignment - 1);

@@ -20,7 +20,7 @@ namespace SuperBMD.Materials
         [JsonConverter(typeof(Matrix4Converter))]
         public Matrix4 ProjectionMatrix { get; set; }
 
-       
+
         public TexMatrix(TexGenType projection, byte type, Vector3 effectTranslation, Vector2 scale, float rotation, Vector2 translation, Matrix4 matrix)
         {
             Projection = projection;
