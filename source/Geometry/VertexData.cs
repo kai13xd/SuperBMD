@@ -5,20 +5,20 @@ namespace SuperBMD.Geometry
 {
     public class VertexData
     {
-        private List<GXVertexAttribute> m_Attributes;
+        private List<VertexAttribute> Attributes;
 
         public List<Vector3> Positions;
         public List<Vector3> Normals;
-        public List<Color> Color_0 { get; private set; }
-        public List<Color> Color_1 { get; private set; }
-        public List<Vector2> TexCoord_0 { get; private set; }
-        public List<Vector2> TexCoord_1 { get; private set; }
-        public List<Vector2> TexCoord_2 { get; private set; }
-        public List<Vector2> TexCoord_3 { get; private set; }
-        public List<Vector2> TexCoord_4 { get; private set; }
-        public List<Vector2> TexCoord_5 { get; private set; }
-        public List<Vector2> TexCoord_6 { get; private set; }
-        public List<Vector2> TexCoord_7 { get; private set; }
+        public List<Color> ColorChannel0 { get; private set; }
+        public List<Color> ColorChannel1 { get; private set; }
+        public List<Vector2> TexCoord0 { get; private set; }
+        public List<Vector2> TexCoord1 { get; private set; }
+        public List<Vector2> TexCoord2 { get; private set; }
+        public List<Vector2> TexCoord3 { get; private set; }
+        public List<Vector2> TexCoord4 { get; private set; }
+        public List<Vector2> TexCoord5 { get; private set; }
+        public List<Vector2> TexCoord6 { get; private set; }
+        public List<Vector2> TexCoord7 { get; private set; }
 
         public void flipAxis()
         {
@@ -34,91 +34,91 @@ namespace SuperBMD.Geometry
 
         public VertexData()
         {
-            m_Attributes = new List<GXVertexAttribute>();
+            Attributes = new List<VertexAttribute>();
             Positions = new List<Vector3>();
             Normals = new List<Vector3>();
-            Color_0 = new List<Color>();
-            Color_1 = new List<Color>();
-            TexCoord_0 = new List<Vector2>();
-            TexCoord_1 = new List<Vector2>();
-            TexCoord_2 = new List<Vector2>();
-            TexCoord_3 = new List<Vector2>();
-            TexCoord_4 = new List<Vector2>();
-            TexCoord_5 = new List<Vector2>();
-            TexCoord_6 = new List<Vector2>();
-            TexCoord_7 = new List<Vector2>();
+            ColorChannel0 = new List<Color>();
+            ColorChannel1 = new List<Color>();
+            TexCoord0 = new List<Vector2>();
+            TexCoord1 = new List<Vector2>();
+            TexCoord2 = new List<Vector2>();
+            TexCoord3 = new List<Vector2>();
+            TexCoord4 = new List<Vector2>();
+            TexCoord5 = new List<Vector2>();
+            TexCoord6 = new List<Vector2>();
+            TexCoord7 = new List<Vector2>();
         }
 
-        public bool CheckAttribute(GXVertexAttribute attribute)
+        public bool CheckAttribute(VertexAttribute attribute)
         {
-            if (m_Attributes.Contains(attribute))
+            if (Attributes.Contains(attribute))
                 return true;
             else
                 return false;
         }
 
-        public object GetAttributeData(GXVertexAttribute attribute)
+        public object GetAttributeData(VertexAttribute attribute)
         {
             if (!CheckAttribute(attribute))
                 return null;
 
             switch (attribute)
             {
-                case GXVertexAttribute.Position:
+                case VertexAttribute.Position:
                     return Positions;
-                case GXVertexAttribute.Normal:
+                case VertexAttribute.Normal:
                     return Normals;
-                case GXVertexAttribute.Color0:
-                    return Color_0;
-                case GXVertexAttribute.Color1:
-                    return Color_1;
-                case GXVertexAttribute.Tex0:
-                    return TexCoord_0;
-                case GXVertexAttribute.Tex1:
-                    return TexCoord_1;
-                case GXVertexAttribute.Tex2:
-                    return TexCoord_2;
-                case GXVertexAttribute.Tex3:
-                    return TexCoord_3;
-                case GXVertexAttribute.Tex4:
-                    return TexCoord_4;
-                case GXVertexAttribute.Tex5:
-                    return TexCoord_5;
-                case GXVertexAttribute.Tex6:
-                    return TexCoord_6;
-                case GXVertexAttribute.Tex7:
-                    return TexCoord_7;
+                case VertexAttribute.ColorChannel0:
+                    return ColorChannel0;
+                case VertexAttribute.ColorChannel1:
+                    return ColorChannel1;
+                case VertexAttribute.TexCoord0:
+                    return TexCoord0;
+                case VertexAttribute.TexCoord1:
+                    return TexCoord1;
+                case VertexAttribute.TexCoord2:
+                    return TexCoord2;
+                case VertexAttribute.TexCoord3:
+                    return TexCoord3;
+                case VertexAttribute.TexCoord4:
+                    return TexCoord4;
+                case VertexAttribute.TexCoord5:
+                    return TexCoord5;
+                case VertexAttribute.TexCoord6:
+                    return TexCoord6;
+                case VertexAttribute.TexCoord7:
+                    return TexCoord7;
                 default:
                     throw new ArgumentException("attribute");
             }
         }
 
-        public void SetAttributeData(GXVertexAttribute attribute, object data)
+        public void SetAttributeData(VertexAttribute attribute, object data)
         {
             if (!CheckAttribute(attribute))
-                m_Attributes.Add(attribute);
+                Attributes.Add(attribute);
 
             switch (attribute)
             {
-                case GXVertexAttribute.Position:
+                case VertexAttribute.Position:
                     if (data.GetType() != typeof(List<Vector3>))
                         throw new ArgumentException("position data");
                     else
                         Positions = (List<Vector3>)data;
                     break;
-                case GXVertexAttribute.Normal:
+                case VertexAttribute.Normal:
                     if (data.GetType() != typeof(List<Vector3>))
                         throw new ArgumentException("normal data");
                     else
                         Normals = (List<Vector3>)data;
                     break;
-                case GXVertexAttribute.Color0:
+                case VertexAttribute.ColorChannel0:
                     if (data.GetType() != typeof(List<Color>))
                         throw new ArgumentException("color0 data");
                     else
                     {
-                        Color_0 = (List<Color>)data;
-                        foreach (Color color in Color_0)
+                        ColorChannel0 = (List<Color>)data;
+                        foreach (Color color in ColorChannel0)
                         {
                             if (color.A < 1.0)
                             {
@@ -128,13 +128,13 @@ namespace SuperBMD.Geometry
                         }
                     }
                     break;
-                case GXVertexAttribute.Color1:
+                case VertexAttribute.ColorChannel1:
                     if (data.GetType() != typeof(List<Color>))
                         throw new ArgumentException("color1 data");
                     else
                     {
-                        Color_1 = (List<Color>)data;
-                        foreach (Color color in Color_1)
+                        ColorChannel1 = (List<Color>)data;
+                        foreach (Color color in ColorChannel1)
                         {
                             if (color.A < 1.0)
                             {
@@ -144,60 +144,60 @@ namespace SuperBMD.Geometry
                         }
                     }
                     break;
-                case GXVertexAttribute.Tex0:
+                case VertexAttribute.TexCoord0:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord0 data");
+                        throw new ArgumentException("TexCoord0 data");
                     else
-                        TexCoord_0 = (List<Vector2>)data;
+                        TexCoord0 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex1:
+                case VertexAttribute.TexCoord1:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord1 data");
+                        throw new ArgumentException("TexCoord1 data");
                     else
-                        TexCoord_1 = (List<Vector2>)data;
+                        TexCoord1 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex2:
+                case VertexAttribute.TexCoord2:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord2 data");
+                        throw new ArgumentException("TexCoord2 data");
                     else
-                        TexCoord_2 = (List<Vector2>)data;
+                        TexCoord2 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex3:
+                case VertexAttribute.TexCoord3:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord3 data");
+                        throw new ArgumentException("TexCoord3 data");
                     else
-                        TexCoord_3 = (List<Vector2>)data;
+                        TexCoord3 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex4:
+                case VertexAttribute.TexCoord4:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord4 data");
+                        throw new ArgumentException("TexCoord4 data");
                     else
-                        TexCoord_4 = (List<Vector2>)data;
+                        TexCoord4 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex5:
+                case VertexAttribute.TexCoord5:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord5 data");
+                        throw new ArgumentException("TexCoord5 data");
                     else
-                        TexCoord_5 = (List<Vector2>)data;
+                        TexCoord5 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex6:
+                case VertexAttribute.TexCoord6:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord6 data");
+                        throw new ArgumentException("TexCoord6 data");
                     else
-                        TexCoord_6 = (List<Vector2>)data;
+                        TexCoord6 = (List<Vector2>)data;
                     break;
-                case GXVertexAttribute.Tex7:
+                case VertexAttribute.TexCoord7:
                     if (data.GetType() != typeof(List<Vector2>))
-                        throw new ArgumentException("texcoord7 data");
+                        throw new ArgumentException("TexCoord7 data");
                     else
-                        TexCoord_7 = (List<Vector2>)data;
+                        TexCoord7 = (List<Vector2>)data;
                     break;
             }
         }
 
-        public void SetAttributesFromList(List<GXVertexAttribute> attributes)
+        public void SetAttributesFromList(List<VertexAttribute> attributes)
         {
-            m_Attributes = new List<GXVertexAttribute>(attributes);
+            Attributes = new List<VertexAttribute>(attributes);
         }
     }
 }

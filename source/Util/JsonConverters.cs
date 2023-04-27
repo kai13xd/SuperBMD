@@ -1,8 +1,8 @@
-﻿global using SuperBMD.Util;
+﻿
 namespace SuperBMD.Util
 {
     /// <summary>
-    /// A JSON converter for OpenTK's Vector2 class.
+    /// A JSON converter for OpenTK.Mathematics's Vector2 class.
     /// </summary>
     class Vector2Converter : JsonConverter<Vector2>
     {
@@ -32,7 +32,7 @@ namespace SuperBMD.Util
     }
 
     /// <summary>
-    /// A JSON converter for OpenTK's Vector3 class.
+    /// A JSON converter for OpenTK.Mathematics's Vector3 class.
     /// </summary>
 
     class Vector3Converter : JsonConverter<Vector3>
@@ -66,7 +66,7 @@ namespace SuperBMD.Util
     }
 
     /// <summary>
-    /// A JSON converter for OpenTK's Vector4 class.
+    /// A JSON converter for OpenTK.Mathematics's Vector4 class.
     /// </summary>
     class Vector4Converter : JsonConverter<Vector4>
     {
@@ -101,16 +101,16 @@ namespace SuperBMD.Util
     }
 
     /// <summary>
-    /// A JSON converter for OpenTK's Quaternion class.
+    /// A JSON converter for OpenTK.Mathematics's Quaternion class.
     /// </summary>
-    class QuaternionConverter : JsonConverter<Quaternion>
+    class QuaternionConverter : JsonConverter<OpenTK.Mathematics.Quaternion>
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(Quaternion);
+            return objectType == typeof(OpenTK.Mathematics.Quaternion);
         }
 
-        public override Quaternion Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
+        public override OpenTK.Mathematics.Quaternion Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
         {
 
             reader.Read();
@@ -122,11 +122,11 @@ namespace SuperBMD.Util
             reader.Read();
             var w = reader.GetSingle();
             reader.Read();
-            return new Quaternion(x, y, z, w);
+            return new OpenTK.Mathematics.Quaternion(x, y, z, w);
 
         }
 
-        public override void Write(Utf8JsonWriter writer, Quaternion quaternion, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, OpenTK.Mathematics.Quaternion quaternion, JsonSerializerOptions options)
         {
             writer.WriteStartArray();
             writer.WriteNumberValue(quaternion.X);
@@ -138,7 +138,7 @@ namespace SuperBMD.Util
     }
 
     /// <summary>
-    /// A JSON converter for OpenTK's Matrix4 class.
+    /// A JSON converter for OpenTK.Mathematics's Matrix4 class.
     /// </summary>
     class Matrix4Converter : JsonConverter<Matrix4>
     {
@@ -211,7 +211,7 @@ namespace SuperBMD.Util
     }
 
     /// <summary>
-    /// A JSON converter for OpenTK's Matrix2x3 class.
+    /// A JSON converter for OpenTK.Mathematics's Matrix2x3 class.
     /// </summary>
     class Matrix2x3Converter : JsonConverter<Matrix2x3>
     {

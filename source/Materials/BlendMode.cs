@@ -1,6 +1,4 @@
-﻿using SuperBMD.Materials;
-
-namespace SuperBMD.Materials
+﻿namespace SuperBMD.Materials
 {
     public struct BlendMode : IEquatable<BlendMode>
     {

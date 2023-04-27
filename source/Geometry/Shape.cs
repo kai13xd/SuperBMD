@@ -1,9 +1,9 @@
-﻿using SuperBMD.BMD;
-using SuperBMD.Rigging;
-using BrawlLib.Modeling.Triangle_Converter;
-using System.Diagnostics;
-using SuperBMD.source.Geometry.Enums;
+﻿using System.Diagnostics;
 using Assimp;
+using BrawlLib.Modeling.Triangle_Converter;
+using SuperBMD.BMD;
+using SuperBMD.Rigging;
+using SuperBMD.source.Geometry.Enums;
 namespace SuperBMD.Geometry
 {
     public class Shape
@@ -55,22 +55,22 @@ namespace SuperBMD.Geometry
             int indexOffset = 0;
 
             if (jointCount > 1)
-                Descriptor.SetAttribute(GXVertexAttribute.PositionMatrixIdx, VertexInputType.Direct, indexOffset++);
+                Descriptor.SetAttribute(VertexAttribute.PositionMatrixIdx, VertexInputType.Direct, indexOffset++);
 
             if (mesh.HasVertices)
-                Descriptor.SetAttribute(GXVertexAttribute.Position, VertexInputType.Index16, indexOffset++);
+                Descriptor.SetAttribute(VertexAttribute.Position, VertexInputType.Index16, indexOffset++);
             if (mesh.HasNormals)
-                Descriptor.SetAttribute(GXVertexAttribute.Normal, VertexInputType.Index16, indexOffset++);
+                Descriptor.SetAttribute(VertexAttribute.Normal, VertexInputType.Index16, indexOffset++);
             for (int i = 0; i < 2; i++)
             {
                 if (mesh.HasVertexColors(i))
-                    Descriptor.SetAttribute(GXVertexAttribute.Color0 + i, VertexInputType.Index16, indexOffset++);
+                    Descriptor.SetAttribute(VertexAttribute.ColorChannel0 + i, VertexInputType.Index16, indexOffset++);
             }
 
             for (int i = 0; i < 8; i++)
             {
                 if (mesh.HasTextureCoords(i))
-                    Descriptor.SetAttribute(GXVertexAttribute.Tex0 + i, VertexInputType.Index16, indexOffset++);
+                    Descriptor.SetAttribute(VertexAttribute.TexCoord0 + i, VertexInputType.Index16, indexOffset++);
             }
             Console.Write(".");
         }
@@ -86,8 +86,8 @@ namespace SuperBMD.Geometry
                 {
                     if (face.Indices.Count < 3)
                     {
-                        throw new System.Exception(
-                            String.Format(
+                        throw new Exception(
+                            string.Format(
                                 "A face in mesh {1} has less than 3 vertices (loose vertex or edge). " +
                                 "You need to remove it.", i, mesh.Name)
                             );
@@ -102,10 +102,10 @@ namespace SuperBMD.Geometry
 
         public void ProcessVerticesWithoutWeights(Mesh mesh, VertexData vertData)
         {
-            Packet pack = new Packet();
+            var packet = new Packet();
 
 
-            List<GXVertexAttribute> activeAttribs = Descriptor.GetActiveAttributes();
+            List<VertexAttribute> activeAttribs = Descriptor.GetActiveAttributes();
             AttributeData.SetAttributesFromList(activeAttribs);
 
             //Console.WriteLine("Calculating triangle strips");
@@ -176,55 +176,55 @@ namespace SuperBMD.Geometry
                     vert.SetWeight(rootWeight);
                     //int vertIndex = face.Indices[i];
 
-                    foreach (GXVertexAttribute attrib in activeAttribs)
+                    foreach (VertexAttribute attrib in activeAttribs)
                     {
                         switch (attrib)
                         {
-                            case GXVertexAttribute.Position:
-                                List<Vector3> posData = (List<Vector3>)vertData.GetAttributeData(GXVertexAttribute.Position);
+                            case VertexAttribute.Position:
+                                List<Vector3> posData = (List<Vector3>)vertData.GetAttributeData(VertexAttribute.Position);
                                 Vector3 vertPos = mesh.Vertices[vertIndex].ToOpenTKVector3();
 
                                 if (!posData.Contains(vertPos))
                                     posData.Add(vertPos);
                                 AttributeData.Positions.Add(vertPos);
 
-                                vert.SetAttributeIndex(GXVertexAttribute.Position, (uint)posData.IndexOf(vertPos));
+                                vert.SetAttributeIndex(VertexAttribute.Position, (uint)posData.IndexOf(vertPos));
                                 break;
-                            case GXVertexAttribute.Normal:
-                                List<Vector3> normData = (List<Vector3>)vertData.GetAttributeData(GXVertexAttribute.Normal);
+                            case VertexAttribute.Normal:
+                                List<Vector3> normData = (List<Vector3>)vertData.GetAttributeData(VertexAttribute.Normal);
                                 Vector3 vertNrm = mesh.Normals[vertIndex].ToOpenTKVector3();
 
                                 if (!normData.Contains(vertNrm))
                                     normData.Add(vertNrm);
                                 AttributeData.Normals.Add(vertNrm);
 
-                                vert.SetAttributeIndex(GXVertexAttribute.Normal, (uint)normData.IndexOf(vertNrm));
+                                vert.SetAttributeIndex(VertexAttribute.Normal, (uint)normData.IndexOf(vertNrm));
                                 break;
-                            case GXVertexAttribute.Color0:
-                            case GXVertexAttribute.Color1:
+                            case VertexAttribute.ColorChannel0:
+                            case VertexAttribute.ColorChannel1:
                                 int colNo = (int)attrib - 11;
-                                List<Color> colData = (List<Color>)vertData.GetAttributeData(GXVertexAttribute.Color0 + colNo);
+                                List<Color> colData = (List<Color>)vertData.GetAttributeData(VertexAttribute.ColorChannel0 + colNo);
                                 Color vertCol = mesh.VertexColorChannels[colNo][vertIndex].ToSuperBMDColorRGBA();
 
 
                                 if (colNo == 0)
-                                    AttributeData.Color_0.Add(vertCol);
+                                    AttributeData.ColorChannel0.Add(vertCol);
                                 else
-                                    AttributeData.Color_1.Add(vertCol);
+                                    AttributeData.ColorChannel1.Add(vertCol);
 
 
-                                vert.SetAttributeIndex(GXVertexAttribute.Color0 + colNo, (uint)colData.IndexOf(vertCol));
+                                vert.SetAttributeIndex(VertexAttribute.ColorChannel0 + colNo, (uint)colData.IndexOf(vertCol));
                                 break;
-                            case GXVertexAttribute.Tex0:
-                            case GXVertexAttribute.Tex1:
-                            case GXVertexAttribute.Tex2:
-                            case GXVertexAttribute.Tex3:
-                            case GXVertexAttribute.Tex4:
-                            case GXVertexAttribute.Tex5:
-                            case GXVertexAttribute.Tex6:
-                            case GXVertexAttribute.Tex7:
+                            case VertexAttribute.TexCoord0:
+                            case VertexAttribute.TexCoord1:
+                            case VertexAttribute.TexCoord2:
+                            case VertexAttribute.TexCoord3:
+                            case VertexAttribute.TexCoord4:
+                            case VertexAttribute.TexCoord5:
+                            case VertexAttribute.TexCoord6:
+                            case VertexAttribute.TexCoord7:
                                 int texNo = (int)attrib - 13;
-                                List<Vector2> texCoordData = (List<Vector2>)vertData.GetAttributeData(GXVertexAttribute.Tex0 + texNo);
+                                List<Vector2> texCoordData = (List<Vector2>)vertData.GetAttributeData(VertexAttribute.TexCoord0 + texNo);
                                 Vector2 vertTexCoord = mesh.TextureCoordinateChannels[texNo][vertIndex].ToOpenTKVector2();
                                 vertTexCoord = new Vector2(vertTexCoord.X, 1.0f - vertTexCoord.Y);
 
@@ -232,32 +232,32 @@ namespace SuperBMD.Geometry
                                 switch (texNo)
                                 {
                                     case 0:
-                                        AttributeData.TexCoord_0.Add(vertTexCoord);
+                                        AttributeData.TexCoord0.Add(vertTexCoord);
                                         break;
                                     case 1:
-                                        AttributeData.TexCoord_1.Add(vertTexCoord);
+                                        AttributeData.TexCoord1.Add(vertTexCoord);
                                         break;
                                     case 2:
-                                        AttributeData.TexCoord_2.Add(vertTexCoord);
+                                        AttributeData.TexCoord2.Add(vertTexCoord);
                                         break;
                                     case 3:
-                                        AttributeData.TexCoord_3.Add(vertTexCoord);
+                                        AttributeData.TexCoord3.Add(vertTexCoord);
                                         break;
                                     case 4:
-                                        AttributeData.TexCoord_4.Add(vertTexCoord);
+                                        AttributeData.TexCoord4.Add(vertTexCoord);
                                         break;
                                     case 5:
-                                        AttributeData.TexCoord_5.Add(vertTexCoord);
+                                        AttributeData.TexCoord5.Add(vertTexCoord);
                                         break;
                                     case 6:
-                                        AttributeData.TexCoord_6.Add(vertTexCoord);
+                                        AttributeData.TexCoord6.Add(vertTexCoord);
                                         break;
                                     case 7:
-                                        AttributeData.TexCoord_7.Add(vertTexCoord);
+                                        AttributeData.TexCoord7.Add(vertTexCoord);
                                         break;
                                 }
 
-                                vert.SetAttributeIndex(GXVertexAttribute.Tex0 + texNo, (uint)texCoordData.IndexOf(vertTexCoord));
+                                vert.SetAttributeIndex(VertexAttribute.TexCoord0 + texNo, (uint)texCoordData.IndexOf(vertTexCoord));
                                 break;
                         }
                     }
@@ -266,12 +266,12 @@ namespace SuperBMD.Geometry
                     prim.Vertices.Add(vert);
                 }
 
-                pack.Primitives.Add(prim);
+                packet.Primitives.Add(prim);
             }
 
 
-            pack.MatrixIndices.Add(0);
-            Packets.Add(pack);
+            packet.MatrixIndices.Add(0);
+            Packets.Add(packet);
 
             BoundingSphere.GetBoundsValues(AttributeData.Positions);
             Console.Write("...✓\n");
@@ -299,7 +299,7 @@ namespace SuperBMD.Geometry
             }
 
             //Primitive prim = new Primitive(GXPrimitiveType.Triangles);
-            List<GXVertexAttribute> activeAttribs = Descriptor.GetActiveAttributes();
+            List<VertexAttribute> activeAttribs = Descriptor.GetActiveAttributes();
             AttributeData.SetAttributesFromList(activeAttribs);
 
 
@@ -474,12 +474,12 @@ namespace SuperBMD.Geometry
 
                                 // Re-add the matrix index for the duplicated verts to the new packet.
                                 // And recalculate the matrix index index in each vert's attribute data.
-                                uint oldMatrixIndexIndex = vertex.GetAttributeIndex(GXVertexAttribute.PositionMatrixIdx);
+                                uint oldMatrixIndexIndex = vertex.GetAttributeIndex(VertexAttribute.PositionMatrixIdx);
                                 int matrixIndex = oldPack.MatrixIndices[(int)oldMatrixIndexIndex];
 
                                 if (!pack.MatrixIndices.Contains(matrixIndex))
                                     pack.MatrixIndices.Add(matrixIndex);
-                                vertex.SetAttributeIndex(GXVertexAttribute.PositionMatrixIdx, (uint)pack.MatrixIndices.IndexOf(matrixIndex));
+                                vertex.SetAttributeIndex(VertexAttribute.PositionMatrixIdx, (uint)pack.MatrixIndices.IndexOf(matrixIndex));
                             }
 
                             if (!packetWeights.Contains(vertWeight))
@@ -494,11 +494,11 @@ namespace SuperBMD.Geometry
 
                         vert.SetWeight(curWeight);
 
-                        foreach (GXVertexAttribute attrib in activeAttribs)
+                        foreach (VertexAttribute attrib in activeAttribs)
                         {
                             switch (attrib)
                             {
-                                case GXVertexAttribute.PositionMatrixIdx:
+                                case VertexAttribute.PositionMatrixIdx:
                                     int newMatrixIndex = -1;
 
                                     if (curWeight.WeightCount == 1)
@@ -525,10 +525,10 @@ namespace SuperBMD.Geometry
                                     if (!pack.MatrixIndices.Contains(newMatrixIndex))
                                         pack.MatrixIndices.Add(newMatrixIndex);
 
-                                    vert.SetAttributeIndex(GXVertexAttribute.PositionMatrixIdx, (uint)pack.MatrixIndices.IndexOf(newMatrixIndex));
+                                    vert.SetAttributeIndex(VertexAttribute.PositionMatrixIdx, (uint)pack.MatrixIndices.IndexOf(newMatrixIndex));
                                     break;
-                                case GXVertexAttribute.Position:
-                                    List<Vector3> posData = (List<Vector3>)vertData.GetAttributeData(GXVertexAttribute.Position);
+                                case VertexAttribute.Position:
+                                    List<Vector3> posData = (List<Vector3>)vertData.GetAttributeData(VertexAttribute.Position);
                                     Vector3 vertPos = mesh.Vertices[vertIndex].ToOpenTKVector3();
 
                                     if (curWeight.WeightCount == 1)
@@ -539,7 +539,7 @@ namespace SuperBMD.Geometry
                                         if (!posData.Contains(transVec))
                                             posData.Add(transVec);
                                         AttributeData.Positions.Add(transVec);
-                                        vert.SetAttributeIndex(GXVertexAttribute.Position, (uint)posData.IndexOf(transVec));
+                                        vert.SetAttributeIndex(VertexAttribute.Position, (uint)posData.IndexOf(transVec));
                                     }
                                     else
                                     {
@@ -547,11 +547,11 @@ namespace SuperBMD.Geometry
                                             posData.Add(vertPos);
                                         AttributeData.Positions.Add(vertPos);
 
-                                        vert.SetAttributeIndex(GXVertexAttribute.Position, (uint)posData.IndexOf(vertPos));
+                                        vert.SetAttributeIndex(VertexAttribute.Position, (uint)posData.IndexOf(vertPos));
                                     }
                                     break;
-                                case GXVertexAttribute.Normal:
-                                    List<Vector3> normData = (List<Vector3>)vertData.GetAttributeData(GXVertexAttribute.Normal);
+                                case VertexAttribute.Normal:
+                                    List<Vector3> normData = (List<Vector3>)vertData.GetAttributeData(VertexAttribute.Normal);
                                     Vector3 vertNrm = mesh.Normals[vertIndex].ToOpenTKVector3();
 
                                     if (curWeight.WeightCount == 1)
@@ -568,63 +568,63 @@ namespace SuperBMD.Geometry
                                     }
 
                                     AttributeData.Normals.Add(vertNrm);
-                                    vert.SetAttributeIndex(GXVertexAttribute.Normal, (uint)normData.IndexOf(vertNrm));
+                                    vert.SetAttributeIndex(VertexAttribute.Normal, (uint)normData.IndexOf(vertNrm));
                                     break;
-                                case GXVertexAttribute.Color0:
-                                case GXVertexAttribute.Color1:
+                                case VertexAttribute.ColorChannel0:
+                                case VertexAttribute.ColorChannel1:
                                     int colNo = (int)attrib - 11;
-                                    List<Color> colData = (List<Color>)vertData.GetAttributeData(GXVertexAttribute.Color0 + colNo);
+                                    List<Color> colData = (List<Color>)vertData.GetAttributeData(VertexAttribute.ColorChannel0 + colNo);
                                     Color vertCol = mesh.VertexColorChannels[colNo][vertIndex].ToSuperBMDColorRGBA();
 
                                     if (colNo == 0)
-                                        AttributeData.Color_0.Add(vertCol);
+                                        AttributeData.ColorChannel0.Add(vertCol);
                                     else
-                                        AttributeData.Color_1.Add(vertCol);
+                                        AttributeData.ColorChannel1.Add(vertCol);
 
-                                    vert.SetAttributeIndex(GXVertexAttribute.Color0 + colNo, (uint)colData.IndexOf(vertCol));
+                                    vert.SetAttributeIndex(VertexAttribute.ColorChannel0 + colNo, (uint)colData.IndexOf(vertCol));
                                     break;
-                                case GXVertexAttribute.Tex0:
-                                case GXVertexAttribute.Tex1:
-                                case GXVertexAttribute.Tex2:
-                                case GXVertexAttribute.Tex3:
-                                case GXVertexAttribute.Tex4:
-                                case GXVertexAttribute.Tex5:
-                                case GXVertexAttribute.Tex6:
-                                case GXVertexAttribute.Tex7:
+                                case VertexAttribute.TexCoord0:
+                                case VertexAttribute.TexCoord1:
+                                case VertexAttribute.TexCoord2:
+                                case VertexAttribute.TexCoord3:
+                                case VertexAttribute.TexCoord4:
+                                case VertexAttribute.TexCoord5:
+                                case VertexAttribute.TexCoord6:
+                                case VertexAttribute.TexCoord7:
                                     int texNo = (int)attrib - 13;
-                                    List<Vector2> texCoordData = (List<Vector2>)vertData.GetAttributeData(GXVertexAttribute.Tex0 + texNo);
+                                    List<Vector2> texCoordData = (List<Vector2>)vertData.GetAttributeData(VertexAttribute.TexCoord0 + texNo);
                                     Vector2 vertTexCoord = mesh.TextureCoordinateChannels[texNo][vertIndex].ToOpenTKVector2();
                                     vertTexCoord = new Vector2(vertTexCoord.X, 1.0f - vertTexCoord.Y);
 
                                     switch (texNo)
                                     {
                                         case 0:
-                                            AttributeData.TexCoord_0.Add(vertTexCoord);
+                                            AttributeData.TexCoord0.Add(vertTexCoord);
                                             break;
                                         case 1:
-                                            AttributeData.TexCoord_1.Add(vertTexCoord);
+                                            AttributeData.TexCoord1.Add(vertTexCoord);
                                             break;
                                         case 2:
-                                            AttributeData.TexCoord_2.Add(vertTexCoord);
+                                            AttributeData.TexCoord2.Add(vertTexCoord);
                                             break;
                                         case 3:
-                                            AttributeData.TexCoord_3.Add(vertTexCoord);
+                                            AttributeData.TexCoord3.Add(vertTexCoord);
                                             break;
                                         case 4:
-                                            AttributeData.TexCoord_4.Add(vertTexCoord);
+                                            AttributeData.TexCoord4.Add(vertTexCoord);
                                             break;
                                         case 5:
-                                            AttributeData.TexCoord_5.Add(vertTexCoord);
+                                            AttributeData.TexCoord5.Add(vertTexCoord);
                                             break;
                                         case 6:
-                                            AttributeData.TexCoord_6.Add(vertTexCoord);
+                                            AttributeData.TexCoord6.Add(vertTexCoord);
                                             break;
                                         case 7:
-                                            AttributeData.TexCoord_7.Add(vertTexCoord);
+                                            AttributeData.TexCoord7.Add(vertTexCoord);
                                             break;
                                     }
 
-                                    vert.SetAttributeIndex(GXVertexAttribute.Tex0 + texNo, (uint)texCoordData.IndexOf(vertTexCoord));
+                                    vert.SetAttributeIndex(VertexAttribute.TexCoord0 + texNo, (uint)texCoordData.IndexOf(vertTexCoord));
                                     break;
                             }
                         }
@@ -700,11 +700,11 @@ namespace SuperBMD.Geometry
 
                             vert.SetWeight(curWeight);
 
-                            foreach (GXVertexAttribute attrib in activeAttribs)
+                            foreach (VertexAttribute attrib in activeAttribs)
                             {
                                 switch (attrib)
                                 {
-                                    case GXVertexAttribute.PositionMatrixIdx:
+                                    case VertexAttribute.PositionMatrixIdx:
                                         int newMatrixIndex = -1;
 
                                         if (curWeight.WeightCount == 1)
@@ -731,10 +731,10 @@ namespace SuperBMD.Geometry
                                         if (!pack.MatrixIndices.Contains(newMatrixIndex))
                                             pack.MatrixIndices.Add(newMatrixIndex);
 
-                                        vert.SetAttributeIndex(GXVertexAttribute.PositionMatrixIdx, (uint)pack.MatrixIndices.IndexOf(newMatrixIndex));
+                                        vert.SetAttributeIndex(VertexAttribute.PositionMatrixIdx, (uint)pack.MatrixIndices.IndexOf(newMatrixIndex));
                                         break;
-                                    case GXVertexAttribute.Position:
-                                        List<Vector3> posData = (List<Vector3>)vertData.GetAttributeData(GXVertexAttribute.Position);
+                                    case VertexAttribute.Position:
+                                        List<Vector3> posData = (List<Vector3>)vertData.GetAttributeData(VertexAttribute.Position);
                                         Vector3 vertPos = mesh.Vertices[vertIndex].ToOpenTKVector3();
 
                                         if (curWeight.WeightCount == 1)
@@ -745,7 +745,7 @@ namespace SuperBMD.Geometry
                                             if (!posData.Contains(transVec))
                                                 posData.Add(transVec);
                                             AttributeData.Positions.Add(transVec);
-                                            vert.SetAttributeIndex(GXVertexAttribute.Position, (uint)posData.IndexOf(transVec));
+                                            vert.SetAttributeIndex(VertexAttribute.Position, (uint)posData.IndexOf(transVec));
                                         }
                                         else
                                         {
@@ -753,11 +753,11 @@ namespace SuperBMD.Geometry
                                                 posData.Add(vertPos);
                                             AttributeData.Positions.Add(vertPos);
 
-                                            vert.SetAttributeIndex(GXVertexAttribute.Position, (uint)posData.IndexOf(vertPos));
+                                            vert.SetAttributeIndex(VertexAttribute.Position, (uint)posData.IndexOf(vertPos));
                                         }
                                         break;
-                                    case GXVertexAttribute.Normal:
-                                        List<Vector3> normData = (List<Vector3>)vertData.GetAttributeData(GXVertexAttribute.Normal);
+                                    case VertexAttribute.Normal:
+                                        List<Vector3> normData = (List<Vector3>)vertData.GetAttributeData(VertexAttribute.Normal);
                                         Vector3 vertNrm = mesh.Normals[vertIndex].ToOpenTKVector3();
 
                                         if (curWeight.WeightCount == 1)
@@ -774,63 +774,63 @@ namespace SuperBMD.Geometry
                                         }
 
                                         AttributeData.Normals.Add(vertNrm);
-                                        vert.SetAttributeIndex(GXVertexAttribute.Normal, (uint)normData.IndexOf(vertNrm));
+                                        vert.SetAttributeIndex(VertexAttribute.Normal, (uint)normData.IndexOf(vertNrm));
                                         break;
-                                    case GXVertexAttribute.Color0:
-                                    case GXVertexAttribute.Color1:
+                                    case VertexAttribute.ColorChannel0:
+                                    case VertexAttribute.ColorChannel1:
                                         int colNo = (int)attrib - 11;
-                                        List<Color> colData = (List<Color>)vertData.GetAttributeData(GXVertexAttribute.Color0 + colNo);
+                                        List<Color> colData = (List<Color>)vertData.GetAttributeData(VertexAttribute.ColorChannel0 + colNo);
                                         Color vertCol = mesh.VertexColorChannels[colNo][vertIndex].ToSuperBMDColorRGBA();
 
                                         if (colNo == 0)
-                                            AttributeData.Color_0.Add(vertCol);
+                                            AttributeData.ColorChannel0.Add(vertCol);
                                         else
-                                            AttributeData.Color_1.Add(vertCol);
+                                            AttributeData.ColorChannel1.Add(vertCol);
 
-                                        vert.SetAttributeIndex(GXVertexAttribute.Color0 + colNo, (uint)colData.IndexOf(vertCol));
+                                        vert.SetAttributeIndex(VertexAttribute.ColorChannel0 + colNo, (uint)colData.IndexOf(vertCol));
                                         break;
-                                    case GXVertexAttribute.Tex0:
-                                    case GXVertexAttribute.Tex1:
-                                    case GXVertexAttribute.Tex2:
-                                    case GXVertexAttribute.Tex3:
-                                    case GXVertexAttribute.Tex4:
-                                    case GXVertexAttribute.Tex5:
-                                    case GXVertexAttribute.Tex6:
-                                    case GXVertexAttribute.Tex7:
+                                    case VertexAttribute.TexCoord0:
+                                    case VertexAttribute.TexCoord1:
+                                    case VertexAttribute.TexCoord2:
+                                    case VertexAttribute.TexCoord3:
+                                    case VertexAttribute.TexCoord4:
+                                    case VertexAttribute.TexCoord5:
+                                    case VertexAttribute.TexCoord6:
+                                    case VertexAttribute.TexCoord7:
                                         int texNo = (int)attrib - 13;
-                                        List<Vector2> texCoordData = (List<Vector2>)vertData.GetAttributeData(GXVertexAttribute.Tex0 + texNo);
+                                        List<Vector2> texCoordData = (List<Vector2>)vertData.GetAttributeData(VertexAttribute.TexCoord0 + texNo);
                                         Vector2 vertTexCoord = mesh.TextureCoordinateChannels[texNo][vertIndex].ToOpenTKVector2();
                                         vertTexCoord = new Vector2(vertTexCoord.X, 1.0f - vertTexCoord.Y);
 
                                         switch (texNo)
                                         {
                                             case 0:
-                                                AttributeData.TexCoord_0.Add(vertTexCoord);
+                                                AttributeData.TexCoord0.Add(vertTexCoord);
                                                 break;
                                             case 1:
-                                                AttributeData.TexCoord_1.Add(vertTexCoord);
+                                                AttributeData.TexCoord1.Add(vertTexCoord);
                                                 break;
                                             case 2:
-                                                AttributeData.TexCoord_2.Add(vertTexCoord);
+                                                AttributeData.TexCoord2.Add(vertTexCoord);
                                                 break;
                                             case 3:
-                                                AttributeData.TexCoord_3.Add(vertTexCoord);
+                                                AttributeData.TexCoord3.Add(vertTexCoord);
                                                 break;
                                             case 4:
-                                                AttributeData.TexCoord_4.Add(vertTexCoord);
+                                                AttributeData.TexCoord4.Add(vertTexCoord);
                                                 break;
                                             case 5:
-                                                AttributeData.TexCoord_5.Add(vertTexCoord);
+                                                AttributeData.TexCoord5.Add(vertTexCoord);
                                                 break;
                                             case 6:
-                                                AttributeData.TexCoord_6.Add(vertTexCoord);
+                                                AttributeData.TexCoord6.Add(vertTexCoord);
                                                 break;
                                             case 7:
-                                                AttributeData.TexCoord_7.Add(vertTexCoord);
+                                                AttributeData.TexCoord7.Add(vertTexCoord);
                                                 break;
                                         }
 
-                                        vert.SetAttributeIndex(GXVertexAttribute.Tex0 + texNo, (uint)texCoordData.IndexOf(vertTexCoord));
+                                        vert.SetAttributeIndex(VertexAttribute.TexCoord0 + texNo, (uint)texCoordData.IndexOf(vertTexCoord));
                                         break;
                                 }
                             }

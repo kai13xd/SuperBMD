@@ -14,7 +14,7 @@ namespace SuperBMD.Materials.Mdl
             XFCommands = new List<XFCommand>();
         }
 
-        public MdlEntry(Material mat, List<BinaryTextureImage> textures)
+        public MdlEntry(BMDMaterial mat, List<BinaryTextureImage> textures)
         {
             Name = mat.Name;
             BPCommands = new List<BPCommand>();
@@ -42,7 +42,7 @@ namespace SuperBMD.Materials.Mdl
             GenerateNumTexGensCommands(mat);
         }
 
-        private void GenerateTextureCommands(Material mat, List<BinaryTextureImage> textures)
+        private void GenerateTextureCommands(BMDMaterial mat, List<BinaryTextureImage> textures)
         {
             BPRegister[] texInfoRegs = new BPRegister[] { BPRegister.TX_SETIMAGE0_I0, BPRegister.TX_SETIMAGE0_I1, BPRegister.TX_SETIMAGE0_I2,
                                                           BPRegister.TX_SETIMAGE0_I3, BPRegister.TX_SETIMAGE0_I4, BPRegister.TX_SETIMAGE0_I5,
@@ -122,7 +122,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateTexGenBPCommands(Material mat, List<BinaryTextureImage> textures)
+        private void GenerateTexGenBPCommands(BMDMaterial mat, List<BinaryTextureImage> textures)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -147,7 +147,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateTevStageCommands(Material mat)
+        private void GenerateTevStageCommands(BMDMaterial mat)
         {
             Dictionary<int, BPCommand> ras1_trefCommandByIndex = new Dictionary<int, BPCommand>();
 
@@ -209,7 +209,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateTevColorCommands(Material mat)
+        private void GenerateTevColorCommands(BMDMaterial mat)
         {
             for (int i = 1; i < 4; i++)
             {
@@ -231,7 +231,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateKonstColorCommands(Material mat)
+        private void GenerateKonstColorCommands(BMDMaterial mat)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -256,7 +256,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateTevColorAndAlphaCommands(Material mat)
+        private void GenerateTevColorAndAlphaCommands(BMDMaterial mat)
         {
             for (int i = 0; i < 16; i++)
             {
@@ -302,7 +302,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateTevKonstSelAndSwapModeCommands(Material mat)
+        private void GenerateTevKonstSelAndSwapModeCommands(BMDMaterial mat)
         {
             for (int i = 0; i < 8; i++)
             {
@@ -340,7 +340,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateRas1IrefAndIndImaskCommands(Material mat)
+        private void GenerateRas1IrefAndIndImaskCommands(BMDMaterial mat)
         {
             BPCommand ras1_iref = new BPCommand() { Register = BPRegister.RAS1_IREF };
             ras1_iref.SetBits(0xFFFFFF, 0, 24);
@@ -351,7 +351,7 @@ namespace SuperBMD.Materials.Mdl
             BPCommands.Add(ind_imask);
         }
 
-        private void GenerateAlphaCompareCommand(Material mat)
+        private void GenerateAlphaCompareCommand(BMDMaterial mat)
         {
             BPCommand tev_alphafunc = new BPCommand() { Register = BPRegister.TEV_ALPHAFUNC };
 
@@ -364,7 +364,7 @@ namespace SuperBMD.Materials.Mdl
             BPCommands.Add(tev_alphafunc);
         }
 
-        private void GenerateBlendModeCommands(Material mat)
+        private void GenerateBlendModeCommands(BMDMaterial mat)
         {
             BPCommand pe_cmode0_mask = new BPCommand() { Register = BPRegister.BP_MASK };
             BPCommand pe_cmode0 = new BPCommand() { Register = BPRegister.PE_CMODE0 };
@@ -395,7 +395,7 @@ namespace SuperBMD.Materials.Mdl
             BPCommands.Add(pe_cmode0);
         }
 
-        private void GenerateZModeCommand(Material mat)
+        private void GenerateZModeCommand(BMDMaterial mat)
         {
             BPCommand pe_zmode = new BPCommand() { Register = BPRegister.PE_ZMODE };
             pe_zmode.SetFlag(mat.ZMode.Enable, 0);
@@ -405,7 +405,7 @@ namespace SuperBMD.Materials.Mdl
             BPCommands.Add(pe_zmode);
         }
 
-        private void GenerateZCompLocCommands(Material mat)
+        private void GenerateZCompLocCommands(BMDMaterial mat)
         {
             BPCommand pe_control_mask = new BPCommand() { Register = BPRegister.BP_MASK };
             pe_control_mask.SetBits(0x000040, 0, 24);
@@ -417,7 +417,7 @@ namespace SuperBMD.Materials.Mdl
             BPCommands.Add(pe_control);
         }
 
-        private void GenerateCullModeCommands(Material mat)
+        private void GenerateCullModeCommands(BMDMaterial mat)
         {
             BPCommand gen_mode_mask = new BPCommand() { Register = BPRegister.BP_MASK };
             gen_mode_mask.SetBits(0x07FC3F, 0, 24);
@@ -443,7 +443,7 @@ namespace SuperBMD.Materials.Mdl
             BPCommands.Add(gen_mode);
         }
 
-        private void GenerateScaleCommands(Material mat)
+        private void GenerateScaleCommands(BMDMaterial mat)
         {
             for (int i = 0; i < 10; i++)
             {
@@ -479,7 +479,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateTexGenXFCommands(Material mat)
+        private void GenerateTexGenXFCommands(BMDMaterial mat)
         {
             XFCommand texGensCommand = new XFCommand(XFRegister.SETTEXMTXINFO);
             XFCommand dtTexGensCommand = new XFCommand(XFRegister.SETPOSMTXINFO);
@@ -563,7 +563,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateMaterialColorChannelCommands(Material mat)
+        private void GenerateMaterialColorChannelCommands(BMDMaterial mat)
         {
             XFCommand materialColorChannelCommand = new XFCommand(XFRegister.SETCHAN0_MATCOLOR);
 
@@ -589,7 +589,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateAmbientColorChannelCommands(Material mat)
+        private void GenerateAmbientColorChannelCommands(BMDMaterial mat)
         {
             XFCommand ambientColorChannelCommand = new XFCommand(XFRegister.SETCHAN0_AMBCOLOR);
 
@@ -615,7 +615,7 @@ namespace SuperBMD.Materials.Mdl
             }
         }
 
-        private void GenerateChannelControlCommands(Material mat)
+        private void GenerateChannelControlCommands(BMDMaterial mat)
         {
             XFCommand channelControlCommand = new XFCommand(XFRegister.SETCHAN0_COLOR);
 
@@ -666,7 +666,7 @@ namespace SuperBMD.Materials.Mdl
             XFCommands.Add(numChannelControlsCommand);
         }
 
-        private void GenerateNumTexGensCommands(Material mat)
+        private void GenerateNumTexGensCommands(BMDMaterial mat)
         {
             XFCommand numTexGensCommand = new XFCommand(XFRegister.SETNUMTEXGENS);
             numTexGensCommand.Args.Add(new XFCommandArgument(mat.NumTexGensCount));

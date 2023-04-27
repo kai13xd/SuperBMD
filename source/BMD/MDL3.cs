@@ -12,11 +12,11 @@ namespace SuperBMD.BMD
             Entries = new List<MdlEntry>();
         }
 
-        public MDL3(List<Material> materials, List<BinaryTextureImage> textures)
+        public MDL3(List<BMDMaterial> materials, List<BinaryTextureImage> textures)
         {
             Entries = new List<MdlEntry>();
 
-            foreach (Material mat in materials)
+            foreach (BMDMaterial mat in materials)
             {
                 Console.Write(string.Format("Generating for {0} - ", mat.Name));
                 Entries.Add(new MdlEntry(mat, textures));

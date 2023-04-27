@@ -1,5 +1,4 @@
-﻿using SuperBMD.Util;
-
+﻿
 namespace SuperBMD.Rigging
 {
     public class Bone
@@ -19,7 +18,7 @@ namespace SuperBMD.Rigging
         [JsonConverter(typeof(Vector3Converter))]
         public Vector3 Scale { get; private set; }
         [JsonConverter(typeof(QuaternionConverter))]
-        public Quaternion Rotation { get; private set; }
+        public OpenTK.Mathematics.Quaternion Rotation { get; private set; }
         [JsonConverter(typeof(Vector3Converter))]
         public Vector3 Translation { get; private set; }
 
@@ -44,9 +43,9 @@ namespace SuperBMD.Rigging
             Scale = new Vector3(reader.ReadFloat(), reader.ReadFloat(), reader.ReadFloat());
 
             var rot = new Vector3(reader.ReadShort(), reader.ReadShort(), reader.ReadShort()) * 0.0000958737992429f;
-            Rotation = Quaternion.FromAxisAngle(new Vector3(0, 0, 1), rot.Z) *
-                         Quaternion.FromAxisAngle(new Vector3(0, 1, 0), rot.Y) *
-                         Quaternion.FromAxisAngle(new Vector3(1, 0, 0), rot.X);
+            Rotation = OpenTK.Mathematics.Quaternion.FromAxisAngle(new Vector3(0, 0, 1), rot.Z) *
+                         OpenTK.Mathematics.Quaternion.FromAxisAngle(new Vector3(0, 1, 0), rot.Y) *
+                         OpenTK.Mathematics.Quaternion.FromAxisAngle(new Vector3(1, 0, 0), rot.X);
 
             reader.Skip(2);
 
@@ -57,7 +56,7 @@ namespace SuperBMD.Rigging
             Bounds = new BoundingSphere(ref reader);
         }
 
-        public Bone(Assimp.Node node, Rigging.Bone parent)
+        public Bone(Node node, Bone parent)
         {
             Children = new List<Bone>();
 

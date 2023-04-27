@@ -4,36 +4,36 @@ namespace SuperBMD.Geometry
 {
     public class ShapeVertexDescriptor
     {
-        public SortedDictionary<GXVertexAttribute, Tuple<VertexInputType, int>> Attributes { get; private set; }
+        public SortedDictionary<VertexAttribute, Tuple<VertexInputType, int>> Attributes { get; private set; }
 
         public ShapeVertexDescriptor()
         {
-            Attributes = new SortedDictionary<GXVertexAttribute, Tuple<VertexInputType, int>>();
+            Attributes = new SortedDictionary<VertexAttribute, Tuple<VertexInputType, int>>();
         }
 
         public ShapeVertexDescriptor(ref EndianBinaryReader reader, int offset)
         {
-            Attributes = new SortedDictionary<GXVertexAttribute, Tuple<VertexInputType, int>>();
+            Attributes = new SortedDictionary<VertexAttribute, Tuple<VertexInputType, int>>();
             reader.Seek(offset);
 
             int index = 0;
-            GXVertexAttribute attrib = (GXVertexAttribute)reader.ReadInt();
+            VertexAttribute attrib = (VertexAttribute)reader.ReadInt();
 
-            while (attrib != GXVertexAttribute.Null)
+            while (attrib != VertexAttribute.Null)
             {
                 Attributes.Add(attrib, new Tuple<VertexInputType, int>((VertexInputType)reader.ReadInt(), index));
 
                 index++;
-                attrib = (GXVertexAttribute)reader.ReadInt();
+                attrib = (VertexAttribute)reader.ReadInt();
             }
         }
 
-        public bool CheckAttribute(GXVertexAttribute attribute)
+        public bool CheckAttribute(VertexAttribute attribute)
         {
             return Attributes.ContainsKey(attribute);
         }
 
-        public void SetAttribute(GXVertexAttribute attribute, VertexInputType inputType, int vertexIndex)
+        public void SetAttribute(VertexAttribute attribute, VertexInputType inputType, int vertexIndex)
         {
             if (CheckAttribute(attribute))
                 throw new Exception($"Attribute \"{attribute}\" is already in the vertex descriptor!");
@@ -41,13 +41,13 @@ namespace SuperBMD.Geometry
             Attributes.Add(attribute, new Tuple<VertexInputType, int>(inputType, vertexIndex));
         }
 
-        public List<GXVertexAttribute> GetActiveAttributes()
+        public List<VertexAttribute> GetActiveAttributes()
         {
-            List<GXVertexAttribute> attribs = new List<GXVertexAttribute>(Attributes.Keys);
+            List<VertexAttribute> attribs = new List<VertexAttribute>(Attributes.Keys);
             return attribs;
         }
 
-        public int GetAttributeIndex(GXVertexAttribute attribute)
+        public int GetAttributeIndex(VertexAttribute attribute)
         {
             if (CheckAttribute(attribute))
                 return Attributes[attribute].Item2;
@@ -55,7 +55,7 @@ namespace SuperBMD.Geometry
                 throw new ArgumentException("attribute");
         }
 
-        public VertexInputType GetAttributeType(GXVertexAttribute attribute)
+        public VertexInputType GetAttributeType(VertexAttribute attribute)
         {
             if (CheckAttribute(attribute))
                 return Attributes[attribute].Item1;
@@ -65,82 +65,82 @@ namespace SuperBMD.Geometry
 
         public void Write(ref EndianBinaryWriter writer)
         {
-            if (CheckAttribute(GXVertexAttribute.PositionMatrixIdx))
+            if (CheckAttribute(VertexAttribute.PositionMatrixIdx))
             {
-                writer.Write((int)GXVertexAttribute.PositionMatrixIdx);
-                writer.Write((int)Attributes[GXVertexAttribute.PositionMatrixIdx].Item1);
+                writer.Write((int)VertexAttribute.PositionMatrixIdx);
+                writer.Write((int)Attributes[VertexAttribute.PositionMatrixIdx].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Position))
+            if (CheckAttribute(VertexAttribute.Position))
             {
-                writer.Write((int)GXVertexAttribute.Position);
-                writer.Write((int)Attributes[GXVertexAttribute.Position].Item1);
+                writer.Write((int)VertexAttribute.Position);
+                writer.Write((int)Attributes[VertexAttribute.Position].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Normal))
+            if (CheckAttribute(VertexAttribute.Normal))
             {
-                writer.Write((int)GXVertexAttribute.Normal);
-                writer.Write((int)Attributes[GXVertexAttribute.Normal].Item1);
+                writer.Write((int)VertexAttribute.Normal);
+                writer.Write((int)Attributes[VertexAttribute.Normal].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Color0))
+            if (CheckAttribute(VertexAttribute.ColorChannel0))
             {
-                writer.Write((int)GXVertexAttribute.Color0);
-                writer.Write((int)Attributes[GXVertexAttribute.Color0].Item1);
+                writer.Write((int)VertexAttribute.ColorChannel0);
+                writer.Write((int)Attributes[VertexAttribute.ColorChannel0].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Color1))
+            if (CheckAttribute(VertexAttribute.ColorChannel1))
             {
-                writer.Write((int)GXVertexAttribute.Color1);
-                writer.Write((int)Attributes[GXVertexAttribute.Color1].Item1);
+                writer.Write((int)VertexAttribute.ColorChannel1);
+                writer.Write((int)Attributes[VertexAttribute.ColorChannel1].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex0))
+            if (CheckAttribute(VertexAttribute.TexCoord0))
             {
-                writer.Write((int)GXVertexAttribute.Tex0);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex0].Item1);
+                writer.Write((int)VertexAttribute.TexCoord0);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord0].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex1))
+            if (CheckAttribute(VertexAttribute.TexCoord1))
             {
-                writer.Write((int)GXVertexAttribute.Tex1);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex1].Item1);
+                writer.Write((int)VertexAttribute.TexCoord1);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord1].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex2))
+            if (CheckAttribute(VertexAttribute.TexCoord2))
             {
-                writer.Write((int)GXVertexAttribute.Tex2);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex2].Item1);
+                writer.Write((int)VertexAttribute.TexCoord2);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord2].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex3))
+            if (CheckAttribute(VertexAttribute.TexCoord3))
             {
-                writer.Write((int)GXVertexAttribute.Tex3);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex3].Item1);
+                writer.Write((int)VertexAttribute.TexCoord3);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord3].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex4))
+            if (CheckAttribute(VertexAttribute.TexCoord4))
             {
-                writer.Write((int)GXVertexAttribute.Tex4);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex4].Item1);
+                writer.Write((int)VertexAttribute.TexCoord4);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord4].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex5))
+            if (CheckAttribute(VertexAttribute.TexCoord5))
             {
-                writer.Write((int)GXVertexAttribute.Tex5);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex5].Item1);
+                writer.Write((int)VertexAttribute.TexCoord5);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord5].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex6))
+            if (CheckAttribute(VertexAttribute.TexCoord6))
             {
-                writer.Write((int)GXVertexAttribute.Tex6);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex6].Item1);
+                writer.Write((int)VertexAttribute.TexCoord6);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord6].Item1);
             }
 
-            if (CheckAttribute(GXVertexAttribute.Tex7))
+            if (CheckAttribute(VertexAttribute.TexCoord7))
             {
-                writer.Write((int)GXVertexAttribute.Tex7);
-                writer.Write((int)Attributes[GXVertexAttribute.Tex7].Item1);
+                writer.Write((int)VertexAttribute.TexCoord7);
+                writer.Write((int)Attributes[VertexAttribute.TexCoord7].Item1);
             }
             // Null attribute
             writer.Write(255);
@@ -187,8 +187,8 @@ namespace SuperBMD.Geometry
 
             for (int i = 0; i < Attributes.Count; i++)
             {
-                KeyValuePair<GXVertexAttribute, Tuple<VertexInputType, int>> thisPair = Attributes.ElementAt(i);
-                KeyValuePair<GXVertexAttribute, Tuple<VertexInputType, int>> otherPair = compObj.Attributes.ElementAt(i);
+                KeyValuePair<VertexAttribute, Tuple<VertexInputType, int>> thisPair = Attributes.ElementAt(i);
+                KeyValuePair<VertexAttribute, Tuple<VertexInputType, int>> otherPair = compObj.Attributes.ElementAt(i);
 
                 if (thisPair.Key != otherPair.Key)
                     return false;
@@ -207,7 +207,7 @@ namespace SuperBMD.Geometry
         {
             int output = 0;
 
-            foreach (KeyValuePair<GXVertexAttribute, Tuple<VertexInputType, int>> pair in Attributes)
+            foreach (KeyValuePair<VertexAttribute, Tuple<VertexInputType, int>> pair in Attributes)
             {
                 output = (int)pair.Key + (int)pair.Value.Item1 + pair.Value.Item2;
             }

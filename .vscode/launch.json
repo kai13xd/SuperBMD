@@ -16,7 +16,9 @@
                 "-m",
                 "${workspaceFolder}/tests/materials.json",
                 "--rotate",
-                "${workspaceFolder}/tests/medama_yaki_new.bmd",
+                //"-t" ,"all",
+                //"${workspaceFolder}/tests/medama_yaki_new.bmd",
+                "C:/Develop/PikminProjects/Pikmin1Remake/build/tools/PIKBMD/files/model.bmd"
                 
             ],
             "cwd": "${workspaceFolder}",

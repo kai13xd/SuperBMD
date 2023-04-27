@@ -1,5 +1,5 @@
-﻿using SuperBMD.Materials;
-using SuperBMD.Geometry;
+﻿using SuperBMD.Geometry;
+using SuperBMD.Materials;
 namespace SuperBMD.Util
 {
     public static class J3DUtility
@@ -79,7 +79,7 @@ namespace SuperBMD.Util
             return output;
         }
 
-        public static Vector3 ToEulerAnglesH(this Quaternion q)
+        public static Vector3 ToEulerAnglesH(this OpenTK.Mathematics.Quaternion q)
         {
             // Store the Euler angles in radians
             /*Vector3 pitchYawRoll = new Vector3();
@@ -123,36 +123,36 @@ namespace SuperBMD.Util
             return pitchYawRoll;*/
 
 
-            Vector3 vec = new Vector3();
+            var vector = new Vector3();
 
             float ysqr = q.Y * q.Y;
 
             float t0 = 2.0f * (q.W * q.X + q.Y * q.Z);
             float t1 = 1.0f - 2.0f * (q.X * q.X + ysqr);
 
-            vec.X = (float)Math.Atan2(t0, t1);
+            vector.X = (float)Math.Atan2(t0, t1);
 
             float t2 = 2.0f * (q.W * q.Y - q.Z * q.X);
             t2 = t2 > 1.0f ? 1.0f : t2;
             t2 = t2 < -1.0f ? -1.0f : t2;
 
-            vec.Y = (float)Math.Asin(t2);
+            vector.Y = (float)Math.Asin(t2);
 
             float t3 = 2.0f * (q.W * q.Z + q.X * q.Y);
             float t4 = 1.0f - 2.0f * (ysqr + q.Z * q.Z);
 
-            vec.Z = (float)Math.Atan2(t3, t4);
+            vector.Z = (float)Math.Atan2(t3, t4);
 
-            vec.X = vec.X * (float)(180.0f / Math.PI);
-            vec.Y = vec.Y * (float)(180.0f / Math.PI);
-            vec.Z = vec.Z * (float)(180.0f / Math.PI);
+            vector.X = vector.X * (float)(180.0f / Math.PI);
+            vector.Y = vector.Y * (float)(180.0f / Math.PI);
+            vector.Z = vector.Z * (float)(180.0f / Math.PI);
 
-            return vec;
+            return vector;
         }
 
         public static List<Vertex> PrimitiveToTriangles(Primitive prim)
         {
-            List<Vertex> vertList = new List<Vertex>();
+            var verticies = new List<Vertex>();
 
             if (prim.PrimitiveType == Geometry.GXPrimitiveType.Triangles)
                 return prim.Vertices;
@@ -169,7 +169,7 @@ namespace SuperBMD.Util
 
                     // Check against degenerate triangles (a triangle which shares indexes)
                     if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
-                        vertList.AddRange(newTri);
+                        verticies.AddRange(newTri);
                     else
                         System.Console.WriteLine("Degenerate triangle detected, skipping TriangleStrip conversion to triangle.");
                 }
@@ -186,13 +186,13 @@ namespace SuperBMD.Util
 
                     // Check against degenerate triangles (a triangle which shares indexes)
                     if (newTri[0] != newTri[1] && newTri[1] != newTri[2] && newTri[2] != newTri[0])
-                        vertList.AddRange(newTri);
+                        verticies.AddRange(newTri);
                     else
                         System.Console.WriteLine("Degenerate triangle detected, skipping TriangleFan conversion to triangle.");
                 }
             }
 
-            return vertList;
+            return verticies;
         }
     }
 }

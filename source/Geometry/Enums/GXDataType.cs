@@ -1,6 +1,6 @@
 ﻿namespace SuperBMD.Geometry
 {
-    public enum GXDataType
+    public enum StorageType
     {
         Unsigned8, RGB565 = 0x0,
         Signed8, RGB8 = 0x1,

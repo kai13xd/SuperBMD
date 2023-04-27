@@ -71,11 +71,11 @@ namespace SuperBMD.BMD
             }*/
         }
 
-        public JNT1(Assimp.Scene scene, VTX1 vertexData)
+        public JNT1(Scene scene, VTX1 vertexData)
         {
             BoneNameIndices = new Dictionary<string, int>();
             FlatSkeleton = new List<Rigging.Bone>();
-            Assimp.Node root = null;
+            Node? root = null;
 
             for (int i = 0; i < scene.RootNode.ChildCount; i++)
             {

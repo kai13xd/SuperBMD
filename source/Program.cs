@@ -1,20 +1,24 @@
-﻿global using OpenTK;
-global using System.Text.Json;
-global using System.Text.Json.Serialization;
-global using System;
-global using System.Linq;
-global using System.Text;
+﻿global using System;
 global using System.Collections.Generic;
 global using System.Globalization;
-global using System.Reflection;
 global using System.IO;
-global using SuperBMD.Geometry;
+global using System.Linq;
+global using System.Reflection;
+global using System.Text;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
+global using System.Text.RegularExpressions;
+global using Assimp;
 global using Kai;
-
-using SuperBMD.Materials;
-
+global using OpenTK.Mathematics;
+global using SuperBMD.Animation;
+global using SuperBMD.BMD;
+global using SuperBMD.Geometry;
+global using SuperBMD.Materials;
+global using SuperBMD.Util;
 namespace SuperBMD
 {
+
     class Program
     {
         static void Main(string[] args)
@@ -34,7 +38,7 @@ namespace SuperBMD
 
             Arguments.ParseArguments(args);
 
-            List<Material> mat_presets = null;
+            List<BMDMaterial> materialPresets = null;
             Model model;
             if (Arguments.ShouldProfile)
             {
@@ -42,7 +46,7 @@ namespace SuperBMD
                 if (Arguments.InputPath.EndsWith(".bmd") || Arguments.InputPath.EndsWith(".bdl"))
                 {
                     Console.WriteLine("Reading the model...");
-                    model = Model.Load(mat_presets, "");
+                    model = Model.Load(materialPresets, "");
 
                     Console.WriteLine("Profiling ->");
                     model.ModelStats.PrintInfo();
@@ -60,7 +64,7 @@ namespace SuperBMD
             if (Arguments.MaterialPath != "")
             {
 
-                mat_presets = File.ReadAllText(Arguments.MaterialPath).JsonDeserialize<List<Material>>();
+                materialPresets = File.ReadAllText(Arguments.MaterialPath).JsonDeserialize<List<BMDMaterial>>();
 
 
             }
@@ -79,11 +83,11 @@ namespace SuperBMD
             }
 
             Console.WriteLine(string.Format("Preparing to convert {0} from {1} to {2}", fi.Name.Replace(fi.Extension, ""), fi.Extension.ToUpper(), destinationFormat));
-            model = Model.Load(mat_presets, additionalTexPath);
+            model = Model.Load(materialPresets, additionalTexPath);
 
             if (!Arguments.HierarchyPath.IsEmpty())
             {
-                model.Scenegraph.LoadHierarchyFromJson(Arguments.HierarchyPath);
+                model.INF1Section.LoadHierarchyFromJson(Arguments.HierarchyPath);
             }
 
             if (Arguments.InputPath.EndsWith(".bmd") || Arguments.InputPath.EndsWith(".bdl"))

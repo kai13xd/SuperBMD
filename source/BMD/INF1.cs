@@ -1,6 +1,6 @@
-﻿using SuperBMD.Scenegraph;
+﻿using SuperBMD.Rigging;
+using SuperBMD.Scenegraph;
 using SuperBMD.Scenegraph.Enums;
-using SuperBMD.Rigging;
 namespace SuperBMD.BMD
 {
     public class INF1
@@ -212,22 +212,24 @@ namespace SuperBMD.BMD
                 }
                 else if (curNode.Type == NodeType.Joint)
                 {
-                    Assimp.Node assCurNode = new(flatSkeleton[curNode.Index].Name, curAssRoot);
-                    assCurNode.Transform = flatSkeleton[curNode.Index].TransformationMatrix.ToMatrix4x4();
-                    curAssRoot.Children.Add(assCurNode);
+                    Node currentAssimpNode = new(flatSkeleton[curNode.Index].Name, curAssRoot)
+                    {
+                        Transform = flatSkeleton[curNode.Index].TransformationMatrix.ToMatrix4x4()
+                    };
+                    curAssRoot.Children.Add(currentAssimpNode);
 
                     lastNode = curNode;
-                    lastAssNode = assCurNode;
+                    lastAssNode = currentAssimpNode;
                 }
                 else if (curNode.Type == NodeType.Terminator)
                     break;
                 else
                 {
-                    Assimp.Node assCurNode = new($"delete", curAssRoot);
-                    curAssRoot.Children.Add(assCurNode);
+                    Node curretnAssimpNode = new($"delete", curAssRoot);
+                    curAssRoot.Children.Add(curretnAssimpNode);
 
                     lastNode = curNode;
-                    lastAssNode = assCurNode;
+                    lastAssNode = curretnAssimpNode;
                 }
                 Console.Write(".");
             }
@@ -241,30 +243,32 @@ namespace SuperBMD.BMD
             Console.Write("✓\n");
         }
 
-        private void DeleteNodesRecursive(Assimp.Node assNode)
+        private void DeleteNodesRecursive(Node assimpNode)
         {
-            if (assNode.Name == "delete")
+            if (assimpNode.Name == "delete")
             {
-                for (int i = 0; i < assNode.Children.Count; i++)
+                for (int i = 0; i < assimpNode.Children.Count; i++)
                 {
-                    Assimp.Node newChild = new(assNode.Children[i].Name, assNode.Parent);
-                    newChild.Transform = assNode.Children[i].Transform;
+                    var newChild = new Node(assimpNode.Children[i].Name, assimpNode.Parent)
+                    {
+                        Transform = assimpNode.Children[i].Transform
+                    };
 
-                    for (int j = 0; j < assNode.Children[i].Children.Count; j++)
-                        newChild.Children.Add(assNode.Children[i].Children[j]);
+                    for (int j = 0; j < assimpNode.Children[i].Children.Count; j++)
+                        newChild.Children.Add(assimpNode.Children[i].Children[j]);
 
-                    assNode.Children[i] = newChild;
-                    assNode.Parent.Children.Add(assNode.Children[i]);
+                    assimpNode.Children[i] = newChild;
+                    assimpNode.Parent.Children.Add(assimpNode.Children[i]);
                 }
 
-                assNode.Parent.Children.Remove(assNode);
+                assimpNode.Parent.Children.Remove(assimpNode);
             }
 
-            for (int i = 0; i < assNode.Children.Count; i++)
-                DeleteNodesRecursive(assNode.Children[i]);
+            for (int i = 0; i < assimpNode.Children.Count; i++)
+                DeleteNodesRecursive(assimpNode.Children[i]);
         }
 
-        public void CorrectMaterialIndices(Assimp.Scene scene, MAT3 materials)
+        public void CorrectMaterialIndices(Scene scene, MAT3 materials)
         {
             foreach (SceneNode node in FlatNodes)
             {

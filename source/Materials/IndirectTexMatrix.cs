@@ -1,6 +1,4 @@
-﻿using SuperBMD.Util;
-
-namespace SuperBMD.Materials
+﻿namespace SuperBMD.Materials
 {
     public struct IndirectTexMatrix : IEquatable<IndirectTexMatrix>
     {
@@ -67,7 +65,7 @@ namespace SuperBMD.Materials
 
         public override bool Equals(object obj)
         {
-            if (!(obj is IndirectTexMatrix))
+            if (obj is not IndirectTexMatrix)
                 return false;
             else
                 return Equals((IndirectTexMatrix)obj);

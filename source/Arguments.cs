@@ -25,7 +25,7 @@
         public static bool ShouldExportAnims { get; private set; } = false;
         public static bool ShouldExportColorAsBytes { get; private set; } = true;
         public static bool ShouldExportColorAsHexString { get; private set; } = false;
-        public static GXDataType VertexType { get; private set; } = GXDataType.Float32;
+        public static StorageType VertexType { get; private set; } = StorageType.Float32;
         public static byte Fraction { get; private set; } = 0;
         public static bool IsMaterialOrderStrict { get; private set; } = false;
 
@@ -120,7 +120,7 @@
                     case "--vtxpos":
                         if (i + 2 >= args.Length)
                             throw new Exception("Not enough parameters have been specified for given cmd arguments.");
-                        VertexType = (Geometry.GXDataType)Enum.Parse(typeof(Geometry.GXDataType), args[i + 1]);
+                        VertexType = (Geometry.StorageType)Enum.Parse(typeof(Geometry.StorageType), args[i + 1]);
                         Fraction = byte.Parse(args[i + 2]);
                         i += 2;
                         break;

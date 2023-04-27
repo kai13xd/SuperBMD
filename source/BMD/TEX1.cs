@@ -85,7 +85,7 @@ namespace SuperBMD.BMD
 
                 if (mat.HasTextureDiffuse)
                 {
-                    string texName = System.IO.Path.GetFileNameWithoutExtension(mat.TextureDiffuse.FilePath);
+                    string textureName = System.IO.Path.GetFileNameWithoutExtension(mat.TextureDiffuse.FilePath);
                     bool isEmbedded = false;
                     int embeddedIndex = -1;
 
@@ -93,14 +93,14 @@ namespace SuperBMD.BMD
                     {
                         string index = mat.TextureDiffuse.FilePath.Substring(1, mat.TextureDiffuse.FilePath.Length); ;
                         isEmbedded = int.TryParse(index, out embeddedIndex);
-                        texName = String.Format("embedded_tex{0}", embeddedIndex);
+                        textureName = String.Format("embedded_tex{0}", embeddedIndex);
                     }
 
                     bool alreadyExists = false;
 
                     foreach (BinaryTextureImage image in Textures)
                     {
-                        if (image.Name == texName)
+                        if (image.Name == textureName)
                         {
                             alreadyExists = true;
                             break;

@@ -1,7 +1,4 @@
-﻿using SuperBMD.Rigging;
-using SuperBMD.Util;
-
-namespace SuperBMD.Animation
+﻿namespace SuperBMD.Animation
 {
     public enum LoopMode
     {
@@ -32,12 +29,12 @@ namespace SuperBMD.Animation
 
             for (int i = 0; i < bone_list.Count; i++)
             {
-                Assimp.NodeAnimationChannel node = src_anim.NodeAnimationChannels.Find(x => x.NodeName == bone_list[i].Name);
+                NodeAnimationChannel animationChannel = src_anim.NodeAnimationChannels.Find(x => x.NodeName == bone_list[i].Name);
 
-                if (node is null)
+                if (animationChannel is null)
                     Tracks[i] = Track.Identity(bone_list[i].TransformationMatrix, Duration);
                 else
-                    Tracks[i] = GenerateTrack(node, bone_list[i]);
+                    Tracks[i] = GenerateTrack(animationChannel, bone_list[i]);
             }
         }
 
@@ -56,7 +53,7 @@ namespace SuperBMD.Animation
             ReadAnk1(ref reader);
         }
 
-        private Track GenerateTrack(Assimp.NodeAnimationChannel channel, Bone bone)
+        private Track GenerateTrack(Assimp.NodeAnimationChannel channel, Rigging.Bone bone)
         {
             Track track = new Track();
 
@@ -67,7 +64,7 @@ namespace SuperBMD.Animation
             return track;
         }
 
-        private Keyframe[][] GenerateTranslationTrack(List<Assimp.VectorKey> keys, Bone bone)
+        private Keyframe[][] GenerateTranslationTrack(List<Assimp.VectorKey> keys, Rigging.Bone bone)
         {
             Keyframe[] x_track = new Keyframe[keys.Count];
             Keyframe[] y_track = new Keyframe[keys.Count];
@@ -91,7 +88,7 @@ namespace SuperBMD.Animation
             return new Keyframe[][] { x_track, y_track, z_track };
         }
 
-        private Keyframe[][] GenerateRotationTrack(List<Assimp.QuaternionKey> keys, Bone bone)
+        private Keyframe[][] GenerateRotationTrack(List<Assimp.QuaternionKey> keys, Rigging.Bone bone)
         {
             Keyframe[] x_track = new Keyframe[keys.Count];
             Keyframe[] y_track = new Keyframe[keys.Count];
@@ -99,8 +96,8 @@ namespace SuperBMD.Animation
 
             for (int i = 0; i < keys.Count; i++)
             {
-                Assimp.QuaternionKey current_key = keys[i];
-                Quaternion value = new Quaternion(current_key.Value.X, current_key.Value.Y, current_key.Value.Z, current_key.Value.W);
+                QuaternionKey current_key = keys[i];
+                var value = new OpenTK.Mathematics.Quaternion(current_key.Value.X, current_key.Value.Y, current_key.Value.Z, current_key.Value.W);
                 Vector3 quat_as_vec = QuaternionExtensions.ToEulerAngles(value);
 
                 x_track[i].Key = quat_as_vec.X;
@@ -116,7 +113,7 @@ namespace SuperBMD.Animation
             return new Keyframe[][] { x_track, y_track, z_track };
         }
 
-        private Keyframe[][] GenerateScaleTrack(List<Assimp.VectorKey> keys, Bone bone)
+        private Keyframe[][] GenerateScaleTrack(List<VectorKey> keys, Rigging.Bone bone)
         {
             Keyframe[] x_track = new Keyframe[keys.Count];
             Keyframe[] y_track = new Keyframe[keys.Count];
@@ -124,8 +121,8 @@ namespace SuperBMD.Animation
 
             for (int i = 0; i < keys.Count; i++)
             {
-                Assimp.VectorKey current_key = keys[i];
-                Vector3 value = new Vector3(current_key.Value.X, current_key.Value.Y, current_key.Value.Z);
+                VectorKey current_key = keys[i];
+                var value = new Vector3(current_key.Value.X, current_key.Value.Y, current_key.Value.Z);
 
                 x_track[i].Key = value.X;
                 x_track[i].Time = (float)current_key.Time;
@@ -392,9 +389,9 @@ namespace SuperBMD.Animation
             List<float> trans_data = new List<float>() { 0.0f };
             byte[] keyframe_data;
 
-            using (MemoryStream mem = new MemoryStream())
+            using (var memoryStream = new MemoryStream())
             {
-                EndianBinaryWriter writer = new EndianBinaryWriter();
+                var writer = new EndianBinaryWriter();
 
                 foreach (Track t in Tracks) // Each bone
                 {
@@ -429,7 +426,7 @@ namespace SuperBMD.Animation
                 foreach (float f in trans_data)
                     writer.Write(f);
 
-                keyframe_data = mem.ToArray();
+                keyframe_data = memoryStream.ToArray();
             }
 
             ScaleCount = scale_data.Count;

@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using SuperBMD.Util;
 using Chadsoft.CTools.Image;
 using DmitryBrant.ImageFormats;
 namespace SuperBMD.Materials

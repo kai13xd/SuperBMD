@@ -1,8 +1,6 @@
-﻿using SuperBMD.Materials;
-using SuperBMD.Util;
-namespace SuperBMD.Materials
+﻿namespace SuperBMD
 {
-    public class Material
+    public class BMDMaterial
     {
         public string Name { get; set; }
         public byte Flag { get; set; }
@@ -37,11 +35,11 @@ namespace SuperBMD.Materials
         public TevSwapModeTable?[] SwapTables { get; set; } = new TevSwapModeTable?[16] { new TevSwapModeTable(0, 1, 2, 3), null, null, null, null, null, null, null, null, null, null, null, null, null, null, null };
         public Fog FogInfo { get; set; } = new Fog(0, false, 0, 0, 0, 0, 0, new Color(0, 0, 0, 0), new float[10]);
         public AlphaCompare AlphCompare { get; set; } = new AlphaCompare(CompareType.Greater, 127, AlphaOp.And, CompareType.Always, 0);
-        public BlendMode BlendMode { get; set; } = new BlendMode(BlendModeType.Blend, BlendModeControl.SrcAlpha, BlendModeControl.InverseSrcAlpha, LogicOp.NoOp);
+        public Materials.BlendMode BlendMode { get; set; } = new Materials.BlendMode(BlendModeType.Blend, BlendModeControl.SrcAlpha, BlendModeControl.InverseSrcAlpha, LogicOp.NoOp);
         public ZMode ZMode { get; set; } = new ZMode(true, CompareType.LEqual, true);
         public NBTScale NBTScale { get; set; } = new NBTScale(0, Vector3.Zero);
-        public Material() { }
-        public void SetUpTev(bool hasTexture, bool hasVtxColor, int texIndex, string texName, Assimp.Material meshMat)
+        public BMDMaterial() { }
+        public void SetUpTev(bool hasTexture, bool hasVtxColor, int texIndex, string textureName, Assimp.Material meshMaterial)
         {
             Flag = 1;
             // Set up channel control 0 to use vertex colors, if they're present
@@ -57,7 +55,7 @@ namespace SuperBMD.Materials
             }
 
             // These settings are common to all the configurations we can use
-            TevStageParameters stageParams = new TevStageParameters
+            var tevStageParameters = new TevStageParameters
             {
                 ColorInD = CombineColorInput.Zero,
                 ColorOp = TevOp.Add,
@@ -85,22 +83,22 @@ namespace SuperBMD.Materials
                 // Texture + Vertex Color
                 if (hasVtxColor)
                 {
-                    stageParams.ColorInA = CombineColorInput.Zero;
-                    stageParams.ColorInB = CombineColorInput.RasColor;
-                    stageParams.ColorInC = CombineColorInput.TexColor;
-                    stageParams.AlphaInA = CombineAlphaInput.Zero;
-                    stageParams.AlphaInB = CombineAlphaInput.RasAlpha;
-                    stageParams.AlphaInC = CombineAlphaInput.TexAlpha;
+                    tevStageParameters.ColorInA = CombineColorInput.Zero;
+                    tevStageParameters.ColorInB = CombineColorInput.RasColor;
+                    tevStageParameters.ColorInC = CombineColorInput.TexColor;
+                    tevStageParameters.AlphaInA = CombineAlphaInput.Zero;
+                    tevStageParameters.AlphaInB = CombineAlphaInput.RasAlpha;
+                    tevStageParameters.AlphaInC = CombineAlphaInput.TexAlpha;
                 }
                 // Texture alone
                 else
                 {
-                    stageParams.ColorInA = CombineColorInput.TexColor;
-                    stageParams.ColorInB = CombineColorInput.Zero;
-                    stageParams.ColorInC = CombineColorInput.Zero;
-                    stageParams.AlphaInA = CombineAlphaInput.TexAlpha;
-                    stageParams.AlphaInB = CombineAlphaInput.Zero;
-                    stageParams.AlphaInC = CombineAlphaInput.Zero;
+                    tevStageParameters.ColorInA = CombineColorInput.TexColor;
+                    tevStageParameters.ColorInB = CombineColorInput.Zero;
+                    tevStageParameters.ColorInC = CombineColorInput.Zero;
+                    tevStageParameters.AlphaInA = CombineAlphaInput.TexAlpha;
+                    tevStageParameters.AlphaInB = CombineAlphaInput.Zero;
+                    tevStageParameters.AlphaInC = CombineAlphaInput.Zero;
                 }
             }
             // No texture!
@@ -111,9 +109,9 @@ namespace SuperBMD.Materials
                 // No vertex colors either, so make sure there's a material color to use instead
                 if (!hasVtxColor)
                 {
-                    if (meshMat.HasColorDiffuse)
+                    if (meshMaterial.HasColorDiffuse)
                     { // Use model's diffuse color
-                        Assimp.Color4D color = meshMat.ColorDiffuse;
+                        Assimp.Color4D color = meshMaterial.ColorDiffuse;
                         MaterialColors[0] = new Color(color.R, color.G, color.B, color.A);
                     }
                     else
@@ -126,15 +124,15 @@ namespace SuperBMD.Materials
                 }
 
                 // Set up TEV to use the material color we just set
-                stageParams.ColorInA = CombineColorInput.RasColor;
-                stageParams.ColorInB = CombineColorInput.Zero;
-                stageParams.ColorInC = CombineColorInput.Zero;
-                stageParams.AlphaInA = CombineAlphaInput.RasAlpha;
-                stageParams.AlphaInB = CombineAlphaInput.Zero;
-                stageParams.AlphaInC = CombineAlphaInput.Zero;
+                tevStageParameters.ColorInA = CombineColorInput.RasColor;
+                tevStageParameters.ColorInB = CombineColorInput.Zero;
+                tevStageParameters.ColorInC = CombineColorInput.Zero;
+                tevStageParameters.AlphaInA = CombineAlphaInput.RasAlpha;
+                tevStageParameters.AlphaInB = CombineAlphaInput.Zero;
+                tevStageParameters.AlphaInC = CombineAlphaInput.Zero;
             }
 
-            AddTevStage(stageParams);
+            AddTevStage(tevStageParameters);
         }
 
         public void AddChannelControl(J3DColorChannelId id, bool enable, ColorSrc MatSrcColor, LightId litId, DiffuseFn diffuse, J3DAttenuationFn atten, ColorSrc ambSrcColor)
@@ -154,13 +152,13 @@ namespace SuperBMD.Materials
 
         public void AddTexGen(TexGenType genType, TexGenSrc genSrc, TexMatrixType mtrx)
         {
-            TexCoordGen newGen = new TexCoordGen(genType, genSrc, mtrx);
+            var texCoordGen = new TexCoordGen(genType, genSrc, mtrx);
 
             for (int i = 0; i < 8; i++)
             {
                 if (TexCoord1Gens[i] is null)
                 {
-                    TexCoord1Gens[i] = newGen;
+                    TexCoord1Gens[i] = texCoordGen;
                     break;
                 }
 
@@ -263,7 +261,7 @@ namespace SuperBMD.Materials
             return parameters;
         }
 
-        public Material(Material src)
+        public BMDMaterial(BMDMaterial src)
         {
             Flag = src.Flag;
             ColorChannelControlsCount = src.ColorChannelControlsCount;

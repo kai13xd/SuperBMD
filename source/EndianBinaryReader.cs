@@ -1,17 +1,16 @@
-using static System.Buffers.Binary.BinaryPrimitives;
+
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SuperBMD.Rigging;
-using SuperBMD.Util;
-using System;
+
+using static System.Buffers.Binary.BinaryPrimitives;
 namespace Kai
 {
     public ref struct EndianBinaryReader
     {
         public int Position = 0;
         public Stack<int> rememberPos = new(3);
-        private Span<byte> buffer;
+        private readonly Span<byte> buffer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public EndianBinaryReader(string filepath)
@@ -131,7 +130,7 @@ namespace Kai
 
             } while (chars[i++] != terminator);
 
-            return new string(chars.Slice(0, i - 1));
+            return new string(chars[..(i - 1)]);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -148,9 +147,9 @@ namespace Kai
             return s;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public OpenTK.Vector3 ReadVector3()
+        public OpenTK.Mathematics.Vector3 ReadVector3()
         {
-            var vec = new OpenTK.Vector3();
+            var vec = new OpenTK.Mathematics.Vector3();
             for (int i = 0; i < 3; i++)
                 vec[i] = ReadFloat();
             return vec;
@@ -173,7 +172,7 @@ namespace Kai
     {
         private const int bufferSize = 8;
         public Span<Byte> SpanView = new byte[bufferSize];
-        private FileStream fileStream;
+        private readonly FileStream fileStream;
         public int Position => (int)fileStream.Position;
         public int Length => (int)fileStream.Length;
 
@@ -214,38 +213,38 @@ namespace Kai
                     break;
                 case short value:
                     WriteInt16BigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 case ushort value:
                     WriteUInt16BigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 case int value:
                     WriteInt32BigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 case uint value:
                     WriteUInt32BigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 case System.Half value:
                     WriteHalfBigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 case float value:
                     WriteSingleBigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 case double value:
                     WriteDoubleBigEndian(SpanView, value);
-                    fileStream.Write(SpanView.Slice(0, size));
+                    fileStream.Write(SpanView[..size]);
                     break;
                 default:
                     throw new Exception("Numeric type not supported!");
             }
         }
 
-        public void Write(OpenTK.Vector4 vector)
+        public void Write(OpenTK.Mathematics.Vector4 vector)
         {
             Write(vector.X);
             Write(vector.Y);
@@ -253,20 +252,20 @@ namespace Kai
             Write(vector.W);
         }
 
-        public void Write(OpenTK.Vector3 vector)
+        public void Write(OpenTK.Mathematics.Vector3 vector)
         {
             Write(vector.X);
             Write(vector.Y);
             Write(vector.Z);
         }
 
-        public void Write(OpenTK.Vector2 vec2)
+        public void Write(OpenTK.Mathematics.Vector2 vec2)
         {
             Write(vec2.X);
             Write(vec2.Y);
         }
 
-        public void Write(SuperBMD.Util.Color color)
+        public void Write(Color color)
         {
             Write((byte)(color.R * 255));
             Write((byte)(color.G * 255));
@@ -344,7 +343,7 @@ namespace Kai
             Write(sphere.Min);
             Write(sphere.Max);
         }
-        public void Write(Bone bone)
+        public void Write(SuperBMD.Rigging.Bone bone)
         {
             Write((short)bone.MatrixType);
             Write(bone.InheritParentScale);

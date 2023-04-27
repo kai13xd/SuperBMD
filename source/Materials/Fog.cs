@@ -1,6 +1,4 @@
-﻿using SuperBMD.Util;
-
-namespace SuperBMD.Materials
+﻿namespace SuperBMD.Materials
 {
     public struct Fog : IEquatable<Fog>
     {

@@ -93,125 +93,125 @@ namespace SuperBMD.Geometry
             VertexWeight = src.VertexWeight;
         }
 
-        public uint GetAttributeIndex(GXVertexAttribute attribute)
+        public uint GetAttributeIndex(VertexAttribute attribute)
         {
             switch (attribute)
             {
-                case GXVertexAttribute.PositionMatrixIdx:
+                case VertexAttribute.PositionMatrixIdx:
                     return PositionMatrixIDxIndex;
-                case GXVertexAttribute.Position:
+                case VertexAttribute.Position:
                     return PositionIndex;
-                case GXVertexAttribute.Normal:
+                case VertexAttribute.Normal:
                     return NormalIndex;
-                case GXVertexAttribute.Color0:
+                case VertexAttribute.ColorChannel0:
                     return Color0Index;
-                case GXVertexAttribute.Color1:
+                case VertexAttribute.ColorChannel1:
                     return Color1Index;
-                case GXVertexAttribute.Tex0:
+                case VertexAttribute.TexCoord0:
                     return TexCoord0Index;
-                case GXVertexAttribute.Tex1:
+                case VertexAttribute.TexCoord1:
                     return TexCoord1Index;
-                case GXVertexAttribute.Tex2:
+                case VertexAttribute.TexCoord2:
                     return TexCoord2Index;
-                case GXVertexAttribute.Tex3:
+                case VertexAttribute.TexCoord3:
                     return TexCoord3Index;
-                case GXVertexAttribute.Tex4:
+                case VertexAttribute.TexCoord4:
                     return TexCoord4Index;
-                case GXVertexAttribute.Tex5:
+                case VertexAttribute.TexCoord5:
                     return TexCoord5Index;
-                case GXVertexAttribute.Tex6:
+                case VertexAttribute.TexCoord6:
                     return TexCoord6Index;
-                case GXVertexAttribute.Tex7:
+                case VertexAttribute.TexCoord7:
                     return TexCoord7Index;
-                case GXVertexAttribute.Tex0Mtx:
+                case VertexAttribute.Tex0Mtx:
                     return Tex0MtxIndex;
-                case GXVertexAttribute.Tex1Mtx:
+                case VertexAttribute.Tex1Mtx:
                     return Tex1MtxIndex;
-                case GXVertexAttribute.Tex2Mtx:
+                case VertexAttribute.Tex2Mtx:
                     return Tex2MtxIndex;
-                case GXVertexAttribute.Tex3Mtx:
+                case VertexAttribute.Tex3Mtx:
                     return Tex3MtxIndex;
-                case GXVertexAttribute.Tex4Mtx:
+                case VertexAttribute.Tex4Mtx:
                     return Tex4MtxIndex;
-                case GXVertexAttribute.Tex5Mtx:
+                case VertexAttribute.Tex5Mtx:
                     return Tex5MtxIndex;
-                case GXVertexAttribute.Tex6Mtx:
+                case VertexAttribute.Tex6Mtx:
                     return Tex6MtxIndex;
-                case GXVertexAttribute.Tex7Mtx:
+                case VertexAttribute.Tex7Mtx:
                     return Tex7MtxIndex;
                 default:
                     throw new ArgumentException(String.Format("attribute {0}", attribute));
             }
         }
 
-        public void SetAttributeIndex(GXVertexAttribute attribute, uint index)
+        public void SetAttributeIndex(VertexAttribute attribute, uint index)
         {
             switch (attribute)
             {
-                case GXVertexAttribute.PositionMatrixIdx:
+                case VertexAttribute.PositionMatrixIdx:
                     PositionMatrixIDxIndex = index;
                     break;
-                case GXVertexAttribute.Position:
+                case VertexAttribute.Position:
                     PositionIndex = index;
                     break;
-                case GXVertexAttribute.Normal:
+                case VertexAttribute.Normal:
                     NormalIndex = index;
                     break;
-                case GXVertexAttribute.Color0:
+                case VertexAttribute.ColorChannel0:
                     Color0Index = index;
                     break;
-                case GXVertexAttribute.Color1:
+                case VertexAttribute.ColorChannel1:
                     Color1Index = index;
                     break;
-                case GXVertexAttribute.Tex0:
+                case VertexAttribute.TexCoord0:
                     TexCoord0Index = index;
                     break;
-                case GXVertexAttribute.Tex1:
+                case VertexAttribute.TexCoord1:
                     TexCoord1Index = index;
                     break;
-                case GXVertexAttribute.Tex2:
+                case VertexAttribute.TexCoord2:
                     TexCoord2Index = index;
                     break;
-                case GXVertexAttribute.Tex3:
+                case VertexAttribute.TexCoord3:
                     TexCoord3Index = index;
                     break;
-                case GXVertexAttribute.Tex4:
+                case VertexAttribute.TexCoord4:
                     TexCoord4Index = index;
                     break;
-                case GXVertexAttribute.Tex5:
+                case VertexAttribute.TexCoord5:
                     TexCoord5Index = index;
                     break;
-                case GXVertexAttribute.Tex6:
+                case VertexAttribute.TexCoord6:
                     TexCoord6Index = index;
                     break;
-                case GXVertexAttribute.Tex7:
+                case VertexAttribute.TexCoord7:
                     TexCoord7Index = index;
                     break;
-                case GXVertexAttribute.Tex0Mtx:
+                case VertexAttribute.Tex0Mtx:
                     Tex0MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex1Mtx:
+                case VertexAttribute.Tex1Mtx:
                     Tex1MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex2Mtx:
+                case VertexAttribute.Tex2Mtx:
                     Tex2MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex3Mtx:
+                case VertexAttribute.Tex3Mtx:
                     Tex3MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex4Mtx:
+                case VertexAttribute.Tex4Mtx:
                     Tex4MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex5Mtx:
+                case VertexAttribute.Tex5Mtx:
                     Tex5MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex6Mtx:
+                case VertexAttribute.Tex6Mtx:
                     Tex6MtxIndex = index;
                     break;
-                case GXVertexAttribute.Tex7Mtx:
+                case VertexAttribute.Tex7Mtx:
                     Tex7MtxIndex = index;
                     break;
-                case GXVertexAttribute.NBT:
+                case VertexAttribute.NBT:
                     NBTIndex = index;
                     break;
                 default:
@@ -226,69 +226,69 @@ namespace SuperBMD.Geometry
 
         public void Write(ref EndianBinaryWriter writer, ShapeVertexDescriptor desc)
         {
-            if (desc.CheckAttribute(GXVertexAttribute.PositionMatrixIdx))
+            if (desc.CheckAttribute(VertexAttribute.PositionMatrixIdx))
             {
-                WriteAttributeIndex(ref writer, PositionMatrixIDxIndex * 3, desc.Attributes[GXVertexAttribute.PositionMatrixIdx].Item1);
+                WriteAttributeIndex(ref writer, PositionMatrixIDxIndex * 3, desc.Attributes[VertexAttribute.PositionMatrixIdx].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Position))
+            if (desc.CheckAttribute(VertexAttribute.Position))
             {
-                WriteAttributeIndex(ref writer, PositionIndex, desc.Attributes[GXVertexAttribute.Position].Item1);
+                WriteAttributeIndex(ref writer, PositionIndex, desc.Attributes[VertexAttribute.Position].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Normal))
+            if (desc.CheckAttribute(VertexAttribute.Normal))
             {
-                WriteAttributeIndex(ref writer, NormalIndex, desc.Attributes[GXVertexAttribute.Normal].Item1);
+                WriteAttributeIndex(ref writer, NormalIndex, desc.Attributes[VertexAttribute.Normal].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Color0))
+            if (desc.CheckAttribute(VertexAttribute.ColorChannel0))
             {
-                WriteAttributeIndex(ref writer, Color0Index, desc.Attributes[GXVertexAttribute.Color0].Item1);
+                WriteAttributeIndex(ref writer, Color0Index, desc.Attributes[VertexAttribute.ColorChannel0].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Color1))
+            if (desc.CheckAttribute(VertexAttribute.ColorChannel1))
             {
-                WriteAttributeIndex(ref writer, Color1Index, desc.Attributes[GXVertexAttribute.Color1].Item1);
+                WriteAttributeIndex(ref writer, Color1Index, desc.Attributes[VertexAttribute.ColorChannel1].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex0))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord0))
             {
-                WriteAttributeIndex(ref writer, TexCoord0Index, desc.Attributes[GXVertexAttribute.Tex0].Item1);
+                WriteAttributeIndex(ref writer, TexCoord0Index, desc.Attributes[VertexAttribute.TexCoord0].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex1))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord1))
             {
-                WriteAttributeIndex(ref writer, TexCoord1Index, desc.Attributes[GXVertexAttribute.Tex1].Item1);
+                WriteAttributeIndex(ref writer, TexCoord1Index, desc.Attributes[VertexAttribute.TexCoord1].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex2))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord2))
             {
-                WriteAttributeIndex(ref writer, TexCoord2Index, desc.Attributes[GXVertexAttribute.Tex2].Item1);
+                WriteAttributeIndex(ref writer, TexCoord2Index, desc.Attributes[VertexAttribute.TexCoord2].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex3))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord3))
             {
-                WriteAttributeIndex(ref writer, TexCoord3Index, desc.Attributes[GXVertexAttribute.Tex3].Item1);
+                WriteAttributeIndex(ref writer, TexCoord3Index, desc.Attributes[VertexAttribute.TexCoord3].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex4))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord4))
             {
-                WriteAttributeIndex(ref writer, TexCoord4Index, desc.Attributes[GXVertexAttribute.Tex4].Item1);
+                WriteAttributeIndex(ref writer, TexCoord4Index, desc.Attributes[VertexAttribute.TexCoord4].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex5))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord5))
             {
-                WriteAttributeIndex(ref writer, TexCoord5Index, desc.Attributes[GXVertexAttribute.Tex5].Item1);
+                WriteAttributeIndex(ref writer, TexCoord5Index, desc.Attributes[VertexAttribute.TexCoord5].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex6))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord6))
             {
-                WriteAttributeIndex(ref writer, TexCoord6Index, desc.Attributes[GXVertexAttribute.Tex6].Item1);
+                WriteAttributeIndex(ref writer, TexCoord6Index, desc.Attributes[VertexAttribute.TexCoord6].Item1);
             }
 
-            if (desc.CheckAttribute(GXVertexAttribute.Tex7))
+            if (desc.CheckAttribute(VertexAttribute.TexCoord7))
             {
-                WriteAttributeIndex(ref writer, TexCoord7Index, desc.Attributes[GXVertexAttribute.Tex7].Item1);
+                WriteAttributeIndex(ref writer, TexCoord7Index, desc.Attributes[VertexAttribute.TexCoord7].Item1);
             }
         }
 

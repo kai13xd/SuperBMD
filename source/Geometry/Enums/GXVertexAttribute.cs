@@ -1,6 +1,6 @@
 ﻿namespace SuperBMD.Geometry
 {
-    public enum GXVertexAttribute
+    public enum VertexAttribute
     {
         PositionMatrixIdx = 0,
         Tex0Mtx = 1,
@@ -13,16 +13,16 @@
         Tex7Mtx = 8,
         Position = 9,
         Normal = 10,
-        Color0 = 11,
-        Color1 = 12,
-        Tex0 = 13,
-        Tex1 = 14,
-        Tex2 = 15,
-        Tex3 = 16,
-        Tex4 = 17,
-        Tex5 = 18,
-        Tex6 = 19,
-        Tex7 = 20,
+        ColorChannel0 = 11,
+        ColorChannel1 = 12,
+        TexCoord0 = 13,
+        TexCoord1 = 14,
+        TexCoord2 = 15,
+        TexCoord3 = 16,
+        TexCoord4 = 17,
+        TexCoord5 = 18,
+        TexCoord6 = 19,
+        TexCoord7 = 20,
 
         NBT = 25,
 

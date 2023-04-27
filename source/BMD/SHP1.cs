@@ -203,7 +203,7 @@ namespace SuperBMD.BMD
                     {
                         foreach (Vertex vert in prim.Vertices)
                         {
-                            if (Shapes[i].Descriptor.CheckAttribute(GXVertexAttribute.PositionMatrixIdx))
+                            if (Shapes[i].Descriptor.CheckAttribute(VertexAttribute.PositionMatrixIdx))
                             {
                                 int drw1Index = Shapes[i].Packets[j].MatrixIndices[(int)vert.PositionMatrixIDxIndex];
                                 int curPacketIndex = j;
@@ -299,10 +299,10 @@ namespace SuperBMD.BMD
                                     mesh.Bones[assBoneIndex].VertexWeights.Add(new Assimp.VertexWeight(vertexID, vert.VertexWeight.Weights[j]));
                                 }
 
-                                Vector3 posVec = vertData.Positions[(int)vert.GetAttributeIndex(GXVertexAttribute.Position)];
+                                Vector3 posVec = vertData.Positions[(int)vert.GetAttributeIndex(VertexAttribute.Position)];
                                 Vector4 openTKVec = new Vector4(posVec.X, posVec.Y, posVec.Z, 1);
 
-                                Assimp.Vector3D vertVec = new(openTKVec.X, openTKVec.Y, openTKVec.Z);
+                                Vector3D vertVec = new(openTKVec.X, openTKVec.Y, openTKVec.Z);
 
                                 if (vert.VertexWeight.WeightCount == 1)
                                 {
@@ -310,19 +310,19 @@ namespace SuperBMD.BMD
                                     {
                                         Matrix4 test = inverseBindMatrices[vert.VertexWeight.BoneIndices[0]].Inverted();
                                         test.Transpose();
-                                        Vector4 trans = Vector4.Transform(openTKVec, test);
+                                        Vector4 trans = Vector4.Transform(openTKVec, test.ExtractRotation());
                                         vertVec = new Assimp.Vector3D(trans.X, trans.Y, trans.Z);
                                     }
                                     else
                                     {
-                                        Vector4 trans = Vector4.Transform(openTKVec, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix);
+                                        Vector4 trans = Vector4.Transform(openTKVec, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix.ExtractRotation());
                                         vertVec = new Assimp.Vector3D(trans.X, trans.Y, trans.Z);
                                     }
                                 }
 
                                 mesh.Vertices.Add(vertVec);
 
-                                if (curShape.Descriptor.CheckAttribute(GXVertexAttribute.Normal))
+                                if (curShape.Descriptor.CheckAttribute(VertexAttribute.Normal))
                                 {
                                     Vector3 nrmVec = vertData.Normals[(int)vert.NormalIndex];
                                     Vector4 openTKNrm = new Vector4(nrmVec.X, nrmVec.Y, nrmVec.Z, 1);
@@ -337,7 +337,7 @@ namespace SuperBMD.BMD
                                         }
                                         else
                                         {
-                                            Vector4 trans = Vector4.Transform(openTKNrm, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix);
+                                            Vector4 trans = Vector4.Transform(openTKNrm, flatSkeleton[vert.VertexWeight.BoneIndices[0]].TransformationMatrix.ExtractRotation());
                                             vertNrm = new Assimp.Vector3D(trans.X, trans.Y, trans.Z);
                                         }
                                     }
@@ -345,42 +345,42 @@ namespace SuperBMD.BMD
                                     mesh.Normals.Add(vertNrm);
                                 }
 
-                                if (curShape.Descriptor.CheckAttribute(GXVertexAttribute.Color0))
-                                    mesh.VertexColorChannels[0].Add(vertData.Color_0[(int)vert.Color0Index].ToColor4D());
+                                if (curShape.Descriptor.CheckAttribute(VertexAttribute.ColorChannel0))
+                                    mesh.VertexColorChannels[0].Add(vertData.ColorChannel0[(int)vert.Color0Index].ToColor4D());
 
-                                if (curShape.Descriptor.CheckAttribute(GXVertexAttribute.Color1))
-                                    mesh.VertexColorChannels[1].Add(vertData.Color_1[(int)vert.Color1Index].ToColor4D());
+                                if (curShape.Descriptor.CheckAttribute(VertexAttribute.ColorChannel1))
+                                    mesh.VertexColorChannels[1].Add(vertData.ColorChannel1[(int)vert.Color1Index].ToColor4D());
 
                                 for (int texCoordNum = 0; texCoordNum < 8; texCoordNum++)
                                 {
-                                    if (curShape.Descriptor.CheckAttribute(GXVertexAttribute.Tex0 + texCoordNum))
+                                    if (curShape.Descriptor.CheckAttribute(VertexAttribute.TexCoord0 + texCoordNum))
                                     {
                                         Assimp.Vector3D texCoord = new();
                                         switch (texCoordNum)
                                         {
                                             case 0:
-                                                texCoord = vertData.TexCoord_0[(int)vert.TexCoord0Index].ToVector2D();
+                                                texCoord = vertData.TexCoord0[(int)vert.TexCoord0Index].ToVector2D();
                                                 break;
                                             case 1:
-                                                texCoord = vertData.TexCoord_1[(int)vert.TexCoord1Index].ToVector2D();
+                                                texCoord = vertData.TexCoord1[(int)vert.TexCoord1Index].ToVector2D();
                                                 break;
                                             case 2:
-                                                texCoord = vertData.TexCoord_2[(int)vert.TexCoord2Index].ToVector2D();
+                                                texCoord = vertData.TexCoord2[(int)vert.TexCoord2Index].ToVector2D();
                                                 break;
                                             case 3:
-                                                texCoord = vertData.TexCoord_3[(int)vert.TexCoord3Index].ToVector2D();
+                                                texCoord = vertData.TexCoord3[(int)vert.TexCoord3Index].ToVector2D();
                                                 break;
                                             case 4:
-                                                texCoord = vertData.TexCoord_4[(int)vert.TexCoord4Index].ToVector2D();
+                                                texCoord = vertData.TexCoord4[(int)vert.TexCoord4Index].ToVector2D();
                                                 break;
                                             case 5:
-                                                texCoord = vertData.TexCoord_5[(int)vert.TexCoord5Index].ToVector2D();
+                                                texCoord = vertData.TexCoord5[(int)vert.TexCoord5Index].ToVector2D();
                                                 break;
                                             case 6:
-                                                texCoord = vertData.TexCoord_6[(int)vert.TexCoord6Index].ToVector2D();
+                                                texCoord = vertData.TexCoord6[(int)vert.TexCoord6Index].ToVector2D();
                                                 break;
                                             case 7:
-                                                texCoord = vertData.TexCoord_7[(int)vert.TexCoord7Index].ToVector2D();
+                                                texCoord = vertData.TexCoord7[(int)vert.TexCoord7Index].ToVector2D();
                                                 break;
                                         }
 

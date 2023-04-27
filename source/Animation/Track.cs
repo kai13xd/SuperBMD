@@ -26,7 +26,7 @@ namespace SuperBMD.Animation
         public static Track Identity(Matrix4 Transform, float MaxTime)
         {
             Track ident_track = new Track();
-            Quaternion XRot = Quaternion.FromAxisAngle(Vector3.UnitX, (float)(0));
+            OpenTK.Mathematics.Quaternion XRot = OpenTK.Mathematics.Quaternion.FromAxisAngle(Vector3.UnitX, (float)(0));
 
             ident_track.IsIdentity = true;
             Vector3 Translation = Transform.ExtractTranslation();
@@ -38,7 +38,7 @@ namespace SuperBMD.Animation
                 new Keyframe[] { new Keyframe() { InTangent = 0, Key = Translation.Z, OutTangent = 0, Time = 0} },
             };
 
-            Quaternion Rotation = Transform.ExtractRotation();
+            OpenTK.Mathematics.Quaternion Rotation = Transform.ExtractRotation();
             Vector3 Rot_Vec = QuaternionExtensions.ToEulerAngles(Rotation);
 
             ident_track.Rotation = new Keyframe[][]

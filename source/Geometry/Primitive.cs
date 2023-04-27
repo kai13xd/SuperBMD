@@ -29,12 +29,12 @@ namespace SuperBMD.Geometry
             {
                 Vertex vert = new Vertex();
 
-                foreach (GXVertexAttribute attrib in activeAttribs.Attributes.Keys)
+                foreach (VertexAttribute attrib in activeAttribs.Attributes.Keys)
                 {
                     switch (activeAttribs.GetAttributeType(attrib))
                     {
                         case VertexInputType.Direct:
-                            vert.SetAttributeIndex(attrib, attrib == GXVertexAttribute.PositionMatrixIdx ? (uint)(reader.ReadByte() / 3) : reader.ReadByte());
+                            vert.SetAttributeIndex(attrib, attrib == VertexAttribute.PositionMatrixIdx ? (uint)(reader.ReadByte() / 3) : reader.ReadByte());
                             break;
                         case VertexInputType.Index8:
                             vert.SetAttributeIndex(attrib, reader.ReadByte());

@@ -5,17 +5,17 @@ namespace SuperBMD.BMD
 {
     struct PresetResult
     {
-        public PresetResult(Material mat, int i)
+        public PresetResult(BMDMaterial mat, int i)
         {
             Preset = mat;
             Index = i;
         }
-        public Material Preset;
+        public BMDMaterial Preset;
         public int Index;
     }
     public class MAT3
     {
-        public List<Material> Materials = new();
+        public List<BMDMaterial> Materials = new();
         public List<short> RemapIndices = new();
         private List<string> MaterialNames = new();
         private List<IndirectTexturing> IndirectTexBlock = new();
@@ -262,7 +262,7 @@ namespace SuperBMD.BMD
             }
 
             reader.Position = matInitOffset;
-            Materials = new List<Material>();
+            Materials = new List<BMDMaterial>();
             for (int i = 0; i <= highestMatIndex; i++)
             {
                 LoadInitData(ref reader, RemapIndices[i]);
@@ -270,21 +270,23 @@ namespace SuperBMD.BMD
 
             reader.Seek(offset + mat3Size);
 
-            List<Material> matCopies = new List<Material>();
+            var bmdMaterialsCopy = new List<BMDMaterial>();
             for (int i = 0; i < RemapIndices.Count; i++)
             {
-                Material originalMat = Materials[RemapIndices[i]];
-                Material copyMat = new Material(originalMat);
-                copyMat.Name = MaterialNames[i];
-                matCopies.Add(copyMat);
+                BMDMaterial originalMat = Materials[RemapIndices[i]];
+                var materialCopy = new BMDMaterial(originalMat)
+                {
+                    Name = MaterialNames[i]
+                };
+                bmdMaterialsCopy.Add(materialCopy);
             }
 
-            Materials = matCopies;
+            Materials = bmdMaterialsCopy;
         }
 
         private void LoadInitData(ref EndianBinaryReader reader, int matindex)
         {
-            Material mat = new Material
+            var bmdMaterial = new BMDMaterial()
             {
                 Name = MaterialNames[matindex],
                 Flag = reader.ReadByte(),
@@ -297,26 +299,26 @@ namespace SuperBMD.BMD
 
             if (matindex < IndirectTexBlock.Count)
             {
-                mat.IndTexEntry = IndirectTexBlock[matindex];
+                bmdMaterial.IndTexEntry = IndirectTexBlock[matindex];
             }
             else
             {
-                Console.WriteLine("Warning: Material {0} referenced an out of range IndirectTexBlock index", mat.Name);
+                Console.WriteLine("Warning: Material {0} referenced an out of range IndirectTexBlock index", bmdMaterial.Name);
             }
 
-            mat.ZCompLoc = ZCompLocBlock[reader.ReadByte()];
-            mat.ZMode = ZModeBlock[reader.ReadByte()];
+            bmdMaterial.ZCompLoc = ZCompLocBlock[reader.ReadByte()];
+            bmdMaterial.ZMode = ZModeBlock[reader.ReadByte()];
 
             if (DitherBlock is null)
                 reader.Skip();
             else
-                mat.Dither = DitherBlock[reader.ReadByte()];
+                bmdMaterial.Dither = DitherBlock[reader.ReadByte()];
             int matColorIndex = reader.ReadShort();
             if (matColorIndex != -1)
-                mat.MaterialColors[0] = MaterialColorBlock[matColorIndex];
+                bmdMaterial.MaterialColors[0] = MaterialColorBlock[matColorIndex];
             matColorIndex = reader.ReadShort();
             if (matColorIndex != -1)
-                mat.MaterialColors[1] = MaterialColorBlock[matColorIndex];
+                bmdMaterial.MaterialColors[1] = MaterialColorBlock[matColorIndex];
 
             for (int i = 0; i < 4; i++)
             {
@@ -325,11 +327,11 @@ namespace SuperBMD.BMD
                     continue;
                 else if (chanIndex < ChannelControlBlock.Count)
                 {
-                    mat.ChannelControls[i] = ChannelControlBlock[chanIndex];
+                    bmdMaterial.ChannelControls[i] = ChannelControlBlock[chanIndex];
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("Warning for material {0} i={2}, color channel index out of range: {1}", mat.Name, chanIndex, i));
+                    Console.WriteLine(string.Format("Warning for material {0} i={2}, color channel index out of range: {1}", bmdMaterial.Name, chanIndex, i));
                 }
             }
             for (int i = 0; i < 2; i++)
@@ -339,11 +341,11 @@ namespace SuperBMD.BMD
                     continue;
                 else if (ambColorIndex < AmbientColorBlock.Count)
                 {
-                    mat.AmbientColors[i] = AmbientColorBlock[ambColorIndex];
+                    bmdMaterial.AmbientColors[i] = AmbientColorBlock[ambColorIndex];
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("Warning for material {0} i={2}, ambient color index out of range: {1}", mat.Name, ambColorIndex, i));
+                    Console.WriteLine(string.Format("Warning for material {0} i={2}, ambient color index out of range: {1}", bmdMaterial.Name, ambColorIndex, i));
                 }
             }
 
@@ -353,7 +355,7 @@ namespace SuperBMD.BMD
                 if ((lightIndex == -1) || (lightIndex > LightingColorBlock.Count) || (LightingColorBlock.Count == 0))
                     continue;
                 else
-                    mat.LightingColors[i] = LightingColorBlock[lightIndex];
+                    bmdMaterial.LightingColors[i] = LightingColorBlock[lightIndex];
             }
 
             for (int i = 0; i < 8; i++)
@@ -362,9 +364,9 @@ namespace SuperBMD.BMD
                 if (texGenIndex == -1)
                     continue;
                 else if (texGenIndex < TexCoord1GenBlock.Count)
-                    mat.TexCoord1Gens[i] = TexCoord1GenBlock[texGenIndex];
+                    bmdMaterial.TexCoord1Gens[i] = TexCoord1GenBlock[texGenIndex];
                 else
-                    Console.WriteLine(string.Format("Warning for material {0} i={2}, TexCoord1GenBlock index out of range: {1}", mat.Name, texGenIndex, i));
+                    Console.WriteLine(string.Format("Warning for material {0} i={2}, TexCoord1GenBlock index out of range: {1}", bmdMaterial.Name, texGenIndex, i));
             }
 
             for (int i = 0; i < 8; i++)
@@ -373,7 +375,7 @@ namespace SuperBMD.BMD
                 if (texGenIndex == -1)
                     continue;
                 else
-                    mat.PostTexCoordGens[i] = TexCoord2GenBlock[texGenIndex];
+                    bmdMaterial.PostTexCoordGens[i] = TexCoord2GenBlock[texGenIndex];
             }
 
             for (int i = 0; i < 10; i++)
@@ -382,7 +384,7 @@ namespace SuperBMD.BMD
                 if (texMatIndex == -1)
                     continue;
                 else
-                    mat.TexMatrix1[i] = TexMatrix1Block[texMatIndex];
+                    bmdMaterial.TexMatrix1[i] = TexMatrix1Block[texMatIndex];
             }
 
             for (int i = 0; i < 20; i++)
@@ -391,9 +393,9 @@ namespace SuperBMD.BMD
                 if (texMatIndex == -1)
                     continue;
                 else if (texMatIndex < TexMatrix2Block.Count)
-                    mat.PostTexMatrix[i] = TexMatrix2Block[texMatIndex];
+                    bmdMaterial.PostTexMatrix[i] = TexMatrix2Block[texMatIndex];
                 else
-                    Console.WriteLine(string.Format("Warning for material {0}, TexMatrix2Block index out of range: {1}", mat.Name, texMatIndex));
+                    Console.WriteLine(string.Format("Warning for material {0}, TexMatrix2Block index out of range: {1}", bmdMaterial.Name, texMatIndex));
             }
 
             for (int i = 0; i < 8; i++)
@@ -402,7 +404,7 @@ namespace SuperBMD.BMD
                 if (texIndex == -1)
                     continue;
                 else
-                    mat.TextureIndices[i] = TexRemapBlock[texIndex];
+                    bmdMaterial.TextureIndices[i] = TexRemapBlock[texIndex];
             }
 
             for (int i = 0; i < 4; i++)
@@ -411,17 +413,17 @@ namespace SuperBMD.BMD
                 if (tevKColor == -1)
                     continue;
                 else
-                    mat.KonstColors[i] = TevKonstColorBlock[tevKColor];
+                    bmdMaterial.KonstColors[i] = TevKonstColorBlock[tevKColor];
             }
 
             for (int i = 0; i < 16; i++)
             {
-                mat.ColorSels[i] = (KonstColorSel)reader.ReadByte();
+                bmdMaterial.ColorSels[i] = (KonstColorSel)reader.ReadByte();
             }
 
             for (int i = 0; i < 16; i++)
             {
-                mat.AlphaSels[i] = (KonstAlphaSel)reader.ReadByte();
+                bmdMaterial.AlphaSels[i] = (KonstAlphaSel)reader.ReadByte();
             }
 
             for (int i = 0; i < 16; i++)
@@ -430,7 +432,7 @@ namespace SuperBMD.BMD
                 if (tevOrderIndex == -1)
                     continue;
                 else
-                    mat.TevOrders[i] = TevOrderBlock[tevOrderIndex];
+                    bmdMaterial.TevOrders[i] = TevOrderBlock[tevOrderIndex];
             }
 
             for (int i = 0; i < 4; i++)
@@ -439,7 +441,7 @@ namespace SuperBMD.BMD
                 if (tevColor == -1)
                     continue;
                 else
-                    mat.TevColors[i] = TevColorBlock[tevColor];
+                    bmdMaterial.TevColors[i] = TevColorBlock[tevColor];
             }
 
             for (int i = 0; i < 16; i++)
@@ -448,7 +450,7 @@ namespace SuperBMD.BMD
                 if (tevStageIndex == -1)
                     continue;
                 else
-                    mat.TevStages[i] = TevStageBlock[tevStageIndex];
+                    bmdMaterial.TevStages[i] = TevStageBlock[tevStageIndex];
             }
 
             for (int i = 0; i < 16; i++)
@@ -457,7 +459,7 @@ namespace SuperBMD.BMD
                 if (tevSwapModeIndex == -1)
                     continue;
                 else
-                    mat.SwapModes[i] = SwapModeBlock[tevSwapModeIndex];
+                    bmdMaterial.SwapModes[i] = SwapModeBlock[tevSwapModeIndex];
             }
 
             for (int i = 0; i < 16; i++)
@@ -470,52 +472,52 @@ namespace SuperBMD.BMD
                     if (tevSwapModeTableIndex >= SwapTableBlock.Count)
                         continue;
 
-                    mat.SwapTables[i] = SwapTableBlock[tevSwapModeTableIndex];
+                    bmdMaterial.SwapTables[i] = SwapTableBlock[tevSwapModeTableIndex];
                 }
             }
 
-            mat.FogInfo = FogBlock[reader.ReadShort()];
-            mat.AlphCompare = AlphaCompBlock[reader.ReadShort()];
-            mat.BlendMode = BlendModeBlock[reader.ReadShort()];
-            mat.NBTScale = NBTScaleBlock[reader.ReadShort()];
+            bmdMaterial.FogInfo = FogBlock[reader.ReadShort()];
+            bmdMaterial.AlphCompare = AlphaCompBlock[reader.ReadShort()];
+            bmdMaterial.BlendMode = BlendModeBlock[reader.ReadShort()];
+            bmdMaterial.NBTScale = NBTScaleBlock[reader.ReadShort()];
             //mat.Debug_Print();
-            Materials.Add(mat);
+            Materials.Add(bmdMaterial);
         }
 
-        public MAT3(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material>? matPresets = null)
+        public MAT3(Scene scene, TEX1 textures, SHP1 shapes, List<BMDMaterial>? materialPresets = null)
         {
-            LoadFromScene(scene, textures, shapes, matPresets);
+            LoadFromScene(scene, textures, shapes, materialPresets);
             FillMaterialDataBlocks();
         }
 
-        private string FindOriginalMaterialName(string name, List<Material> mat_presets)
+        private string FindOriginalMaterialName(string name, List<BMDMaterial> materialPresets)
         {
-            string result = null;
-            if (mat_presets is null)
+            string? result = null;
+            if (materialPresets is null)
             {
                 return result;
             }
 
-            foreach (Material mat in mat_presets)
+            foreach (BMDMaterial bmdMaterial in materialPresets)
             {
-                if (mat is null)
+                if (bmdMaterial is null)
                 {
                     continue;
                 }
-                if (mat.Name.StartsWith("__MatDefault"))
+                if (bmdMaterial.Name.StartsWith("__MatDefault"))
                 {
                     continue;
                 }
                 if (name.StartsWith("m"))
                 {
-                    string sanitized = Model.AssimpMatnamePartSanitize(mat.Name);
+                    string sanitized = Model.AssimpMatnamePartSanitize(bmdMaterial.Name);
                     if (
                         (name.Length > 2 && name.Substring(2) == sanitized) ||
                         (name.Length > 3 && name.Substring(3) == sanitized) ||
                         (name.Length > 4 && name.Substring(4) == sanitized))
                     {
                         //Console.WriteLine(String.Format("Matched up {0} with {1} from the json file", name, mat.Name));
-                        result = mat.Name;
+                        result = bmdMaterial.Name;
                         break;
                     }
 
@@ -528,7 +530,7 @@ namespace SuperBMD.BMD
                             (name.Length > 4 && name.Substring(4) == sanitized))
                         {
                             //Console.WriteLine(String.Format("Matched up {0} with {1} from the json file", name, mat.Name));
-                            result = mat.Name;
+                            result = bmdMaterial.Name;
                             break;
                         }
                     }
@@ -536,14 +538,14 @@ namespace SuperBMD.BMD
 
                 if (name.EndsWith("-material"))
                 {
-                    string sanitized = Model.AssimpMatnamePartSanitize(mat.Name);
+                    string sanitized = Model.AssimpMatnamePartSanitize(bmdMaterial.Name);
                     name = name[..^9];
                     if (
                         (name == sanitized)
                         )
                     {
                         //Console.WriteLine(String.Format("Matched up {0} with {1} from the json file", name, mat.Name));
-                        result = mat.Name;
+                        result = bmdMaterial.Name;
                         break;
                     }
                 }
@@ -551,19 +553,19 @@ namespace SuperBMD.BMD
             return result;
         }
 
-        private PresetResult? FindMatPreset(string name, List<Material> mat_presets)
+        private PresetResult? FindMatPreset(string name, List<BMDMaterial> materialPresets)
         {
-            if (mat_presets is null)
+            if (materialPresets is null)
             {
                 return null;
             }
-            Material? default_mat = null;
+            BMDMaterial? default_mat = null;
 
             int i = 0;
 
-            foreach (Material mat in mat_presets)
+            foreach (BMDMaterial bmdMaterial in materialPresets)
             {
-                if (mat is null)
+                if (bmdMaterial is null)
                 {
                     if (Arguments.IsMaterialOrderStrict)
                     {
@@ -575,47 +577,47 @@ namespace SuperBMD.BMD
 
                 //Console.WriteLine(String.Format("{0}", mat.Name));
 
-                if (mat.Name == "__MatDefault" && default_mat is null)
+                if (bmdMaterial.Name == "__MatDefault" && default_mat is null)
                 {
                     if (Arguments.IsMaterialOrderStrict)
                     {
                         throw new Exception("'__MatDefault' materials cannot be used in Strict Material Order mode!");
                     }
-                    default_mat = mat;
+                    default_mat = bmdMaterial;
                 }
 
-                if (mat.Name.StartsWith("__MatDefault:"))
+                if (bmdMaterial.Name.StartsWith("__MatDefault:"))
                 {
                     if (Arguments.IsMaterialOrderStrict)
                     {
                         throw new Exception("'__MatDefault:' materials cannot be used in Strict Material Order mode!");
                     }
-                    string[] subs = mat.Name.Split(delimiter, 2, StringSplitOptions.None);
+                    string[] subs = bmdMaterial.Name.Split(delimiter, 2, StringSplitOptions.None);
                     if (subs.Length == 2)
                     {
                         string submat = "_" + subs[1];
                         if (name.Contains(submat))
                         {
-                            default_mat = mat;
+                            default_mat = bmdMaterial;
                         }
                     }
                 }
 
-                if (mat.Name == name)
+                if (bmdMaterial.Name == name)
                 {
                     //Console.WriteLine(String.Format("Applying material preset to {1}", default_mat.Name, name));
-                    return new PresetResult(mat, i);
+                    return new PresetResult(bmdMaterial, i);
                 }
                 if (name.StartsWith("m"))
                 {
-                    string sanitized = Model.AssimpMatnamePartSanitize(mat.Name);
+                    string sanitized = Model.AssimpMatnamePartSanitize(bmdMaterial.Name);
                     if (
                         (name.Length > 2 && name.Substring(2) == sanitized) ||
                         (name.Length > 3 && name.Substring(3) == sanitized) ||
                         (name.Length > 4 && name.Substring(4) == sanitized))
                     {
-                        Console.WriteLine(String.Format("Matched up {0} with {1} from the json file", name, mat.Name));
-                        return new PresetResult(mat, i);
+                        Console.WriteLine(String.Format("Matched up {0} with {1} from the json file", name, bmdMaterial.Name));
+                        return new PresetResult(bmdMaterial, i);
                     }
                 }
                 i++;
@@ -626,7 +628,7 @@ namespace SuperBMD.BMD
             return new PresetResult(default_mat, -1);
         }
 
-        private void SetPreset(Material bmdMaterial, Material preset)
+        private void SetPreset(BMDMaterial bmdMaterial, BMDMaterial preset)
         {
             // put data from preset over current material if it exists
 
@@ -666,17 +668,17 @@ namespace SuperBMD.BMD
             if (preset.NBTScale != null) bmdMaterial.NBTScale = preset.NBTScale;
         }
 
-        private void LoadFromJson(Assimp.Scene scene, TEX1 textures, SHP1 shapes, string jsonPath)
+        private void LoadFromJson(Scene scene, TEX1 textures, SHP1 shapes, string jsonPath)
         {
 
-            Materials = JsonSerializer.Deserialize<List<Material>>(jsonPath);
+            Materials = JsonSerializer.Deserialize<List<BMDMaterial>>(jsonPath);
 
             for (short i = 0; i < Materials.Count; i++)
             {
                 RemapIndices.Add(i);
             }
 
-            foreach (Material mat in Materials)
+            foreach (BMDMaterial mat in Materials)
             {
                 MaterialNames.Add(mat.Name);
                 for (int i = 0; i < 8; i++)
@@ -696,10 +698,10 @@ namespace SuperBMD.BMD
 
             for (int i = 0; i < scene.MeshCount; i++)
             {
-                Assimp.Material meshMat = scene.Materials[scene.Meshes[i].MaterialIndex];
-                string test = meshMat.Name.Replace("-material", "");
+                Material meshMaterial = scene.Materials[scene.Meshes[i].MaterialIndex];
+                string test = meshMaterial.Name.Replace("-material", "");
 
-                List<string> materialNamesWithoutParentheses = new List<string>();
+                var materialNamesWithoutParentheses = new List<string>();
                 foreach (string materialName in MaterialNames)
                 {
                     materialNamesWithoutParentheses.Add(materialName.Replace("(", "_").Replace(")", "_"));
@@ -709,7 +711,7 @@ namespace SuperBMD.BMD
                 {
                     if (test.Length <= 1)
                     {
-                        throw new Exception($"Mesh \"{scene.Meshes[i].Name}\" has a material named \"{meshMat.Name.Replace("-material", "")}\" which was not found in materials.json.");
+                        throw new Exception($"Mesh \"{scene.Meshes[i].Name}\" has a material named \"{meshMaterial.Name.Replace("-material", "")}\" which was not found in materials.json.");
                     }
                     test = test.Substring(1);
                 }
@@ -727,40 +729,40 @@ namespace SuperBMD.BMD
             }
         }
 
-        private void LoadFromScene(Assimp.Scene scene, TEX1 textures, SHP1 shapes, List<Material>? matPresets = null)
+        private void LoadFromScene(Scene scene, TEX1 textures, SHP1 shapes, List<BMDMaterial>? materialPresets = null)
         {
-            List<int> indices = new List<int>();
+            var indices = new List<int>();
 
             for (short i = 0; i < scene.MeshCount; i++)
             {
-                Assimp.Material meshMat = scene.Materials[scene.Meshes[i].MaterialIndex];
-                Console.Write("Mesh {0} has material {1}...\n", scene.Meshes[i].Name, meshMat.Name);
-                Material bmdMaterial = new Material();
-                bmdMaterial.Name = meshMat.Name;
+                Material meshMaterial = scene.Materials[scene.Meshes[i].MaterialIndex];
+                Console.Write("Mesh {0} has material {1}...\n", scene.Meshes[i].Name, meshMaterial.Name);
+                var bmdMaterial = new BMDMaterial();
+                bmdMaterial.Name = meshMaterial.Name;
 
-                bool hasVtxColor0 = shapes.Shapes[i].AttributeData.CheckAttribute(Geometry.GXVertexAttribute.Color0);
+                bool hasVtxColor0 = shapes.Shapes[i].AttributeData.CheckAttribute(Geometry.VertexAttribute.ColorChannel0);
                 int texIndex = -1;
-                string texName = null;
-                if (meshMat.HasTextureDiffuse)
+                string textureName = null;
+                if (meshMaterial.HasTextureDiffuse)
                 {
-                    texName = Path.GetFileNameWithoutExtension(meshMat.TextureDiffuse.FilePath);
-                    texIndex = textures.Textures.IndexOf(textures[texName]);
+                    textureName = Path.GetFileNameWithoutExtension(meshMaterial.TextureDiffuse.FilePath);
+                    texIndex = textures.Textures.IndexOf(textures[textureName]);
                 }
 
-                bmdMaterial.SetUpTev(meshMat.HasTextureDiffuse, hasVtxColor0, texIndex, texName, meshMat);
-                string originalName = FindOriginalMaterialName(meshMat.Name, matPresets);
+                bmdMaterial.SetUpTev(meshMaterial.HasTextureDiffuse, hasVtxColor0, texIndex, textureName, meshMaterial);
+                string originalName = FindOriginalMaterialName(meshMaterial.Name, materialPresets);
                 if (originalName != null)
                 {
-                    Console.WriteLine("Material name {0} renamed to {1}", meshMat.Name, originalName);
-                    meshMat.Name = originalName;
+                    Console.WriteLine("Material name {0} renamed to {1}", meshMaterial.Name, originalName);
+                    meshMaterial.Name = originalName;
                 }
 
-                PresetResult? result = FindMatPreset(meshMat.Name, matPresets);
+                PresetResult? result = FindMatPreset(meshMaterial.Name, materialPresets);
 
 
                 if (result != null)
                 {
-                    Material preset = ((PresetResult)result).Preset;
+                    BMDMaterial preset = ((PresetResult)result).Preset;
                     if (preset.Name.StartsWith("__MatDefault:"))
                     {
                         // If a material has a suffix that fits one of the default presets, we remove the suffix as the
@@ -769,13 +771,13 @@ namespace SuperBMD.BMD
                         string substring = "_" + subs[1];
                         bmdMaterial.Name = bmdMaterial.Name.Replace(substring, "");
                     }
-                    Console.Write(string.Format("Applying material preset for {0}...", meshMat.Name));
+                    Console.Write(string.Format("Applying material preset for {0}...", meshMaterial.Name));
                     SetPreset(bmdMaterial, preset);
                 }
                 else if (Arguments.IsMaterialOrderStrict)
                 {
                     throw new Exception(String.Format("No material entry found for material {0}. In Strict Material Order mode every material needs to have an entry in the JSON!",
-                                        meshMat.Name));
+                                        meshMaterial.Name));
                 }
                 bmdMaterial.Readjust();
 
@@ -790,18 +792,18 @@ namespace SuperBMD.BMD
                 {
                     indices.Add(-1);
                 }
-                MaterialNames.Add(meshMat.Name);
+                MaterialNames.Add(meshMaterial.Name);
                 Console.WriteLine("✓\n");
             }
             if (Arguments.IsMaterialOrderStrict)
             {
-                if (Materials.Count != matPresets.Count)
+                if (Materials.Count != materialPresets.Count)
                 {
-                    throw new Exception($"Amount of materials doesn't match amount of presets: \"{Materials.Count}\" vs \"{matPresets.Count}\".");
+                    throw new Exception($"Amount of materials doesn't match amount of presets: \"{Materials.Count}\" vs \"{materialPresets.Count}\".");
                 }
-                List<Material> new_list = new(Materials);
+                var newBMDMaterialList = new List<BMDMaterial>(Materials);
                 List<string> names = new(MaterialNames);
-                for (int i = 0; i < new_list.Count; i++)
+                for (int i = 0; i < newBMDMaterialList.Count; i++)
                 {
                     int index = indices[i];
                     if (index == -1)
@@ -809,10 +811,10 @@ namespace SuperBMD.BMD
                         throw new Exception("On resorting the materials, couldn't find one material in the material JSON. This shouldn't happen.");
                     }
                     scene.Meshes[i].MaterialIndex = index;
-                    new_list[index] = Materials[i];
+                    newBMDMaterialList[index] = Materials[i];
                     names[index] = MaterialNames[i];
                 }
-                Materials = new_list;
+                Materials = newBMDMaterialList;
                 MaterialNames = names;
                 Console.WriteLine("Materials have been sorted according to their position in the material JSON file.");
             }
@@ -821,177 +823,177 @@ namespace SuperBMD.BMD
         private void FillMaterialDataBlocks()
         {
 
-            foreach (Material mat in Materials)
+            foreach (BMDMaterial material in Materials)
             {
-                IndirectTexBlock.Add(mat.IndTexEntry);
+                IndirectTexBlock.Add(material.IndTexEntry);
 
-                if (!CullModeBlock.Contains(mat.CullMode))
-                    CullModeBlock.Add(mat.CullMode);
+                if (!CullModeBlock.Contains(material.CullMode))
+                    CullModeBlock.Add(material.CullMode);
 
                 for (int i = 0; i < 2; i++)
                 {
-                    if (mat.MaterialColors[i] is null)
+                    if (material.MaterialColors[i] is null)
                         break;
-                    if (!MaterialColorBlock.Contains(mat.MaterialColors[i].Value))
-                        MaterialColorBlock.Add(mat.MaterialColors[i].Value);
+                    if (!MaterialColorBlock.Contains(material.MaterialColors[i].Value))
+                        MaterialColorBlock.Add(material.MaterialColors[i].Value);
                 }
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (mat.ChannelControls[i] is null)
+                    if (material.ChannelControls[i] is null)
                         break;
-                    if (!ChannelControlBlock.Contains(mat.ChannelControls[i].Value))
-                        ChannelControlBlock.Add(mat.ChannelControls[i].Value);
+                    if (!ChannelControlBlock.Contains(material.ChannelControls[i].Value))
+                        ChannelControlBlock.Add(material.ChannelControls[i].Value);
                 }
 
                 for (int i = 0; i < 2; i++)
                 {
-                    if (mat.AmbientColors[i] is null)
+                    if (material.AmbientColors[i] is null)
                         break;
-                    if (!AmbientColorBlock.Contains(mat.AmbientColors[i].Value))
-                        AmbientColorBlock.Add(mat.AmbientColors[i].Value);
+                    if (!AmbientColorBlock.Contains(material.AmbientColors[i].Value))
+                        AmbientColorBlock.Add(material.AmbientColors[i].Value);
                 }
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if (mat.LightingColors[i] is null)
+                    if (material.LightingColors[i] is null)
                         break;
-                    if (!LightingColorBlock.Contains(mat.LightingColors[i].Value))
-                        LightingColorBlock.Add(mat.LightingColors[i].Value);
+                    if (!LightingColorBlock.Contains(material.LightingColors[i].Value))
+                        LightingColorBlock.Add(material.LightingColors[i].Value);
                 }
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if (mat.TexCoord1Gens[i] is null)
+                    if (material.TexCoord1Gens[i] is null)
                         break;
-                    if (!TexCoord1GenBlock.Contains(mat.TexCoord1Gens[i].Value))
-                        TexCoord1GenBlock.Add(mat.TexCoord1Gens[i].Value);
+                    if (!TexCoord1GenBlock.Contains(material.TexCoord1Gens[i].Value))
+                        TexCoord1GenBlock.Add(material.TexCoord1Gens[i].Value);
                 }
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if (mat.PostTexCoordGens[i] is null)
+                    if (material.PostTexCoordGens[i] is null)
                         break;
-                    if (!TexCoord2GenBlock.Contains(mat.PostTexCoordGens[i].Value))
-                        TexCoord2GenBlock.Add(mat.PostTexCoordGens[i].Value);
+                    if (!TexCoord2GenBlock.Contains(material.PostTexCoordGens[i].Value))
+                        TexCoord2GenBlock.Add(material.PostTexCoordGens[i].Value);
                 }
 
                 for (int i = 0; i < 10; i++)
                 {
-                    if (mat.TexMatrix1[i] is null)
+                    if (material.TexMatrix1[i] is null)
                         break;
-                    if (!TexMatrix1Block.Contains(mat.TexMatrix1[i].Value))
-                        TexMatrix1Block.Add(mat.TexMatrix1[i].Value);
+                    if (!TexMatrix1Block.Contains(material.TexMatrix1[i].Value))
+                        TexMatrix1Block.Add(material.TexMatrix1[i].Value);
                 }
 
                 for (int i = 0; i < 20; i++)
                 {
-                    if (mat.PostTexMatrix[i] is null)
+                    if (material.PostTexMatrix[i] is null)
                         break;
-                    if (!TexMatrix2Block.Contains(mat.PostTexMatrix[i].Value))
-                        TexMatrix2Block.Add(mat.PostTexMatrix[i].Value);
+                    if (!TexMatrix2Block.Contains(material.PostTexMatrix[i].Value))
+                        TexMatrix2Block.Add(material.PostTexMatrix[i].Value);
                 }
 
                 for (int i = 0; i < 8; i++)
                 {
-                    if (mat.TextureIndices[i] == -1)
+                    if (material.TextureIndices[i] == -1)
                         break;
-                    if (!TexRemapBlock.Contains((short)mat.TextureIndices[i]))
-                        TexRemapBlock.Add((short)mat.TextureIndices[i]);
+                    if (!TexRemapBlock.Contains((short)material.TextureIndices[i]))
+                        TexRemapBlock.Add((short)material.TextureIndices[i]);
                 }
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (mat.KonstColors[i] is null)
+                    if (material.KonstColors[i] is null)
                         break;
-                    if (!TevKonstColorBlock.Contains(mat.KonstColors[i].Value))
-                        TevKonstColorBlock.Add(mat.KonstColors[i].Value);
+                    if (!TevKonstColorBlock.Contains(material.KonstColors[i].Value))
+                        TevKonstColorBlock.Add(material.KonstColors[i].Value);
                 }
 
                 for (int i = 0; i < 16; i++)
                 {
-                    if (mat.TevOrders[i] is null)
+                    if (material.TevOrders[i] is null)
                         break;
-                    if (!TevOrderBlock.Contains(mat.TevOrders[i].Value))
-                        TevOrderBlock.Add(mat.TevOrders[i].Value);
+                    if (!TevOrderBlock.Contains(material.TevOrders[i].Value))
+                        TevOrderBlock.Add(material.TevOrders[i].Value);
                 }
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (mat.TevColors[i] is null)
+                    if (material.TevColors[i] is null)
                         break;
-                    if (!TevColorBlock.Contains(mat.TevColors[i].Value))
-                        TevColorBlock.Add(mat.TevColors[i].Value);
+                    if (!TevColorBlock.Contains(material.TevColors[i].Value))
+                        TevColorBlock.Add(material.TevColors[i].Value);
                 }
 
                 for (int i = 0; i < 16; i++)
                 {
-                    if (mat.TevStages[i] is null)
+                    if (material.TevStages[i] is null)
                         break;
-                    if (!TevStageBlock.Contains(mat.TevStages[i].Value))
-                        TevStageBlock.Add(mat.TevStages[i].Value);
+                    if (!TevStageBlock.Contains(material.TevStages[i].Value))
+                        TevStageBlock.Add(material.TevStages[i].Value);
                 }
 
                 for (int i = 0; i < 16; i++)
                 {
-                    if (mat.SwapModes[i] is null)
+                    if (material.SwapModes[i] is null)
                         break;
-                    if (!SwapModeBlock.Contains(mat.SwapModes[i].Value))
-                        SwapModeBlock.Add(mat.SwapModes[i].Value);
+                    if (!SwapModeBlock.Contains(material.SwapModes[i].Value))
+                        SwapModeBlock.Add(material.SwapModes[i].Value);
                 }
 
                 for (int i = 0; i < 16; i++)
                 {
-                    if (mat.SwapTables[i] is null)
+                    if (material.SwapTables[i] is null)
                         break;
-                    if (!SwapTableBlock.Contains(mat.SwapTables[i].Value))
-                        SwapTableBlock.Add(mat.SwapTables[i].Value);
+                    if (!SwapTableBlock.Contains(material.SwapTables[i].Value))
+                        SwapTableBlock.Add(material.SwapTables[i].Value);
                 }
 
-                if (!FogBlock.Contains(mat.FogInfo))
-                    FogBlock.Add(mat.FogInfo);
+                if (!FogBlock.Contains(material.FogInfo))
+                    FogBlock.Add(material.FogInfo);
 
-                if (!AlphaCompBlock.Contains(mat.AlphCompare))
-                    AlphaCompBlock.Add(mat.AlphCompare);
+                if (!AlphaCompBlock.Contains(material.AlphCompare))
+                    AlphaCompBlock.Add(material.AlphCompare);
 
-                if (!BlendModeBlock.Contains(mat.BlendMode))
-                    BlendModeBlock.Add(mat.BlendMode);
+                if (!BlendModeBlock.Contains(material.BlendMode))
+                    BlendModeBlock.Add(material.BlendMode);
 
-                if (!NBTScaleBlock.Contains(mat.NBTScale))
-                    NBTScaleBlock.Add(mat.NBTScale);
+                if (!NBTScaleBlock.Contains(material.NBTScale))
+                    NBTScaleBlock.Add(material.NBTScale);
 
-                if (!ZModeBlock.Contains(mat.ZMode))
-                    ZModeBlock.Add(mat.ZMode);
+                if (!ZModeBlock.Contains(material.ZMode))
+                    ZModeBlock.Add(material.ZMode);
 
-                if (!ZCompLocBlock.Contains(mat.ZCompLoc))
-                    ZCompLocBlock.Add(mat.ZCompLoc);
+                if (!ZCompLocBlock.Contains(material.ZCompLoc))
+                    ZCompLocBlock.Add(material.ZCompLoc);
 
-                if (!DitherBlock.Contains(mat.Dither))
-                    DitherBlock.Add(mat.Dither);
+                if (!DitherBlock.Contains(material.Dither))
+                    DitherBlock.Add(material.Dither);
 
-                if (!NumColorChannelsBlock.Contains(mat.ColorChannelControlsCount))
-                    NumColorChannelsBlock.Add(mat.ColorChannelControlsCount);
+                if (!NumColorChannelsBlock.Contains(material.ColorChannelControlsCount))
+                    NumColorChannelsBlock.Add(material.ColorChannelControlsCount);
 
-                if (!NumTevStagesBlock.Contains(mat.NumTevStagesCount))
-                    NumTevStagesBlock.Add(mat.NumTevStagesCount);
+                if (!NumTevStagesBlock.Contains(material.NumTevStagesCount))
+                    NumTevStagesBlock.Add(material.NumTevStagesCount);
 
-                if (!NumTexGensBlock.Contains(mat.NumTexGensCount))
-                    NumTexGensBlock.Add(mat.NumTexGensCount);
+                if (!NumTexGensBlock.Contains(material.NumTexGensCount))
+                    NumTexGensBlock.Add(material.NumTexGensCount);
             }
         }
 
-        public void FillScene(Assimp.Scene scene, TEX1 textures, string fileDir)
+        public void FillScene(Scene scene, TEX1 textures, string fileDir)
         {
             //textures.DumpTextures(fileDir);
 
-            foreach (Material mat in Materials)
+            foreach (BMDMaterial bmdMaterial in Materials)
             {
-                Console.Write(mat.Name + " - ");
-                Assimp.Material assMat = new Assimp.Material();
-                assMat.Name = mat.Name;
-                if (mat.TextureIndices[0] != -1)
+                Console.Write(bmdMaterial.Name + " - ");
+                var assimpMaterial = new Material();
+                assimpMaterial.Name = bmdMaterial.Name;
+                if (bmdMaterial.TextureIndices[0] != -1)
                 {
-                    int texIndex = mat.TextureIndices[0];
+                    int texIndex = bmdMaterial.TextureIndices[0];
                     //texIndex = m_TexRemapBlock[texIndex];
                     string texPath = Path.Combine(fileDir, textures[texIndex].Name + ".png");
 
@@ -999,20 +1001,20 @@ namespace SuperBMD.BMD
                        Assimp.TextureMapping.FromUV, 0, 1.0f, Assimp.TextureOperation.Add,
                        textures[texIndex].WrapS.ToAssImpWrapMode(), textures[texIndex].WrapT.ToAssImpWrapMode(), 0);
 
-                    assMat.AddMaterialTexture(in tex);
+                    assimpMaterial.AddMaterialTexture(in tex);
                 }
 
-                if (mat.MaterialColors[0] != null)
+                if (bmdMaterial.MaterialColors[0] != null)
                 {
-                    assMat.ColorDiffuse = mat.MaterialColors[0].Value.ToColor4D();
+                    assimpMaterial.ColorDiffuse = bmdMaterial.MaterialColors[0].Value.ToColor4D();
                 }
 
-                if (mat.AmbientColors[0] != null)
+                if (bmdMaterial.AmbientColors[0] != null)
                 {
-                    assMat.ColorAmbient = mat.AmbientColors[0].Value.ToColor4D();
+                    assimpMaterial.ColorAmbient = bmdMaterial.AmbientColors[0].Value.ToColor4D();
                 }
 
-                scene.Materials.Add(assMat);
+                scene.Materials.Add(assimpMaterial);
                 Console.Write("✓\n");
 
             }
@@ -1024,15 +1026,15 @@ namespace SuperBMD.BMD
 
             // Calculate what the unique materials are and update the duplicate remap indices list.
             RemapIndices = new List<short>();
-            List<Material> uniqueMaterials = new List<Material>();
+            var uniqueMaterials = new List<BMDMaterial>();
             for (int i = 0; i < Materials.Count; i++)
             {
-                Material mat = Materials[i];
+                BMDMaterial bmdMaterial = Materials[i];
                 short duplicateRemapIndex = -1;
                 for (int j = 0; j < i; j++)
                 {
-                    Material othermat = Materials[j];
-                    if (mat == othermat)
+                    BMDMaterial othermat = Materials[j];
+                    if (bmdMaterial == othermat)
                     {
                         duplicateRemapIndex = (short)uniqueMaterials.IndexOf(othermat);
                         break;
@@ -1045,7 +1047,7 @@ namespace SuperBMD.BMD
                 else
                 {
                     RemapIndices.Add((short)uniqueMaterials.Count);
-                    uniqueMaterials.Add(mat);
+                    uniqueMaterials.Add(bmdMaterial);
                 }
             }
 
@@ -1316,7 +1318,7 @@ namespace SuperBMD.BMD
             writer.Seek(end);
         }
 
-        private void WriteMaterialInitData(ref EndianBinaryWriter writer, Material mat)
+        private void WriteMaterialInitData(ref EndianBinaryWriter writer, BMDMaterial mat)
         {
             writer.Write(mat.Flag);
             writer.Write((byte)CullModeBlock.IndexOf(mat.CullMode));
@@ -1478,21 +1480,21 @@ namespace SuperBMD.BMD
         public void LoadAdditionalTextures(TEX1 tex1, string texpath)
         {
             //string modeldir = Path.GetDirectoryName(modelpath);
-            foreach (Material mat in Materials)
+            foreach (BMDMaterial mat in Materials)
             {
-                foreach (string texname in mat.TextureNames)
+                foreach (string textureName in mat.TextureNames)
                 {
-                    if (texname != null && texname != "")
+                    if (textureName != null && textureName != "")
                     {
-                        if (tex1[texname] is null || texname.IsEmpty())
+                        if (tex1[textureName] is null || textureName.IsEmpty())
                         {
-                            var textureName = texname.Split(":")[0];
-                            Console.Write("Searching for " + textureName);
+                            var splitTextureName = textureName.Split(":")[0];
+                            Console.Write("Searching for " + splitTextureName);
                             string path = "";
                             foreach (string extension in new string[] { ".png", ".jpg", ".tga", ".bmp" })
                             {
                                 Console.Write(".");
-                                string tmppath = Path.Combine(texpath, texname + extension);
+                                string tmppath = Path.Combine(texpath, splitTextureName + extension);
                                 if (File.Exists(tmppath))
                                 {
                                     path = tmppath;
@@ -1509,7 +1511,7 @@ namespace SuperBMD.BMD
                             }
                             else
                             {
-                                Console.WriteLine(string.Format("Could not find texture {0} in file path {1}", texname, texpath));
+                                Console.WriteLine(string.Format("Could not find texture {0} in file path {1}", textureName, texpath));
                             }
                         }
                     }
@@ -1520,7 +1522,7 @@ namespace SuperBMD.BMD
         public void MapTextureNamesToIndices(TEX1 textures)
         {
             //Console.WriteLine("Mapping names to indices");
-            foreach (Material mat in Materials)
+            foreach (BMDMaterial mat in Materials)
             {
                 for (int i = 0; i < 8; i++)
                 {
@@ -1563,7 +1565,7 @@ namespace SuperBMD.BMD
 
         public void SetTextureNames(TEX1 textures)
         {
-            foreach (Material mat in Materials)
+            foreach (BMDMaterial mat in Materials)
             {
                 for (int i = 0; i < 8; i++)
                 {
